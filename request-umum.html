@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI YANDU - Request Umum</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Sidebar & Shared Component -->
+  <script src="sidebar.js"></script>
+  <script src="shared.js?v=1.0.1"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asabri: { blue: '#0141A8', blueDark: '#01358C', gold: '#FFDE24', softBlue: '#F8FAFC', textDark: '#0F172A' }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'],
+            mono: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+
+  <!-- TOPBAR / HEADER BAR -->
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center">
+          <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        </div>
+        <div class="h-8 w-px bg-white/20"></div>
+        <div class="flex flex-col">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">CUSTOMER RELATION MANAGEMENT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right-side Topbar Controls -->
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-semibold text-white tracking-wide" id="topbar-role">ROLE : Staf Kancab</span>
+      </div>
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">SK</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">Staf Kancab Utama</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19900315001</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTAINER -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR: Navigation Panel -->
+    <div id="sidebar"></div>
+    <script>
+      renderSidebar('request-umum');
+    </script>
+
+    <!-- CONTENT CONTAINER -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- BREADCRUMB BAR -->
+      <div class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
+          <span>Pelayanan Komunikasi Pelanggan</span>
+          <span class="text-slate-400">/</span>
+          <span class="font-bold text-asabri-blue">Request Umum</span>
+        </div>
+      </div>
+
+      <!-- WORKSPACE PANELS -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/50">
+
+        <!-- FILTER & ACTION BAR -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-100">
+            <div>
+              <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-comments text-asabri-blue"></i> Kelola Request Umum Komunikasi
+              </h2>
+              <p class="text-xs text-slate-500 mt-0.5">Media komunikasi antara Kantor Cabang dan Divisi Pusat (Pelayanan / Kepesertaan)</p>
+            </div>
+            <button onclick="openModalTambah()" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 flex items-center gap-2 shrink-0">
+              <i class="fas fa-plus-circle"></i> Request Umum Baru
+            </button>
+          </div>
+
+          <!-- FORM FILTER -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Peserta (Nama / NIP / NRP)</label>
+              <input type="text" id="filter-peserta" oninput="applyFilter()" placeholder="Cari peserta..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue transition-colors">
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Cabang</label>
+              <select id="filter-cabang" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue transition-colors">
+                <option value="">Semua Cabang</option>
+                <option value="KCU JAKARTA">KCU JAKARTA</option>
+                <option value="KC SURABAYA">KC SURABAYA</option>
+                <option value="KC BANDUNG">KC BANDUNG</option>
+                <option value="KC MEDAN">KC MEDAN</option>
+                <option value="KC MAKASSAR">KC MAKASSAR</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Status</label>
+              <select id="filter-status" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue transition-colors">
+                <option value="">Semua Status</option>
+                <option value="Belum Selesai">Belum Selesai</option>
+                <option value="Selesai">Selesai</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tujuan</label>
+              <select id="filter-tujuan" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue transition-colors">
+                <option value="">Semua Tujuan</option>
+                <option value="Pelayanan">Pelayanan</option>
+                <option value="Kepesertaan">Kepesertaan</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABEL REQUEST UMUM -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Daftar Request Umum</span>
+            <span id="record-count" class="text-xs font-semibold text-slate-400">Total: 0 Record</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead class="bg-slate-50/80">
+                <tr class="border-b border-slate-100 text-slate-400 uppercase text-[10px] font-bold tracking-wider">
+                  <th class="py-3 px-4 whitespace-nowrap">Tanggal Request</th>
+                  <th class="py-3 px-4">Peserta</th>
+                  <th class="py-3 px-4">Cabang</th>
+                  <th class="py-3 px-4">Tujuan</th>
+                  <th class="py-3 px-4">Subjek</th>
+                  <th class="py-3 px-4 max-w-xs">Isi</th>
+                  <th class="py-3 px-4">User Request</th>
+                  <th class="py-3 px-4">User Terakhir Reply</th>
+                  <th class="py-3 px-4">Diperbaharui</th>
+                  <th class="py-3 px-4 text-center">Status</th>
+                  <th class="py-3 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="table-request-body" class="divide-y divide-slate-100 text-xs text-slate-600">
+                <!-- Dynamic Rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: TAMBAH / EDIT REQUEST UMUM -->
+  <div id="modal-form-request" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[150] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform scale-95 transition-transform duration-300" id="modal-form-container">
+      <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+        <h3 id="modal-form-title" class="text-sm font-bold flex items-center gap-2">
+          <i class="fas fa-plus-circle text-asabri-gold"></i> Tambah Request Umum
+        </h3>
+        <button onclick="closeModalForm()" class="text-slate-400 hover:text-white transition-colors">
+          <i class="fas fa-times text-base"></i>
+        </button>
+      </div>
+
+      <form id="form-request-umum" onsubmit="handleFormSubmit(event)" class="p-6 space-y-4">
+        <input type="hidden" id="form-id" value="">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Subjek <span class="text-rose-500">*</span></label>
+          <input type="text" id="form-subjek" required placeholder="Contoh: Perubahan Data KTPA / Permohonan Keringanan Potongan Hutang" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-asabri-blue transition-colors">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Tujuan <span class="text-rose-500">*</span></label>
+          <select id="form-tujuan" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-asabri-blue transition-colors">
+            <option value="">-- Silahkan Pilih Tujuan --</option>
+            <option value="Pelayanan">Pelayanan</option>
+            <option value="Kepesertaan">Kepesertaan</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Isi <span class="text-rose-500">*</span></label>
+          <textarea id="form-isi" required rows="4" placeholder="Tuliskan rincian request atau pengajuan komunikasi di sini..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-asabri-blue transition-colors resize-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Attachment (Upload File)</label>
+          <input type="file" id="form-attachment" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs text-slate-600 file:mr-3 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-asabri-blue file:text-white hover:file:bg-asabri-blueDark cursor-pointer">
+          <p class="text-[10px] text-slate-400 mt-1">Format opsional: PDF, DOCX, JPG/PNG (Maks 5MB)</p>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeModalForm()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors">Tutup</button>
+          <button type="submit" class="px-5 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-xs font-bold transition-colors shadow-sm">Simpan Request Umum</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DETAIL / VIEW REQUEST UMUM -->
+  <div id="modal-view-request" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[150] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform scale-95 transition-transform duration-300" id="modal-view-container">
+      <div class="bg-asabri-blue text-white px-6 py-4 flex items-center justify-between">
+        <h3 class="text-sm font-bold flex items-center gap-2">
+          <i class="fas fa-eye text-asabri-gold"></i> Detail Request Umum
+        </h3>
+        <button onclick="closeModalView()" class="text-white/70 hover:text-white transition-colors">
+          <i class="fas fa-times text-base"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div class="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs">
+          <div>
+            <span class="block text-[10px] font-bold text-slate-400 uppercase">Subjek</span>
+            <span id="view-subjek" class="font-bold text-slate-800 text-sm"></span>
+          </div>
+          <div>
+            <span class="block text-[10px] font-bold text-slate-400 uppercase">Status</span>
+            <span id="view-status"></span>
+          </div>
+          <div>
+            <span class="block text-[10px] font-bold text-slate-400 uppercase">Tujuan</span>
+            <span id="view-tujuan" class="font-semibold text-slate-700"></span>
+          </div>
+          <div>
+            <span class="block text-[10px] font-bold text-slate-400 uppercase">Cabang</span>
+            <span id="view-cabang" class="font-semibold text-slate-700"></span>
+          </div>
+          <div>
+            <span class="block text-[10px] font-bold text-slate-400 uppercase">User Request</span>
+            <span id="view-user-request" class="font-semibold text-slate-700"></span>
+          </div>
+          <div>
+            <span class="block text-[10px] font-bold text-slate-400 uppercase">Tanggal Request</span>
+            <span id="view-tanggal-request" class="font-mono text-slate-700"></span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Isi Request:</label>
+          <div id="view-isi" class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-700 leading-relaxed font-medium min-h-[80px]"></div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Attachment:</label>
+          <div id="view-attachment" class="text-xs text-slate-500 italic">Tidak ada attachment</div>
+        </div>
+
+        <!-- REPLIES / DISCUSSION THREAD -->
+        <div class="border-t border-slate-100 pt-4 space-y-3">
+          <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+            <i class="fas fa-reply-all text-asabri-blue"></i> Balasan & Discussion Thread
+          </h4>
+          <div id="view-replies" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <!-- Dynamic replies -->
+          </div>
+
+          <!-- Add reply form (mock) -->
+          <div class="pt-2 flex items-center gap-2">
+            <input type="text" id="input-reply-text" placeholder="Tuliskan balasan..." class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-asabri-blue">
+            <button onclick="submitReply()" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors shrink-0">Kirim Reply</button>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+          <button type="button" onclick="closeModalView()" class="px-5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // DATA INITIAL STATE
+    let currentViewId = null;
+    let DATA_REQUEST_UMUM = [
+      {
+        id: 'REQ-2026-001',
+        tanggalRequest: '2026-09-10 09:30',
+        peserta: 'Sutrisno (NRP: 19800315)',
+        cabang: 'KCU JAKARTA',
+        tujuan: 'Kepesertaan',
+        subjek: 'Permohonan Koreksi KTPA Peserta Pensiun',
+        isi: 'Mohon bantuannya untuk perbaikan penulisan nama di KTPA peserta atas nama Sutrisno karena terdapat perbedaan 1 huruf dengan SK Pensiun.',
+        userRequest: 'Budi (Staf Kancab)',
+        userTerakhirReply: 'Siti (Admin Pusat)',
+        diperbaharui: '2026-09-11 14:20',
+        status: 'Belum Selesai',
+        attachmentName: 'SK_Pensiun_Sutrisno.pdf',
+        replies: [
+          { user: 'Siti (Admin Pusat)', date: '2026-09-11 14:20', text: 'Sedang kami cek berkas SK pendukungnya ya Pak Budi.' }
+        ]
+      },
+      {
+        id: 'REQ-2026-002',
+        tanggalRequest: '2026-09-08 11:15',
+        peserta: 'Bambang Herman (NRP: 19750812)',
+        cabang: 'KC SURABAYA',
+        tujuan: 'Pelayanan',
+        subjek: 'Pengajuan Keringanan Potongan Hutang Dapem',
+        isi: 'Pengajuan keringanan cicilan potongan hutang dikarenakan peserta sedang menjalani rawat jalan rutin.',
+        userRequest: 'Dewi (Staf Kancab)',
+        userTerakhirReply: 'Agus (Kabid Layanan Pusat)',
+        diperbaharui: '2026-09-09 16:45',
+        status: 'Selesai',
+        attachmentName: 'Surat_Permohonan_Keringanan.pdf',
+        replies: [
+          { user: 'Agus (Kabid Layanan Pusat)', date: '2026-09-09 16:45', text: 'Pengajuan keringanan telah disetujui. Silahkan lakukan penyesuaian tenor di aplikasi.' }
+        ]
+      },
+      {
+        id: 'REQ-2026-003',
+        tanggalRequest: '2026-09-12 13:00',
+        peserta: 'Agus Prasetyo (NRP: 19850520)',
+        cabang: 'KC BANDUNG',
+        tujuan: 'Pelayanan',
+        subjek: 'Konfirmasi Klaim Restitusi JKK Perawatan',
+        isi: 'Mohon konfirmasi status klaim perawatan restitusi no agenda KLM-2026-089 yang memerlukan pengesahan ulang.',
+        userRequest: 'Rian (Staf Kancab)',
+        userTerakhirReply: 'Rian (Staf Kancab)',
+        diperbaharui: '2026-09-12 13:00',
+        status: 'Belum Selesai',
+        attachmentName: null,
+        replies: []
+      }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTable(DATA_REQUEST_UMUM);
+    });
+
+    function renderTable(data) {
+      const tbody = document.getElementById('table-request-body');
+      const recordCount = document.getElementById('record-count');
+      tbody.innerHTML = '';
+
+      recordCount.textContent = `Total: ${data.length} Record`;
+
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="11" class="text-center py-8 text-slate-400 italic">
+              Tidak ada data Request Umum yang sesuai filter.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      data.forEach(item => {
+        const isBelumSelesai = item.status === 'Belum Selesai';
+        const badgeStatus = isBelumSelesai 
+          ? `<span class="bg-amber-50 text-amber-600 border border-amber-200 px-2.5 py-1 rounded-full font-bold text-[10px] inline-block">Belum Selesai</span>`
+          : `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-full font-bold text-[10px] inline-block">Selesai</span>`;
+
+        const badgeTujuan = item.tujuan === 'Pelayanan'
+          ? `<span class="bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded text-[10px] font-bold">${item.tujuan}</span>`
+          : `<span class="bg-purple-50 text-purple-700 border border-purple-100 px-2 py-0.5 rounded text-[10px] font-bold">${item.tujuan}</span>`;
+
+        const btnEdit = isBelumSelesai
+          ? `<button onclick="openModalEdit('${item.id}')" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded text-[10px] font-bold transition-colors"><i class="fas fa-edit mr-1"></i> Ubah</button>`
+          : `<button disabled class="px-2.5 py-1 bg-slate-200 text-slate-400 rounded text-[10px] font-bold cursor-not-allowed"><i class="fas fa-lock mr-1"></i> Ubah</button>`;
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/70 transition-colors';
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono text-[11px] whitespace-nowrap">${item.tanggalRequest}</td>
+          <td class="py-3 px-4 font-bold text-slate-800 whitespace-nowrap">${item.peserta}</td>
+          <td class="py-3 px-4 font-semibold text-slate-700 whitespace-nowrap">${item.cabang}</td>
+          <td class="py-3 px-4 whitespace-nowrap">${badgeTujuan}</td>
+          <td class="py-3 px-4 font-bold text-slate-800 max-w-xs truncate" title="${item.subjek}">${item.subjek}</td>
+          <td class="py-3 px-4 text-slate-600 max-w-xs truncate" title="${item.isi}">${item.isi}</td>
+          <td class="py-3 px-4 font-medium text-slate-700 whitespace-nowrap">${item.userRequest}</td>
+          <td class="py-3 px-4 font-medium text-slate-700 whitespace-nowrap">${item.userTerakhirReply || '-'}</td>
+          <td class="py-3 px-4 font-mono text-[11px] whitespace-nowrap">${item.diperbaharui}</td>
+          <td class="py-3 px-4 text-center whitespace-nowrap">${badgeStatus}</td>
+          <td class="py-3 px-4 text-center whitespace-nowrap">
+            <div class="flex items-center justify-center gap-1.5">
+              ${btnEdit}
+              <button onclick="openModalView('${item.id}')" class="px-2.5 py-1 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded text-[10px] font-bold transition-colors"><i class="fas fa-eye mr-1"></i> View</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function applyFilter() {
+      const peserta = document.getElementById('filter-peserta').value.toLowerCase();
+      const cabang = document.getElementById('filter-cabang').value;
+      const status = document.getElementById('filter-status').value;
+      const tujuan = document.getElementById('filter-tujuan').value;
+
+      const filtered = DATA_REQUEST_UMUM.filter(item => {
+        const matchPeserta = !peserta || item.peserta.toLowerCase().includes(peserta) || item.subjek.toLowerCase().includes(peserta);
+        const matchCabang = !cabang || item.cabang === cabang;
+        const matchStatus = !status || item.status === status;
+        const matchTujuan = !tujuan || item.tujuan === tujuan;
+        return matchPeserta && matchCabang && matchStatus && matchTujuan;
+      });
+
+      renderTable(filtered);
+    }
+
+    // MODAL CONTROL: FORM TAMBAH / EDIT
+    function openModalTambah() {
+      document.getElementById('form-id').value = '';
+      document.getElementById('modal-form-title').innerHTML = '<i class="fas fa-plus-circle text-asabri-gold"></i> Tambah Request Umum';
+      document.getElementById('form-subjek').value = '';
+      document.getElementById('form-tujuan').value = '';
+      document.getElementById('form-isi').value = '';
+      document.getElementById('form-attachment').value = '';
+
+      const modal = document.getElementById('modal-form-request');
+      const container = document.getElementById('modal-form-container');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        container.classList.remove('scale-95');
+      }, 10);
+    }
+
+    function openModalEdit(id) {
+      const item = DATA_REQUEST_UMUM.find(x => x.id === id);
+      if (!item) return;
+
+      document.getElementById('form-id').value = item.id;
+      document.getElementById('modal-form-title').innerHTML = '<i class="fas fa-edit text-asabri-gold"></i> Ubah Request Umum';
+      document.getElementById('form-subjek').value = item.subjek;
+      document.getElementById('form-tujuan').value = item.tujuan;
+      document.getElementById('form-isi').value = item.isi;
+
+      const modal = document.getElementById('modal-form-request');
+      const container = document.getElementById('modal-form-container');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        container.classList.remove('scale-95');
+      }, 10);
+    }
+
+    function closeModalForm() {
+      const modal = document.getElementById('modal-form-request');
+      const container = document.getElementById('modal-form-container');
+      modal.classList.add('opacity-0');
+      container.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('form-id').value;
+      const subjek = document.getElementById('form-subjek').value;
+      const tujuan = document.getElementById('form-tujuan').value;
+      const isi = document.getElementById('form-isi').value;
+      const fileInput = document.getElementById('form-attachment');
+      const attachmentName = fileInput.files.length > 0 ? fileInput.files[0].name : null;
+
+      const now = new Date();
+      const formattedNow = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      if (id) {
+        // Edit existing
+        const item = DATA_REQUEST_UMUM.find(x => x.id === id);
+        if (item) {
+          item.subjek = subjek;
+          item.tujuan = tujuan;
+          item.isi = isi;
+          if (attachmentName) item.attachmentName = attachmentName;
+          item.diperbaharui = formattedNow;
+        }
+      } else {
+        // Create new
+        const newId = `REQ-2026-${String(DATA_REQUEST_UMUM.length + 1).padStart(3, '0')}`;
+        DATA_REQUEST_UMUM.unshift({
+          id: newId,
+          tanggalRequest: formattedNow,
+          peserta: 'Umum / Staf Kancab',
+          cabang: 'KCU JAKARTA',
+          tujuan: tujuan,
+          subjek: subjek,
+          isi: isi,
+          userRequest: 'Staf Kancab Utama',
+          userTerakhirReply: 'Staf Kancab Utama',
+          diperbaharui: formattedNow,
+          status: 'Belum Selesai',
+          attachmentName: attachmentName,
+          replies: []
+        });
+      }
+
+      closeModalForm();
+      applyFilter();
+    }
+
+    // MODAL CONTROL: VIEW DETAIL
+    function openModalView(id) {
+      const item = DATA_REQUEST_UMUM.find(x => x.id === id);
+      if (!item) return;
+      currentViewId = id;
+
+      document.getElementById('view-subjek').textContent = item.subjek;
+      document.getElementById('view-tujuan').textContent = item.tujuan;
+      document.getElementById('view-cabang').textContent = item.cabang;
+      document.getElementById('view-user-request').textContent = item.userRequest;
+      document.getElementById('view-tanggal-request').textContent = item.tanggalRequest;
+      document.getElementById('view-isi').textContent = item.isi;
+
+      const viewStatus = document.getElementById('view-status');
+      viewStatus.innerHTML = item.status === 'Belum Selesai' 
+        ? `<span class="bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-bold">Belum Selesai</span>`
+        : `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">Selesai</span>`;
+
+      const viewAtt = document.getElementById('view-attachment');
+      if (item.attachmentName) {
+        viewAtt.innerHTML = `<a href="#" onclick="alert('Downloading ${item.attachmentName}...'); return false;" class="text-asabri-blue hover:underline font-bold flex items-center gap-1.5"><i class="fas fa-paperclip"></i> ${item.attachmentName}</a>`;
+      } else {
+        viewAtt.innerHTML = `<span class="text-slate-400 italic">Tidak ada attachment</span>`;
+      }
+
+      renderReplies(item.replies);
+
+      const modal = document.getElementById('modal-view-request');
+      const container = document.getElementById('modal-view-container');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        container.classList.remove('scale-95');
+      }, 10);
+    }
+
+    function renderReplies(replies) {
+      const container = document.getElementById('view-replies');
+      container.innerHTML = '';
+      if (!replies || replies.length === 0) {
+        container.innerHTML = `<p class="text-slate-400 italic text-[11px]">Belum ada balasan.</p>`;
+        return;
+      }
+      replies.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs space-y-1';
+        div.innerHTML = `
+          <div class="flex items-center justify-between text-[10px]">
+            <span class="font-bold text-slate-800">${r.user}</span>
+            <span class="text-slate-400 font-mono">${r.date}</span>
+          </div>
+          <p class="text-slate-700 font-medium">${r.text}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function submitReply() {
+      const input = document.getElementById('input-reply-text');
+      const text = input.value.trim();
+      if (!text || !currentViewId) return;
+
+      const item = DATA_REQUEST_UMUM.find(x => x.id === currentViewId);
+      if (!item) return;
+
+      const now = new Date();
+      const formattedNow = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+      if (!item.replies) item.replies = [];
+      item.replies.push({
+        user: 'Staf Kancab Utama',
+        date: formattedNow,
+        text: text
+      });
+      item.userTerakhirReply = 'Staf Kancab Utama';
+      item.diperbaharui = formattedNow;
+
+      input.value = '';
+      renderReplies(item.replies);
+      applyFilter();
+    }
+
+    function closeModalView() {
+      const modal = document.getElementById('modal-view-request');
+      const container = document.getElementById('modal-view-container');
+      modal.classList.add('opacity-0');
+      container.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+  </script>
+
+</body>
+</html>

@@ -62,7 +62,8 @@ function renderSidebar(activePage) {
         { label: 'Dashboard', href: 'komunikasi-dashboard.html' },
         { label: 'Riwayat Interaksi', href: 'komunikasi-riwayat.html' }
       ]
-    }
+    },
+    { id: 'request-umum', label: '12. Request Umum', icon: 'fas fa-envelope-open-text', href: 'request-umum.html', subMenu: [] }
   ];
 
   const currentFullUrl = window.location.pathname.split('/').pop() + window.location.search;
