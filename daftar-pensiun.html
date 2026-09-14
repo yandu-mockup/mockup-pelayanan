@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI - YANDU NG (Daftar Pensiun - Perbandingan DAPEM)</title>
+  <meta name="description" content="Daftar Pensiun — Perbandingan DAPEM peserta ASABRI. Detail data pensiun.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="sidebar.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { asabri: { blue: '#0141A8', blueDark: '#01358C' } }, fontFamily: { sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'] } } }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+    th.sortable{cursor:pointer;user-select:none}th.sortable:hover{background-color:#e2e8f0}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}.animate-fade-in{animation:fadeIn 0.25s ease}
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        <div class="h-8 w-px bg-white/20"></div>
+        <button id="sidebar-toggle" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors text-base"><i class="fas fa-bars"></i></button>
+        <div class="flex flex-col ml-1">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">HIGH DENSITY MANAGEMENT SYSTEM</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-semibold text-white tracking-wide">ROLE : Staf KANCAB</span>
+      </div>
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">SK</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">SK | Staf Kancab Utama</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19930708001</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <div id="sidebar"></div>
+    <script>renderSidebar('perbandingan-dapem');</script>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+          <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="text-slate-500">11. Perbandingan DAPEM</span>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="font-bold text-asabri-blue">Daftar Pensiun</span>
+        </div>
+        <div class="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+          <a href="ap3-sementara.html" class="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:bg-white hover:text-asabri-blue transition-all"><i class="fas fa-table-list mr-1.5"></i>AP3 Sementara</a>
+          <a href="daftar-pensiun.html" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-asabri-blue text-white shadow transition-all"><i class="fas fa-users mr-1.5"></i>Daftar Pensiun</a>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-5">
+
+        <div id="notice-autofill" class="hidden bg-blue-50 border border-blue-200 rounded-2xl px-5 py-3 flex items-center gap-3 animate-fade-in">
+          <i class="fas fa-circle-info text-blue-500 text-base shrink-0"></i>
+          <p class="text-xs font-semibold text-blue-800">Filter Nopens Pensiunan telah diisi otomatis dari halaman AP3 Sementara. Anda dapat mengubah filter sesuai kebutuhan.</p>
+          <button onclick="document.getElementById('notice-autofill').classList.add('hidden')" class="ml-auto text-blue-400 hover:text-blue-600 text-sm"><i class="fas fa-times"></i></button>
+        </div>
+
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+
+          <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-blue-50/30 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-asabri-blue/10 border border-asabri-blue/20 text-asabri-blue flex items-center justify-center text-xl shadow-sm">
+                <i class="fas fa-users"></i>
+              </div>
+              <div>
+                <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">Daftar Pensiun</h1>
+                <p class="text-xs font-medium text-slate-500">Detail data pensiun peserta ASABRI.</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button onclick="renderTable()" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                <i class="fas fa-search text-xs"></i> Cari
+              </button>
+              <button onclick="handleUnduhExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                <i class="fas fa-file-excel text-xs"></i> Export Excel
+              </button>
+              <a href="ap3-sementara.html" class="bg-slate-100 hover:bg-slate-200 text-slate-600 px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                <i class="fas fa-arrow-left text-xs"></i> Kembali
+              </a>
+            </div>
+          </div>
+
+          <!-- Filter Bar -->
+          <div class="bg-slate-50/60 px-6 py-4 border-b border-slate-200/60">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Nopens Pensiunan</label>
+                <input type="text" id="filter-nopens" onkeydown="if(event.key==='Enter') renderTable()" placeholder="Nopens..." class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">NRP / NIP</label>
+                <input type="text" id="filter-nrp" onkeydown="if(event.key==='Enter') renderTable()" placeholder="NRP/NIP..." class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Tanggal Lahir</label>
+                <input type="date" id="filter-tgl-lahir" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">SPTB Terakhir</label>
+                <input type="month" id="filter-sptb" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Pay Terakhir</label>
+                <input type="month" id="filter-pay" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Jenis Pensiun</label>
+                <select id="filter-jenis" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+                  <option value="">Semua</option><option>Pensiun Sendiri</option><option>Pensiun Wari</option><option>Tunjangan Yatim Piatu</option><option>Tunjangan Orang Tua</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Dapem Terakhir Awal</label>
+                <input type="month" id="filter-dapem-awal" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Dapem Terakhir Akhir</label>
+                <input type="month" id="filter-dapem-akhir" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Cabang Bayar</label>
+                <input type="text" id="filter-cabang-bayar" onkeydown="if(event.key==='Enter') renderTable()" placeholder="Cabang Bayar..." class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Dapem Status</label>
+                <select id="filter-dapem-status" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+                  <option value="">On &amp; Off</option><option>On</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Unit Organisasi</label>
+                <select id="filter-unor" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+                  <option value="">-- Silahkan Pilih Unit Organisasi --</option>
+                  <option>TNI AD</option><option>TNI AL</option><option>TNI AU</option><option>POLRI</option><option>MABES TNI</option><option>KEMHAN</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Pangkat</label>
+                <input type="text" id="filter-pangkat" onkeydown="if(event.key==='Enter') renderTable()" placeholder="Pangkat..." class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Cabang Alamat</label>
+                <input type="text" id="filter-cabang-alamat" onkeydown="if(event.key==='Enter') renderTable()" placeholder="Cabang Alamat..." class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+            </div>
+            <div class="mt-3 flex items-center gap-2">
+              <button onclick="resetFilter()" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-500 hover:border-slate-300 hover:text-slate-700 transition-all flex items-center gap-1.5">
+                <i class="fas fa-filter-circle-xmark"></i> Reset Filter
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="bg-white px-6 py-3 border-b border-slate-100 flex flex-wrap items-center gap-3 text-xs font-semibold">
+            <div class="bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-xl">Total Pensiun Sendiri: <span class="font-extrabold text-blue-700" id="stat-sendiri">0</span></div>
+            <div class="bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-xl">Total Pensiun Wari/Janda/Duda: <span class="font-extrabold text-purple-700" id="stat-wari">0</span></div>
+            <div class="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">Total Tunjangan Yatim-Piatu: <span class="font-extrabold text-amber-700" id="stat-yatim">0</span></div>
+            <div class="bg-teal-50 border border-teal-200 px-3 py-1.5 rounded-xl">Total Tunjangan Orang Tua: <span class="font-extrabold text-teal-700" id="stat-ortu">0</span></div>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse min-w-[1500px]">
+              <thead>
+                <tr class="bg-slate-100/90 text-slate-700 font-extrabold text-[11px] uppercase tracking-wider border-b border-slate-200">
+                  <th onclick="sortTable('status')" class="py-3.5 px-3 sortable whitespace-nowrap">Status <span id="sort-status"></span></th>
+                  <th onclick="sortTable('nrpNip')" class="py-3.5 px-3 sortable whitespace-nowrap">NRP/NIP <span id="sort-nrpNip"></span></th>
+                  <th onclick="sortTable('ktpa')" class="py-3.5 px-3 sortable whitespace-nowrap">KTPA <span id="sort-ktpa"></span></th>
+                  <th onclick="sortTable('nopens')" class="py-3.5 px-3 sortable whitespace-nowrap">Nopens <span id="sort-nopens"></span></th>
+                  <th onclick="sortTable('nama')" class="py-3.5 px-3 sortable whitespace-nowrap">Nama <span id="sort-nama"></span></th>
+                  <th onclick="sortTable('tanggalLahir')" class="py-3.5 px-3 sortable whitespace-nowrap">Tanggal Lahir <span id="sort-tanggalLahir"></span></th>
+                  <th onclick="sortTable('jenisPensiun')" class="py-3.5 px-3 sortable whitespace-nowrap">Jenis Pensiun <span id="sort-jenisPensiun"></span></th>
+                  <th onclick="sortTable('unor')" class="py-3.5 px-3 sortable whitespace-nowrap">Unor <span id="sort-unor"></span></th>
+                  <th onclick="sortTable('sptbTerakhir')" class="py-3.5 px-3 sortable whitespace-nowrap">SPTB Terakhir <span id="sort-sptbTerakhir"></span></th>
+                  <th onclick="sortTable('payTerakhir')" class="py-3.5 px-3 sortable whitespace-nowrap">Pay Terakhir <span id="sort-payTerakhir"></span></th>
+                  <th onclick="sortTable('dapemEnd')" class="py-3.5 px-3 sortable whitespace-nowrap">Dapem End <span id="sort-dapemEnd"></span></th>
+                  <th class="py-3.5 px-3 text-center whitespace-nowrap">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="pensiun-table-body" class="divide-y divide-slate-100 font-medium"></tbody>
+            </table>
+          </div>
+
+          <div id="empty-state" class="hidden p-12 text-center space-y-3">
+            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto text-2xl"><i class="fas fa-folder-open"></i></div>
+            <h3 class="text-sm font-bold text-slate-700">Tidak ada data pensiun</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">Tidak ditemukan data yang sesuai dengan filter yang diterapkan.</p>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    const DATA_PENSIUN = [
+      { status:'Aktif', nrpNip:'3273120105910003', ktpa:'KTP-12345', nopens:'NOP-998821', nama:'Brig. Jend. (Purn) Ahmad Fauzi', tanggalLahir:'1961-05-12', jenisPensiun:'Pensiun Sendiri', unor:'TNI AD', sptbTerakhir:'2026-09', payTerakhir:'2026-09', dapemEnd:'2030-12', cabangBayar:'KC Utama Jakarta', dapemStatus:'On', pangkat:'Brigjen', cabangAlamat:'Jakarta Pusat' },
+      { status:'Aktif', nrpNip:'3171092801890001', ktpa:'KTP-12346', nopens:'NOP-998822', nama:'Letkol (Purn) Widya Wardhani', tanggalLahir:'1965-08-28', jenisPensiun:'Pensiun Wari', unor:'TNI AL', sptbTerakhir:'2026-08', payTerakhir:'2026-08', dapemEnd:'2035-08', cabangBayar:'KC Bandung', dapemStatus:'On', pangkat:'Letkol', cabangAlamat:'Bandung' },
+      { status:'Aktif', nrpNip:'3273120105910011', ktpa:'KTP-12347', nopens:'NOP-998823', nama:'Kolonel (Purn) Bambang Triyono', tanggalLahir:'1958-03-15', jenisPensiun:'Pensiun Sendiri', unor:'TNI AU', sptbTerakhir:'2026-09', payTerakhir:'2026-09', dapemEnd:'2028-03', cabangBayar:'KANCAB AMBON', dapemStatus:'On', pangkat:'Kolonel', cabangAlamat:'Ambon' },
+      { status:'Non-Aktif', nrpNip:'3500891012345001', ktpa:'KTP-12348', nopens:'NOP-998824', nama:'Siti Rahayu Ningsih', tanggalLahir:'1972-11-22', jenisPensiun:'Tunjangan Yatim Piatu', unor:'POLRI', sptbTerakhir:'2026-09', payTerakhir:'2026-09', dapemEnd:'2026-11', cabangBayar:'KC Surabaya', dapemStatus:'Off', pangkat:'-', cabangAlamat:'Surabaya' },
+      { status:'Aktif', nrpNip:'1234567890123456', ktpa:'KTP-12349', nopens:'NOP-998825', nama:'Mayjen (Purn) Rizal Harahap', tanggalLahir:'1955-07-04', jenisPensiun:'Pensiun Sendiri', unor:'MABES TNI', sptbTerakhir:'2026-08', payTerakhir:'2026-09', dapemEnd:'2030-07', cabangBayar:'KC Medan', dapemStatus:'On', pangkat:'Mayjen', cabangAlamat:'Medan' },
+      { status:'Aktif', nrpNip:'7301230012345678', ktpa:'KTP-12350', nopens:'NOP-998826', nama:'Hj. Ramlah binti Daeng Said', tanggalLahir:'1942-02-17', jenisPensiun:'Tunjangan Orang Tua', unor:'KEMHAN', sptbTerakhir:'2026-07', payTerakhir:'2026-08', dapemEnd:'2027-02', cabangBayar:'KC Makassar', dapemStatus:'On', pangkat:'-', cabangAlamat:'Makassar' },
+    ];
+
+    let sortCol='', sortAsc=true;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+        const s = document.getElementById('sidebar-nav');
+        if (s) { s.classList.toggle('w-0'); s.classList.toggle('overflow-hidden'); }
+      });
+
+      const params = new URLSearchParams(window.location.search);
+      const nopensParam = params.get('nopens');
+      if (nopensParam) {
+        const el = document.getElementById('filter-nopens');
+        if (el) el.value = nopensParam;
+        document.getElementById('notice-autofill').classList.remove('hidden');
+      }
+
+      renderTable();
+    });
+
+    function resetFilter(){
+      ['filter-nopens','filter-nrp','filter-cabang-bayar','filter-pangkat','filter-cabang-alamat'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      ['filter-tgl-lahir','filter-sptb','filter-pay','filter-dapem-awal','filter-dapem-akhir'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      ['filter-jenis','filter-dapem-status','filter-unor'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      renderTable();
+    }
+
+    function sortTable(c){ if(sortCol===c){sortAsc=!sortAsc;}else{sortCol=c;sortAsc=true;} renderTable(); }
+
+    function renderTable(){
+      const tbody=document.getElementById('pensiun-table-body');
+      const empt=document.getElementById('empty-state');
+      
+      const fN=document.getElementById('filter-nopens').value.trim().toLowerCase();
+      const fNRP=document.getElementById('filter-nrp').value.trim().toLowerCase();
+      const fTgl=document.getElementById('filter-tgl-lahir').value;
+      const fSPTB=document.getElementById('filter-sptb').value;
+      const fPay=document.getElementById('filter-pay').value;
+      const fJenis=document.getElementById('filter-jenis').value;
+      const fDAwal=document.getElementById('filter-dapem-awal').value;
+      const fDAkhir=document.getElementById('filter-dapem-akhir').value;
+      const fCabBayar=document.getElementById('filter-cabang-bayar').value.trim().toLowerCase();
+      const fStatus=document.getElementById('filter-dapem-status').value;
+      const fUnor=document.getElementById('filter-unor').value;
+      const fPangkat=document.getElementById('filter-pangkat').value.trim().toLowerCase();
+      const fCabAlamat=document.getElementById('filter-cabang-alamat').value.trim().toLowerCase();
+
+      let filtered=DATA_PENSIUN.filter(r=>{
+        if(fN&&!r.nopens.toLowerCase().includes(fN))return false;
+        if(fNRP&&!r.nrpNip.toLowerCase().includes(fNRP))return false;
+        if(fTgl&&r.tanggalLahir!==fTgl)return false;
+        if(fSPTB&&r.sptbTerakhir!==fSPTB)return false;
+        if(fPay&&r.payTerakhir!==fPay)return false;
+        if(fJenis&&r.jenisPensiun!==fJenis)return false;
+        if(fDAwal&&r.dapemEnd<fDAwal)return false;
+        if(fDAkhir&&r.dapemEnd>fDAkhir)return false;
+        if(fCabBayar&&!r.cabangBayar.toLowerCase().includes(fCabBayar))return false;
+        if(fStatus&&r.dapemStatus!==(fStatus==='On & Off'?'':fStatus)&&fStatus!=='On & Off')return false;
+        if(fUnor&&r.unor!==fUnor)return false;
+        if(fPangkat&&!r.pangkat.toLowerCase().includes(fPangkat))return false;
+        if(fCabAlamat&&!r.cabangAlamat.toLowerCase().includes(fCabAlamat))return false;
+        return true;
+      });
+
+      if(sortCol){
+        filtered.sort((a,b)=>{
+          let vA=a[sortCol],vB=b[sortCol];
+          if(typeof vA==='string'){vA=vA.toLowerCase();vB=vB.toLowerCase();}
+          return vA<vB?(sortAsc?-1:1):vA>vB?(sortAsc?1:-1):0;
+        });
+      }
+
+      const cols=['status','nrpNip','ktpa','nopens','nama','tanggalLahir','jenisPensiun','unor','sptbTerakhir','payTerakhir','dapemEnd'];
+      cols.forEach(c=>{const el=document.getElementById(`sort-${c}`);if(el)el.innerText=(sortCol===c)?(sortAsc?'▲':'▼'):'';});
+
+      const countSendiri = filtered.filter(r=>r.jenisPensiun==='Pensiun Sendiri').length;
+      const countWari = filtered.filter(r=>r.jenisPensiun==='Pensiun Wari').length;
+      const countYatim = filtered.filter(r=>r.jenisPensiun==='Tunjangan Yatim Piatu').length;
+      const countOrtu = filtered.filter(r=>r.jenisPensiun==='Tunjangan Orang Tua').length;
+
+      document.getElementById('stat-sendiri').innerText = countSendiri;
+      document.getElementById('stat-wari').innerText = countWari;
+      document.getElementById('stat-yatim').innerText = countYatim;
+      document.getElementById('stat-ortu').innerText = countOrtu;
+
+      if(!filtered.length){tbody.innerHTML='';empt.classList.remove('hidden');return;}
+      empt.classList.add('hidden');
+
+      function jenisBadge(j){
+        if(j==='Pensiun Sendiri')return 'bg-blue-100 text-blue-800';
+        if(j==='Pensiun Wari')return 'bg-purple-100 text-purple-800';
+        if(j==='Tunjangan Yatim Piatu')return 'bg-amber-100 text-amber-800';
+        if(j==='Tunjangan Orang Tua')return 'bg-teal-100 text-teal-800';
+        return 'bg-slate-100 text-slate-700';
+      }
+
+      function statusBadge(s){
+        return s==='Aktif' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
+      }
+
+      tbody.innerHTML=filtered.map(r=>`
+        <tr class="hover:bg-blue-50/20 transition-colors">
+          <td class="py-3 px-3"><span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${statusBadge(r.status)}">${r.status}</span></td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.nrpNip}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.ktpa}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-asabri-blue font-bold">${r.nopens}</td>
+          <td class="py-3 px-3 font-bold text-slate-800 whitespace-nowrap">${r.nama}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.tanggalLahir}</td>
+          <td class="py-3 px-3"><span class="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${jenisBadge(r.jenisPensiun)}">${r.jenisPensiun}</span></td>
+          <td class="py-3 px-3 text-slate-700 font-semibold text-[11px]">${r.unor}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.sptbTerakhir}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.payTerakhir}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.dapemEnd}</td>
+          <td class="py-3 px-3 text-center">
+            <button onclick="alert('Cetak Kartu Identitas Pensiun untuk Nopens: ${r.nopens}')" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-bold transition-all shadow-sm flex items-center gap-1"><i class="fas fa-id-card"></i> Cetak Kartu Identitas Pensiun</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function handleUnduhExcel(){ alert('📥 Mengunduh data Daftar Pensiun ke format Excel...\n\n(Fitur aktif di lingkungan produksi)'); }
+  </script>
+</body>
+</html>

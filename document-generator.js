@@ -614,6 +614,34 @@ function generateSPTunjanganCacat(data) {
   });
 }
 
+// 6.5. SP NTTA (Nilai Tunai Tabungan Asuransi)
+function generateSPNTTA(data) {
+  return buildSPHTML({
+    nomor: data.nomorSP || '-',
+    sifat: 'Biasa', lampiran: '-',
+    halProgram: 'Surat Pemberitahuan (SP) Pembayaran Manfaat\nProgram NILAI TUNAI TABUNGAN ASURANSI (NTTA)',
+    namaProgram: 'NILAI TUNAI TABUNGAN ASURANSI (NTTA)',
+    tanggal: data.tanggal || todayID(),
+    tujuan: { nama: data.nama || '', nip: data.nrp || '', alamat: data.alamat || '', telp: data.telp || '' },
+    rincian: {
+      namaPeserta: data.nama || '', namaPenerima: data.nama || '',
+      mitraKerja: data.mitraKerja || 'Unit Kerja BANK BJB di Seluruh Indonesia',
+      noRekening: data.noRekening || data.rekening || '', atasNamaRekening: data.nama || '',
+      kodeBayar: data.kodeBayar || `${data.nrp || ''}NTTA`,
+    },
+    tabel: [
+      { uraian: 'Nilai Tunai Tabungan Asuransi (NTTA)', jumlah: data.nominalNTTA || 0 },
+      { uraian: 'Jumlah Potongan', jumlah: data.potonganHutang || 0 },
+    ],
+    jumlahPenerimaan: data.nominalNTTA || data.jumlahPenerimaan || 0,
+    kakancab: {
+      kancab: data.kancab || 'JAKARTA',
+      jabatan: `KEPALA KANTOR CABANG UTAMA\nPT ASABRI (PERSERO) ${(data.kancab || 'JAKARTA').toUpperCase()}`,
+      nama: data.namaKakancab || '',
+    },
+  });
+}
+
 // 7. SP NTIP (Nilai Tunai Iuran Pensiun)
 function generateSPNTIP(data) {
   return buildSPHTML({
@@ -640,6 +668,10 @@ function generateSPNTIP(data) {
       nama: data.namaKakancab || '',
     },
   });
+}
+
+function generateSPTunj(data) {
+  return generateSPTunjangan(data);
 }
 
 // 8. SP Tunjangan Terbatas

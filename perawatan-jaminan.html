@@ -221,8 +221,9 @@
             <div><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Tanggal Mulai Rawat</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 font-mono text-slate-700" id="dt-tgl-mulai-rawat">04 Sep 2026</div></div>
             <div><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Tanggal Kejadian</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 font-mono text-slate-700" id="dt-tgl-kejadian">03 Sep 2026</div></div>
             <div><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Jenis Kejadian</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 font-semibold text-slate-800" id="dt-jenis-kejadian">Kecelakaan Kerja Dinas</div></div>
+            <div><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Jenis Layanan</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 font-bold text-asabri-blue" id="dt-secb-jenis-layanan">Rawat Inap</div></div>
             <div><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Kelas Perawatan</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 font-semibold text-slate-800" id="dt-kelas-perawatan">Kelas I (Sesuai Hak Pangkat)</div></div>
-            <div class="col-span-3"><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Biaya Tarif Kamar Rawat Inap</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 font-mono font-bold text-emerald-700" id="dt-tarif-kamar">Rp 750.000 / Hari</div></div>
+            <div class="col-span-2"><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Biaya Tarif Kamar Rawat Inap</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 font-mono font-bold text-emerald-700" id="dt-tarif-kamar">Rp 750.000 / Hari</div></div>
             <div class="col-span-2"><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Kronologis Kejadian</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 text-slate-700 italic" id="dt-kronologis">Peserta mengalami benturan saat latihan fisik persiapan tugas kedinasan.</div></div>
             <div class="col-span-2"><label class="block text-slate-400 font-bold mb-1 uppercase text-[10px]">Diagnosa Kejadian</label><div class="p-3 bg-slate-50 rounded-2xl border border-slate-150 font-semibold text-slate-800" id="dt-diagnosa">Fraktur Clavicula Dextra (ICD-10: S42.0)</div></div>
           </div>
@@ -828,10 +829,18 @@
 
       if (searchVal) {
         filtered = filtered.filter(item =>
-          item.noReg.toLowerCase().includes(searchVal) ||
-          item.namaPeserta.toLowerCase().includes(searchVal) ||
-          item.nrpNip.toLowerCase().includes(searchVal) ||
-          item.noSuratKronologis.toLowerCase().includes(searchVal)
+          (item.noReg && item.noReg.toLowerCase().includes(searchVal)) ||
+          (item.namaPeserta && item.namaPeserta.toLowerCase().includes(searchVal)) ||
+          (item.ktpa && item.ktpa.toLowerCase().includes(searchVal)) ||
+          (item.kta && item.kta.toLowerCase().includes(searchVal)) ||
+          (item.nrpNip && item.nrpNip.toLowerCase().includes(searchVal)) ||
+          (item.noSuratKronologis && item.noSuratKronologis.toLowerCase().includes(searchVal)) ||
+          (item.provider && item.provider.toLowerCase().includes(searchVal)) ||
+          (item.kesatuan && item.kesatuan.toLowerCase().includes(searchVal)) ||
+          (item.UNOR && item.UNOR.toLowerCase().includes(searchVal)) ||
+          (item.SATKER && item.SATKER.toLowerCase().includes(searchVal)) ||
+          (item.diagnosa && item.diagnosa.toLowerCase().includes(searchVal)) ||
+          (item.jenisLayanan && item.jenisLayanan.toLowerCase().includes(searchVal))
         );
       }
 
@@ -960,6 +969,8 @@
       document.getElementById('dt-satker').innerText = selectedItem.SATKER;
       document.getElementById('dt-rs-nama').innerText = selectedItem.provider;
       document.getElementById('dt-rs-status').innerText = selectedItem.statusRs;
+      const secbLayanan = document.getElementById('dt-secb-jenis-layanan');
+      if (secbLayanan) secbLayanan.innerText = selectedItem.jenisLayanan || "Rawat Inap";
 
       renderRiwayatSjpTabel();
 

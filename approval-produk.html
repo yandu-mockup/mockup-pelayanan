@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI - YANDU NG (List Request Approval Produk)</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Sidebar Component -->
+  <script src="sidebar.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asabri: { blue: '#0141A8', blueDark: '#01358C', gold: '#FFDE24', softBlue: '#F8FAFC', textDark: '#0F172A' }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'],
+            mono: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+
+  <!-- TOPBAR / HEADER BAR -->
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center">
+          <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        </div>
+        <div class="h-8 w-px bg-white/20"></div>
+        <button id="sidebar-toggle" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors text-base">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="flex flex-col ml-1">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">HIGH DENSITY MANAGEMENT SYSTEM</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right-side Topbar Controls -->
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-semibold text-white tracking-wide">ROLE : KAKANCAB</span>
+      </div>
+
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">KC</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">KC | Kakancab Utama</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19750101001</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTAINER -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR: Navigation Panel -->
+    <div id="sidebar"></div>
+    <script>
+      renderSidebar('approval-produk');
+    </script>
+
+    <!-- CONTENT CONTAINER -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- BREADCRUMB BAR -->
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+          <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="font-bold text-asabri-blue">7. List Request Approval Produk</span>
+        </div>
+      </div>
+
+      <!-- WORKSPACE PANELS -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-6">
+
+        <!-- MAIN CARD -->
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+          
+          <!-- Card Header & Quick Metrics -->
+          <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-blue-50/30 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-asabri-blue/10 border border-asabri-blue/20 text-asabri-blue flex items-center justify-center text-xl shadow-sm">
+                <i class="fas fa-file-circle-check"></i>
+              </div>
+              <div>
+                <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">List Request Approval Produk (KAKANCAB)</h1>
+                <p class="text-xs font-medium text-slate-500">Antrian persetujuan produk klaim oleh KAKANCAB dan pencetakan dokumen resmi (SP & LPK).</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="bg-white border border-slate-200 px-4 py-2 rounded-2xl shadow-sm flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-asabri-blue"></div>
+                <div class="flex flex-col">
+                  <span class="text-[10px] uppercase font-bold text-slate-400">Total Pengajuan</span>
+                  <span class="text-sm font-black text-slate-800" id="total-approval-count">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter Section -->
+          <div class="bg-slate-50/50 p-6 border-b border-slate-200/60 space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i class="fas fa-filter text-asabri-blue"></i> Filter Approval Produk
+              </span>
+              <button onclick="resetFilters()" class="text-xs font-bold text-asabri-blue hover:text-asabri-blueDark transition-colors flex items-center gap-1">
+                <i class="fas fa-undo text-[10px]"></i> Reset Filter
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">KTPA</label>
+                <input type="text" id="filter-ktpa" oninput="applyFilters()" placeholder="Cari KTPA..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">NRP / NIP</label>
+                <input type="text" id="filter-nrpnip" oninput="applyFilters()" placeholder="Cari NRP/NIP..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">NOPENS PESERTA</label>
+                <input type="text" id="filter-nopens" oninput="applyFilters()" placeholder="Cari Nopens..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Nama Peserta</label>
+                <input type="text" id="filter-nama" oninput="applyFilters()" placeholder="Cari nama peserta..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-1">
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">No Kunjungan</label>
+                <input type="text" id="filter-nokunjungan" oninput="applyFilters()" placeholder="REG/..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Kantor Cabang</label>
+                <input type="text" id="filter-kantorcabang" oninput="applyFilters()" placeholder="Cari cabang..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tgl Mulai Pengajuan</label>
+                <input type="date" id="filter-tgl-mulai-pengajuan" onchange="applyFilters()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tgl Selesai Pengajuan</label>
+                <input type="date" id="filter-tgl-selesai-pengajuan" onchange="applyFilters()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Manfaat / Produk</label>
+                <input type="text" id="filter-manfaat" oninput="applyFilters()" placeholder="Cari manfaat/produk..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tgl Mulai Approve</label>
+                <input type="date" id="filter-tgl-mulai-approve" onchange="applyFilters()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tgl Selesai Approve</label>
+                <input type="date" id="filter-tgl-selesai-approve" onchange="applyFilters()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-100/80 text-slate-600 font-extrabold text-[11px] uppercase tracking-wider border-b border-slate-200">
+                  <th class="py-3.5 px-4">No Kunjungan</th>
+                  <th class="py-3.5 px-4">Kejadian</th>
+                  <th class="py-3.5 px-4">Cabang (Proses)</th>
+                  <th class="py-3.5 px-4">User Verifikator</th>
+                  <th class="py-3.5 px-4">Peserta</th>
+                  <th class="py-3.5 px-4">KTPA</th>
+                  <th class="py-3.5 px-4">NRP/NIP</th>
+                  <th class="py-3.5 px-4">Nopens</th>
+                  <th class="py-3.5 px-4">Angkatan</th>
+                  <th class="py-3.5 px-4">NIK</th>
+                  <th class="py-3.5 px-4 text-center">Jumlah Produk</th>
+                  <th class="py-3.5 px-4">Waktu Kunjungan</th>
+                  <th class="py-3.5 px-4">Waktu Approval</th>
+                  <th class="py-3.5 px-4 text-center">Waktu Berjalan</th>
+                  <th class="py-3.5 px-4 text-center">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="approval-table-body" class="divide-y divide-slate-100 font-medium">
+                <!-- Dynamic Content JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div id="empty-state" class="hidden p-12 text-center space-y-3">
+            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto text-2xl">
+              <i class="fas fa-folder-check"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-700">Tidak ada data request approval</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">Tidak ditemukan pengajuan produk klaim yang sesuai dengan kriteria filter.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    let FILTER_LIST_APPROVAL = {
+      ktpa: '',
+      nrpNip: '',
+      nopensPeserta: '',
+      nama: '',
+      noKunjungan: '',
+      kantorCabang: '',
+      tanggalMulaiPengajuan: '',
+      tanggalSelesaiPengajuan: '',
+      manfaat: '',
+      tanggalMulaiApprove: '',
+      tanggalSelesaiApprove: '',
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Toggle sidebar functionality
+      document.getElementById("sidebar-toggle")?.addEventListener("click", () => {
+        const sidebarNav = document.getElementById("sidebar-nav");
+        if (sidebarNav) {
+          sidebarNav.classList.toggle("w-0");
+          sidebarNav.classList.toggle("overflow-hidden");
+        }
+      });
+
+      renderTable();
+    });
+
+    function getApprovalClaims() {
+      const claims = getClaims();
+      // Filter claims for Approval Queue and Completed History for document re-printing
+      return claims.filter(c => {
+        const status = (c.status || '').toLowerCase();
+        return status.includes('approval') || status.includes('menunggu approval') || status === 'selesai' || status === 'sp terbit' || status === 'proses pembayaran';
+      });
+    }
+
+    function calculateTotalProduk(claim) {
+      if (claim.manfaatKlaim) {
+        return claim.manfaatKlaim.split('+').length;
+      }
+      if (claim.klaimDidapatkan) {
+        return claim.klaimDidapatkan.split('+').length;
+      }
+      return 1;
+    }
+
+    function applyFilters() {
+      FILTER_LIST_APPROVAL.ktpa = document.getElementById("filter-ktpa").value.trim().toLowerCase();
+      FILTER_LIST_APPROVAL.nrpNip = document.getElementById("filter-nrpnip").value.trim().toLowerCase();
+      FILTER_LIST_APPROVAL.nopensPeserta = document.getElementById("filter-nopens").value.trim().toLowerCase();
+      FILTER_LIST_APPROVAL.nama = document.getElementById("filter-nama").value.trim().toLowerCase();
+      FILTER_LIST_APPROVAL.noKunjungan = document.getElementById("filter-nokunjungan").value.trim().toLowerCase();
+      FILTER_LIST_APPROVAL.kantorCabang = document.getElementById("filter-kantorcabang").value.trim().toLowerCase();
+      FILTER_LIST_APPROVAL.tanggalMulaiPengajuan = document.getElementById("filter-tgl-mulai-pengajuan").value;
+      FILTER_LIST_APPROVAL.tanggalSelesaiPengajuan = document.getElementById("filter-tgl-selesai-pengajuan").value;
+      FILTER_LIST_APPROVAL.manfaat = document.getElementById("filter-manfaat").value.trim().toLowerCase();
+      FILTER_LIST_APPROVAL.tanggalMulaiApprove = document.getElementById("filter-tgl-mulai-approve").value;
+      FILTER_LIST_APPROVAL.tanggalSelesaiApprove = document.getElementById("filter-tgl-selesai-approve").value;
+
+      renderTable();
+    }
+
+    function resetFilters() {
+      document.getElementById("filter-ktpa").value = "";
+      document.getElementById("filter-nrpnip").value = "";
+      document.getElementById("filter-nopens").value = "";
+      document.getElementById("filter-nama").value = "";
+      document.getElementById("filter-nokunjungan").value = "";
+      document.getElementById("filter-kantorcabang").value = "";
+      document.getElementById("filter-tgl-mulai-pengajuan").value = "";
+      document.getElementById("filter-tgl-selesai-pengajuan").value = "";
+      document.getElementById("filter-manfaat").value = "";
+      document.getElementById("filter-tgl-mulai-approve").value = "";
+      document.getElementById("filter-tgl-selesai-approve").value = "";
+
+      applyFilters();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("approval-table-body");
+      const emptyState = document.getElementById("empty-state");
+      const countEl = document.getElementById("total-approval-count");
+
+      let claims = getApprovalClaims();
+
+      // Apply Filters
+      claims = claims.filter(c => {
+        const participant = c.participant || {};
+        const ktpa = (participant.ktpa || c.ktpa || '').toLowerCase();
+        const nrpNip = (participant.nrp_nip || participant.nip || c.nik || '').toLowerCase();
+        const nopens = (participant.nopens || c.nopens || '').toLowerCase();
+        const nama = (participant.nama || c.namaPeserta || '').toLowerCase();
+        const noKunjungan = (c.noRegistrasi || c.noAgenda || '').toLowerCase();
+        const kantorCabang = (c.kantorCabang || '').toLowerCase();
+        const manfaat = (c.manfaatKlaim || c.klaimDidapatkan || '').toLowerCase();
+
+        if (FILTER_LIST_APPROVAL.ktpa && !ktpa.includes(FILTER_LIST_APPROVAL.ktpa)) return false;
+        if (FILTER_LIST_APPROVAL.nrpNip && !nrpNip.includes(FILTER_LIST_APPROVAL.nrpNip)) return false;
+        if (FILTER_LIST_APPROVAL.nopensPeserta && !nopens.includes(FILTER_LIST_APPROVAL.nopensPeserta)) return false;
+        if (FILTER_LIST_APPROVAL.nama && !nama.includes(FILTER_LIST_APPROVAL.nama)) return false;
+        if (FILTER_LIST_APPROVAL.noKunjungan && !noKunjungan.includes(FILTER_LIST_APPROVAL.noKunjungan)) return false;
+        if (FILTER_LIST_APPROVAL.kantorCabang && !kantorCabang.includes(FILTER_LIST_APPROVAL.kantorCabang)) return false;
+        if (FILTER_LIST_APPROVAL.manfaat && !manfaat.includes(FILTER_LIST_APPROVAL.manfaat)) return false;
+
+        return true;
+      });
+
+      countEl.innerText = claims.length;
+
+      if (claims.length === 0) {
+        tbody.innerHTML = "";
+        emptyState.classList.remove("hidden");
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+
+      tbody.innerHTML = claims.map(c => {
+        const p = c.participant || {};
+        const totalProduk = calculateTotalProduk(c);
+        const tglKunjungan = c.tanggalRegistrasi || c.tanggal || "11 Mei 2025";
+        const noAgenda = c.noRegistrasi || c.noAgenda || "REG/000084/0123/IX/2025";
+        const userVerifikator = "Bambang Verifikator";
+        const isApproved = (c.status === 'Selesai' || c.status === 'SP Terbit' || c.status === 'Proses Pembayaran');
+        const waktuApproval = isApproved ? (c.tanggalApproval || "14 Mei 2025 15:30") : "-";
+
+        return `
+          <tr class="hover:bg-blue-50/30 transition-colors">
+            <td class="py-3 px-4 font-mono font-bold text-asabri-blue whitespace-nowrap text-[11px]">${noAgenda}</td>
+            <td class="py-3 px-4 font-bold text-slate-800">${c.jenisKejadian || c.jenisKlaim || 'Pensiun'}</td>
+            <td class="py-3 px-4 text-slate-600">${c.kantorCabang || 'KC Utama Jakarta'}</td>
+            <td class="py-3 px-4 text-slate-600">${userVerifikator}</td>
+            <td class="py-3 px-4 font-bold text-slate-800">${p.nama || c.namaPeserta || '-'}</td>
+            <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.ktpa || 'ASB-2024-001234'}</td>
+            <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.nrp_nip || c.nik || '-'}</td>
+            <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.nopens || 'NOP-998822'}</td>
+            <td class="py-3 px-4 text-slate-600">${p.matra_angkatan || 'TNI AD'}</td>
+            <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.nik || c.nik || '-'}</td>
+            <td class="py-3 px-4 text-center">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-asabri-blue/10 text-asabri-blue font-bold text-xs">${totalProduk}</span>
+            </td>
+            <td class="py-3 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${tglKunjungan}</td>
+            <td class="py-3 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${waktuApproval}</td>
+            <td class="py-3 px-4 text-center">
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${isApproved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-asabri-blue border border-blue-200'} font-extrabold text-[10px]">
+                <i class="fas ${isApproved ? 'fa-check-circle' : 'fa-clock'} text-[9px]"></i> ${isApproved ? 'Selesai' : (c.sla ? c.sla.waktu : '50 menit')}
+              </span>
+            </td>
+            <td class="py-3 px-4 text-center whitespace-nowrap">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="goToApproval('${noAgenda}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1">
+                  <i class="fas fa-file-circle-check text-[10px]"></i> Detail Approval
+                </button>
+                <button onclick="cetakDokumen('SP', '${noAgenda}')" class="${isApproved ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-100 text-slate-400 cursor-not-allowed'} px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1" ${!isApproved ? 'disabled' : ''}>
+                  <i class="fas fa-print text-[10px]"></i> Cetak SP
+                </button>
+                <button onclick="cetakDokumen('LPK', '${noAgenda}')" class="${isApproved ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-slate-100 text-slate-400 cursor-not-allowed'} px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1" ${!isApproved ? 'disabled' : ''}>
+                  <i class="fas fa-file-pdf text-[10px]"></i> Cetak LPK
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function goToApproval(noAgenda) {
+      const claims = getClaims();
+      let claim = claims.find(c => c.noRegistrasi === noAgenda || c.noAgenda === noAgenda);
+      if (claim) {
+        // Ensure status is 'Menunggu Approval KAKANCAB' if it's awaiting approval
+        if (!claim.status || claim.status === 'Menunggu Approval' || claim.status === 'Terverifikasi') {
+          claim.status = 'Menunggu Approval KAKANCAB';
+        }
+        localStorage.setItem("detailKlaim", JSON.stringify(claim));
+        localStorage.setItem("registrasiKlaim", JSON.stringify(claim));
+        localStorage.setItem("selectedNoAgenda", noAgenda);
+      }
+      // Set active role to KAKANCAB automatically
+      localStorage.setItem("YANDU_ROLE", "kakancab");
+      localStorage.setItem("currentRole", "KAKANCAB");
+
+      window.location.href = `kejadian.html?noAgenda=${encodeURIComponent(noAgenda)}&startTab=5`;
+    }
+
+    function cetakDokumen(jenis, noAgenda) {
+      alert(`[DOWNLOAD] Mendownload dokumen ${jenis} untuk No Kunjungan/Registrasi ${noAgenda} dalam format PDF.`);
+    }
+  </script>
+</body>
+</html>

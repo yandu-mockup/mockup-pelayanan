@@ -256,13 +256,13 @@ const MOCK_PESERTA = [
     nama: "Ahmad Fauzi",
     noPeserta: "ASB-2024-001234",
     no_ktpa: "ASB-2024-001234",
-    pangkat: "Serma",
+    pangkat: "Serma (Purn)",
     golongan_pangkat: "Bintara/Tamtama",
     gaji_pokok_terakhir: 4200000,
     unitKerja: "Kodam III/Siliwangi",
     kesatuan: "Kodam III/Siliwangi",
-    statusKepesertaan: "Aktif",
-    status_kepesertaan: "Aktif",
+    statusKepesertaan: "Pensiunan",
+    status_kepesertaan: "Pensiunan",
     ikut_tppd: true,
     jenis_kelamin: "L",
     tanggal_lahir: "1980-05-12",
@@ -292,7 +292,7 @@ const MOCK_PESERTA = [
     status_kepesertaan: "Aktif",
     ikut_tppd: false,
     jenis_kelamin: "P",
-    tanggal_lahir: "1985-08-25",
+    tanggal_lahir: "1958-08-25",
     nrp_nip: "3273120105910088",
     pasangan: {
       nik: "3273120105910003",
@@ -339,7 +339,15 @@ const MOCK_PESERTA = [
     jenis_kelamin: "L",
     tanggal_lahir: "1982-11-15",
     nrp_nip: "3273120105910011",
-    pasangan: null,
+    pasangan: {
+      nik: "3273120105910012",
+      nama: "Tri Hastuti",
+      jugaPesertaASABRI: false
+    },
+    anak: [
+      { nama: "Rizky Triyono", usia: 16, status_sekolah: "SMA", menikah: false, bekerja: false, nik: "3273120105910013" },
+      { nama: "Dewi Triyono", usia: 12, status_sekolah: "SD", menikah: false, bekerja: false, nik: "3273120105910014" }
+    ],
     gaji_pokok_terakhir: 5200000,
     kantor_bayar: { bank: "Bank Mandiri", jenis_tabungan: "Giro", no_rekening: "3344556677" }
   },
@@ -365,16 +373,28 @@ const MOCK_PESERTA = [
     nama: "Budi Santoso",
     noPeserta: "ASB-1985-004321",
     no_ktpa: "ASB-1985-004321",
-    pangkat: "Peltu (Purn)",
+    pangkat: "Kolonel",
     unitKerja: "Kodam IV/Diponegoro",
     kesatuan: "Kodam IV/Diponegoro",
-    statusKepesertaan: "Non-Aktif",
-    status_kepesertaan: "Non-Aktif",
+    statusKepesertaan: "Aktif",
+    status_kepesertaan: "Aktif",
     jenis_kelamin: "L",
     tanggal_lahir: "1962-11-03",
     nrp_nip: "3374110304620002",
     pasangan: null,
-    gaji_pokok_terakhir: 3100000,
+    tingkat_cacat: "III",
+    golongan_cacat: "C",
+    riwayatCacat: [
+      {
+        noSkep: "SKEP-CACAT/088/III/2024",
+        tanggalSkep: "2024-03-15",
+        tingkat: "Tingkat III",
+        golongan: "C",
+        gapokSk: 4200000,
+        keterangan: "Terjadi kecelakaan kerja dinas aktif (Cacat Tingkat III/C)"
+      }
+    ],
+    gaji_pokok_terakhir: 5800000,
     kantor_bayar: { bank: "PT Pos Indonesia", jenis_tabungan: "Tabungan", no_rekening: "5566778899" }
   },
   {
@@ -427,6 +447,16 @@ const MOCK_PESERTA = [
     statusKepesertaan: "Aktif",
     tingkat_cacat: "III",
     golongan_cacat: "C",
+    riwayatCacat: [
+      {
+        noSkep: "SKEP-CACAT/088/III/2024",
+        tanggalSkep: "2024-03-15",
+        tingkat: "Tingkat III",
+        golongan: "C",
+        gapokSk: 4200000,
+        keterangan: "Terjadi kecelakaan kerja dinas aktif (Cacat Tingkat III/C)"
+      }
+    ],
     gaji_pokok_terakhir: 5500000,
     kantor_bayar: { bank: "Bank BRI", jenis_tabungan: "Tabungan", no_rekening: "1234567890" }
   },
@@ -596,7 +626,7 @@ function getMitraList() {
 // MOCK DATA REGISTRASI KLAIM (15 records)
 const MOCK_CLAIMS = [
   {
-    noRegistrasi: "REG-2025-00078",
+    noRegistrasi: "REG/000078/0123/IX/2025",
     nik: "3273120105910003",
     namaPeserta: "Ahmad Fauzi",
     jenisKlaim: "JKK",
@@ -612,7 +642,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "14 Mei 2025 09:15", user: "Staf Utama", aksi: "Registrasi Dibuat", keterangan: "Dokumen klaim diterima langsung" }]
   },
   {
-    noRegistrasi: "REG-2025-00079",
+    noRegistrasi: "REG/000079/0123/IX/2025",
     nik: "3171092801890001",
     namaPeserta: "Wirata Atmaja",
     jenisKlaim: "JKK",
@@ -628,7 +658,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "14 Mei 2025 09:30", user: "Sistem YANDU", aksi: "Registrasi Dibuat", keterangan: "Pendaftaran online" }]
   },
   {
-    noRegistrasi: "REG-2025-00080",
+    noRegistrasi: "REG/000080/0123/IX/2025",
     nik: "3273120105910011",
     namaPeserta: "Bambang Triyono",
     jenisKlaim: "JKm",
@@ -644,7 +674,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "13 Mei 2025 14:00", user: "Staf Bandung", aksi: "Registrasi Dibuat", keterangan: "Berkas masuk via Pos" }]
   },
   {
-    noRegistrasi: "REG-2025-00081",
+    noRegistrasi: "REG/000081/0123/IX/2025",
     nik: "3578140902940004",
     namaPeserta: "Kartika Sari",
     jenisKlaim: "THT",
@@ -660,7 +690,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "14 Mei 2025 08:00", user: "Mitra Link", aksi: "Registrasi Dibuat", keterangan: "Pendaftaran via ASABRI Link" }]
   },
   {
-    noRegistrasi: "REG-2025-00082",
+    noRegistrasi: "REG/000082/0123/IX/2025",
     nik: "3374110304620002",
     namaPeserta: "Budi Santoso",
     jenisKlaim: "Pensiun",
@@ -676,7 +706,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "12 Mei 2025 10:00", user: "Staf Utama", aksi: "Registrasi Dibuat", keterangan: "Registrasi offline" }]
   },
   {
-    noRegistrasi: "REG-2025-00083",
+    noRegistrasi: "REG/000083/0123/IX/2025",
     nik: "3173051212880005",
     namaPeserta: "Hendra Wijaya",
     jenisKlaim: "Pensiun",
@@ -692,7 +722,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "14 Mei 2025 11:00", user: "Sistem Mobile", aksi: "Registrasi Dibuat", keterangan: "Pendaftaran online" }]
   },
   {
-    noRegistrasi: "REG-2025-00084",
+    noRegistrasi: "REG/000084/0123/IX/2025",
     nik: "3515082109650007",
     namaPeserta: "Joko Susilo",
     jenisKlaim: "Pensiun",
@@ -708,7 +738,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "11 Mei 2025 09:00", user: "Staf Makassar", aksi: "Registrasi Dibuat", keterangan: "Berkas fisik masuk" }]
   },
   {
-    noRegistrasi: "REG-2025-00085",
+    noRegistrasi: "REG/000085/0123/IX/2025",
     nik: "3273120105910088",
     namaPeserta: "Siti Nurhaliza",
     jenisKlaim: "Pensiun",
@@ -724,7 +754,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "14 Mei 2025 14:00", user: "Sistem Mobile", aksi: "Registrasi Dibuat", keterangan: "Pendaftaran via Mobile" }]
   },
   {
-    noRegistrasi: "REG-2025-00086",
+    noRegistrasi: "REG/000086/0123/IX/2025",
     nik: "3273010101750006",
     namaPeserta: "Ahmad Sobari",
     jenisKlaim: "Pensiun",
@@ -740,7 +770,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "14 Mei 2025 14:10", user: "Sistem YANDU", aksi: "Registrasi Dibuat", keterangan: "Pendaftaran online" }]
   },
   {
-    noRegistrasi: "REG-2025-00087",
+    noRegistrasi: "REG/000087/0123/IX/2025",
     nik: "3172021008700004",
     namaPeserta: "Herman Wijaya",
     jenisKlaim: "Pensiun",
@@ -756,7 +786,7 @@ const MOCK_CLAIMS = [
     auditTrail: [{ tanggal: "14 Mei 2025 11:30", user: "Staf Surabaya", aksi: "Registrasi Dibuat", keterangan: "Pencatatan berkas fisik" }]
   },
   {
-    noRegistrasi: "REG-2025-00088",
+    noRegistrasi: "REG/000088/0123/IX/2025",
     nik: "3201010808900003",
     namaPeserta: "Doni Haryono",
     jenisKlaim: "Pensiun",
@@ -1535,3 +1565,137 @@ const BENEFIT_CALC_CONFIG = {
   "NTIP": { type: "ntip", label: "NTIP — Nilai Tunai Iuran Pensiun", note: "Akumulasi iuran pensiun 4.75% × masa kerja." },
   "IDP": { type: "aktuaria", label: "IDP — Skema PP 67", note: "Sesuai akumulasi iuran skema PP 67." }
 };
+
+// ============================================================
+// DUMMY DATA FOR TESTING BRD KEJADIAN HUTANG (POIN A - G)
+// ============================================================
+
+// POIN A — Ahmad Fauzi (NIK: 3273120105910003)
+var hutangData_3273120105910003 = [
+  {
+    tmt: '2026-01-15',
+    noHutangPiutang: 'HTG-2026-0001',
+    jenisHutang: 'Keterlanjuran Bayar',
+    nopens: 'NP-880123',
+    ktpa: 'ASB-2024-001234',
+    jumlah: 3000000,
+    jumlahDibayar: 0,
+    jumlahDPS: 0,
+    status: 'Belum Lunas',
+    keterangan: 'Keterlanjuran pembayaran tunjangan keluarga',
+  }
+];
+
+// POIN B — Siti Nurhaliza (NIK: 3273120105910088)
+var hutangData_3273120105910088 = [
+  {
+    tmt: '2025-06-10',
+    noHutangPiutang: 'HTG-2025-0055',
+    jenisHutang: 'Hutang TGR',
+    nopens: 'NP-770456',
+    ktpa: 'ASB-2024-001235',
+    jumlah: 5000000,
+    jumlahDibayar: 800000,
+    jumlahDPS: 0,
+    status: 'Dalam Cicilan',
+    keterangan: 'Hutang TGR sesuai SKPP',
+  }
+];
+
+// POIN C — Wirata Atmaja (NIK: 3171092801890001)
+var hutangData_3171092801890001 = [
+  {
+    tmt: '2024-03-01',
+    noHutangPiutang: 'HTG-2024-0012',
+    jenisHutang: 'Hutang TGR',
+    nopens: 'NP-990001',
+    ktpa: 'ASB-2015-087211',
+    jumlah: 1500000,
+    jumlahDibayar: 1500000,
+    jumlahDPS: 0,
+    status: 'Lunas',
+    keterangan: 'Sudah dilunasi',
+  },
+  {
+    tmt: '2024-05-20',
+    noHutangPiutang: 'HTG-2024-0034',
+    jenisHutang: 'BUM KPR YKPP Progsus',
+    nopens: 'NP-990001',
+    ktpa: 'ASB-2015-087211',
+    jumlah: 25000000,
+    jumlahDibayar: 5000000,
+    jumlahDPS: 0,
+    status: 'Dalam Cicilan',
+    keterangan: 'Cicilan KPR bulanan',
+  }
+];
+
+// POIN D & G — Bambang Triyono (NIK: 3273120105910011)
+var hutangData_3273120105910011 = [
+  {
+    tmt: '2025-11-05',
+    noHutangPiutang: 'HTG-2025-0099',
+    jenisHutang: 'Hutang TGR',
+    nopens: 'NP-660789',
+    ktpa: 'ASB-2018-095431',
+    jumlah: 8000000,
+    jumlahDibayar: 0,
+    jumlahDPS: 0,
+    status: 'Belum Lunas',
+    keterangan: 'Hutang TGR belum dipotong',
+  }
+];
+
+// POIN E — Kartika Sari (NIK: 3578140902940004)
+var dataCacat_3578140902940004 = {
+  tingkat: 'Tingkat II',
+  golongan: 'B',
+  nomorSKEPCacat: 'SKEP-CACAT/045/II/2023',
+  tanggalSKEPCacat: '2023-02-10',
+  gapokSaatSKCacat: 3800000,
+};
+
+var riwayatCacat_3578140902940004 = [
+  { periodeBayar: '2026-07-01', nominalTunjanganCacat: 1900000 },
+  { periodeBayar: '2026-08-01', nominalTunjanganCacat: 1900000 },
+  { periodeBayar: '2026-09-01', nominalTunjanganCacat: 1900000 },
+  { periodeBayar: '2026-10-01', nominalTunjanganCacat: 1900000 },
+];
+
+// POIN F — Joko Susilo (NIK: 3515082109650007)
+var hutangData_3515082109650007 = [
+  {
+    tmt: '2026-02-01',
+    noHutangPiutang: 'HTG-2026-0021',
+    jenisHutang: 'Hutang Non-TGR',
+    nopens: 'NP-550321',
+    ktpa: 'ASB-1990-008976',
+    jumlah: 2000000,
+    jumlahDibayar: 0,
+    jumlahDPS: 0,
+    status: 'Belum Lunas',
+    keterangan: 'Hutang Non-TGR untuk uji pembayaran manual',
+  }
+];
+
+// Inisialisasi/Sync ke localStorage secara otomatis jika belum ada
+(function seedHutangLocalStorage() {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+
+  const seeds = [
+    { key: 'hutangData_3273120105910003', value: hutangData_3273120105910003 },
+    { key: 'hutangData_3273120105910088', value: hutangData_3273120105910088 },
+    { key: 'hutangData_3171092801890001', value: hutangData_3171092801890001 },
+    { key: 'hutangData_3273120105910011', value: hutangData_3273120105910011 },
+    { key: 'dataCacat_3578140902940004', value: dataCacat_3578140902940004 },
+    { key: 'riwayatCacat_3578140902940004', value: riwayatCacat_3578140902940004 },
+    { key: 'hutangData_3515082109650007', value: hutangData_3515082109650007 },
+  ];
+
+  seeds.forEach(function(item) {
+    if (!localStorage.getItem(item.key)) {
+      localStorage.setItem(item.key, JSON.stringify(item.value));
+    }
+  });
+})();
+

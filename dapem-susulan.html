@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI - YANDU NG (List Dapem Susulan Sementara)</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Sidebar Component -->
+  <script src="sidebar.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asabri: { blue: '#0141A8', blueDark: '#01358C', gold: '#FFDE24', softBlue: '#F8FAFC', textDark: '#0F172A' }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'],
+            mono: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+    th.sortable:hover {
+      background-color: #e2e8f0;
+    }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+
+  <!-- TOPBAR / HEADER BAR -->
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center">
+          <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        </div>
+        <div class="h-8 w-px bg-white/20"></div>
+        <button id="sidebar-toggle" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors text-base">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="flex flex-col ml-1">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">HIGH DENSITY MANAGEMENT SYSTEM</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right-side Topbar Controls -->
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-semibold text-white tracking-wide">ROLE : Staf KANCAB</span>
+      </div>
+
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">SK</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">SK | Staf Kancab Utama</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19930708001</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTAINER -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR: Navigation Panel -->
+    <div id="sidebar"></div>
+    <script>
+      renderSidebar('dapem-susulan');
+    </script>
+
+    <!-- CONTENT CONTAINER -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- BREADCRUMB BAR -->
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+          <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="font-bold text-asabri-blue">8. List Dapem Susulan Sementara</span>
+        </div>
+      </div>
+
+      <!-- WORKSPACE PANELS -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-6">
+
+        <!-- MAIN CARD -->
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+          
+          <!-- Card Header & Main Actions -->
+          <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-blue-50/30 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-asabri-blue/10 border border-asabri-blue/20 text-asabri-blue flex items-center justify-center text-xl shadow-sm">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <div>
+                <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">List Dapem Susulan Sementara</h1>
+                <p class="text-xs font-medium text-slate-500">Manajemen pengajuan dan pemotongan Dana Pensiun Susulan Sementara peserta ASABRI.</p>
+              </div>
+            </div>
+
+            <!-- Tombol Aksi Utama -->
+            <div class="flex items-center gap-3">
+              <button onclick="openModalBuat()" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
+                <i class="fas fa-plus-circle text-xs"></i> Buat Dapem Susulan
+              </button>
+              <button onclick="openModalPotong()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
+                <i class="fas fa-scissors text-xs"></i> Potong Dapem Susulan
+              </button>
+            </div>
+          </div>
+
+          <!-- Search & Summary Bar -->
+          <div class="bg-slate-50/50 p-6 border-b border-slate-200/60 flex flex-wrap items-center justify-between gap-4">
+            <div class="relative w-full max-w-md">
+              <i class="fas fa-search absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+              <input type="text" id="search-input" oninput="handleSearch()" placeholder="Cari NIP/NRP, Nopens, Nama, Bank, Cabang, MAK..." class="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+            </div>
+
+            <div class="flex items-center gap-4 text-xs font-semibold text-slate-600">
+              <div class="bg-white border border-slate-200 px-3 py-1.5 rounded-xl shadow-sm">
+                Total Data: <span class="font-extrabold text-asabri-blue" id="stat-total-row">0</span>
+              </div>
+              <div class="bg-white border border-slate-200 px-3 py-1.5 rounded-xl shadow-sm">
+                Total Netto: <span class="font-extrabold text-emerald-700 font-mono" id="stat-total-netto">Rp 0</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse min-w-[1500px]">
+              <thead>
+                <tr class="bg-slate-100/90 text-slate-700 font-extrabold text-[11px] uppercase tracking-wider border-b border-slate-200">
+                  <th onclick="sortTable('blnBayar')" class="py-3.5 px-3 sortable">Bln Bayar <span id="sort-blnBayar"></span></th>
+                  <th onclick="sortTable('nrpNip')" class="py-3.5 px-3 sortable">NRP/NIP <span id="sort-nrpNip"></span></th>
+                  <th onclick="sortTable('nopens')" class="py-3.5 px-3 sortable">Nopens <span id="sort-nopens"></span></th>
+                  <th onclick="sortTable('nama')" class="py-3.5 px-3 sortable">Nama Peserta <span id="sort-nama"></span></th>
+                  <th onclick="sortTable('kodeJiwa')" class="py-3.5 px-3 sortable">Kode Jiwa <span id="sort-kodeJiwa"></span></th>
+                  <th onclick="sortTable('jnsBayar')" class="py-3.5 px-3 sortable">Jns Bayar <span id="sort-jnsBayar"></span></th>
+                  <th onclick="sortTable('fBayar')" class="py-3.5 px-3 sortable">F Bayar <span id="sort-fBayar"></span></th>
+                  <th onclick="sortTable('cab')" class="py-3.5 px-3 sortable">Cab <span id="sort-cab"></span></th>
+                  <th onclick="sortTable('bank')" class="py-3.5 px-3 sortable">Bank <span id="sort-bank"></span></th>
+                  <th onclick="sortTable('branch')" class="py-3.5 px-3 sortable">Branch <span id="sort-branch"></span></th>
+                  <th onclick="sortTable('mak')" class="py-3.5 px-3 sortable">MAK <span id="sort-mak"></span></th>
+                  <th onclick="sortTable('pensPokok')" class="py-3.5 px-3 text-right sortable">Pens Pokok <span id="sort-pensPokok"></span></th>
+                  <th onclick="sortTable('tunjIstri')" class="py-3.5 px-3 text-right sortable">Tunj Istri <span id="sort-tunjIstri"></span></th>
+                  <th onclick="sortTable('tunjAnak')" class="py-3.5 px-3 text-right sortable">Tunj Anak <span id="sort-tunjAnak"></span></th>
+                  <th onclick="sortTable('tunjLain')" class="py-3.5 px-3 text-right sortable">Tunj Lain <span id="sort-tunjLain"></span></th>
+                  <th onclick="sortTable('jmlBruto')" class="py-3.5 px-3 text-right sortable bg-blue-50/50 text-asabri-blue">Jml Bruto <span id="sort-jmlBruto"></span></th>
+                  <th onclick="sortTable('potAskes')" class="py-3.5 px-3 text-right sortable">Pot Askes <span id="sort-potAskes"></span></th>
+                  <th onclick="sortTable('potHutang')" class="py-3.5 px-3 text-right sortable text-rose-700">Pot Hutang (Piutang) <span id="sort-potHutang"></span></th>
+                  <th onclick="sortTable('potLain')" class="py-3.5 px-3 text-right sortable">Pot Lain <span id="sort-potLain"></span></th>
+                  <th onclick="sortTable('jmlPotong')" class="py-3.5 px-3 text-right sortable bg-rose-50/50 text-rose-700">Jml Potong <span id="sort-jmlPotong"></span></th>
+                  <th onclick="sortTable('jmlNetto')" class="py-3.5 px-3 text-right sortable bg-emerald-50/50 text-emerald-800">Jml Netto <span id="sort-jmlNetto"></span></th>
+                  <th onclick="sortTable('pembulatan')" class="py-3.5 px-3 text-right sortable">Pembulatan <span id="sort-pembulatan"></span></th>
+                </tr>
+              </thead>
+              <tbody id="dapem-table-body" class="divide-y divide-slate-100 font-medium">
+                <!-- Dynamic Javascript Content -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State -->
+          <div id="empty-state" class="hidden p-12 text-center space-y-3">
+            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto text-2xl">
+              <i class="fas fa-folder-open"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-700">Tidak ada data dapem susulan</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">Tidak ditemukan data yang sesuai dengan kata kunci pencarian Anda.</p>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================
+       MODAL 1: BUAT DAPEM SUSULAN
+       ========================================== -->
+  <div id="modal-buat" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-slate-200 w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 bg-asabri-blue text-white flex items-center justify-between">
+        <h3 class="text-sm font-bold flex items-center gap-2">
+          <i class="fas fa-plus-circle"></i> Buat Dapem Susulan
+        </h3>
+        <button onclick="closeModalBuat()" class="text-white/80 hover:text-white text-base"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form id="form-buat-dapem" onsubmit="handleSaveBuat(event)" class="p-6 space-y-4">
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tanggal Dapem Susulan <span class="text-rose-500">*</span></label>
+          <input type="date" id="buat-tgl-dapem" onchange="handleTglDapemChange(this.value)" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-asabri-blue">
+          
+          <!-- Konfirmasi Otomatis Bulan Bayar YYYYMM -->
+          <div id="box-konfirmasi-bulanbayar" class="hidden mt-3 p-3.5 bg-blue-50 border border-blue-200 rounded-2xl text-xs text-asabri-blue flex items-center gap-2.5 font-semibold animate-fade-in">
+            <i class="fas fa-info-circle text-asabri-blue text-base shrink-0"></i>
+            <span>Silahkan buat dapem susulan untuk Bulan Bayar: <strong id="lbl-bulanbayar-yyyymm" class="font-mono font-extrabold text-sm text-blue-950"></strong></span>
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+          <button type="button" onclick="closeModalBuat()" class="px-5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors">Tutup</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-asabri-blue hover:bg-asabri-blueDark text-white text-xs font-bold transition-all shadow-md">Simpan Dapem Susulan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MODAL 2: POTONG DAPEM SUSULAN
+       ========================================== -->
+  <div id="modal-potong" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-amber-200 w-full max-w-lg shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 bg-amber-600 text-white flex items-center justify-between">
+        <h3 class="text-sm font-bold flex items-center gap-2">
+          <i class="fas fa-scissors"></i> Potong Dapem Susulan
+        </h3>
+        <button onclick="closeModalPotong()" class="text-white/80 hover:text-white text-base"><i class="fas fa-times"></i></button>
+      </div>
+
+      <form id="form-potong-dapem" onsubmit="handleProcessPotong(event)" class="p-6 space-y-5">
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tanggal Dapem Induk <span class="text-rose-500">*</span></label>
+          <input type="date" id="potong-tgl-induk" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold outline-none focus:border-amber-500 shadow-inner">
+        </div>
+
+        <!-- Peringatan Mencolok -->
+        <div class="bg-rose-50 border-2 border-rose-400 p-4 rounded-2xl flex items-start gap-3.5 shadow-sm">
+          <div class="w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 text-base font-bold shadow">
+            ⚠️
+          </div>
+          <div class="space-y-1">
+            <h4 class="text-xs font-extrabold text-rose-800 uppercase tracking-wider">PERINGATAN PENTING</h4>
+            <p class="text-xs font-bold text-rose-700 leading-snug">
+              "PASTIKAN TANGGAL BULAN BAYAR YANG DIPILIH SUDAH BENAR, JIKA TERJADI KESALAHAN PILIH TANGGAL MAKA AKAN TERJADI UKP"
+            </p>
+          </div>
+        </div>
+
+        <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
+          <button type="button" onclick="closeModalPotong()" class="px-5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors">Tutup</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+            <i class="fas fa-check-circle"></i> Proses Potong
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    // Initial Dummy Data Dapem Susulan
+    let DATA_DAPEM_SUSULAN = [
+      {
+        blnBayar: '2026-09',
+        nrpNip: '3273120105910003',
+        nopens: 'NOP-998821',
+        nama: 'Ahmad Fauzi',
+        kodeJiwa: '1 - Peserta Sendiri',
+        jnsBayar: 'Susulan Pensiun',
+        fBayar: 'Transfer Bank',
+        cab: 'KANCAB AMBON',
+        bank: 'BANK BRI',
+        branch: 'KC Ambon Utama',
+        mak: '511111 - Pensiun',
+        pensPokok: 3500000,
+        tunjIstri: 350000,
+        tunjAnak: 140000,
+        tunjLain: 50000,
+        jmlBruto: 4040000,
+        potAskes: 80800,
+        potHutang: 200000,
+        potLain: 0,
+        jmlPotong: 280800,
+        jmlNetto: 3759200,
+        pembulatan: 0
+      },
+      {
+        blnBayar: '2026-08',
+        nrpNip: '3171092801890001',
+        nopens: 'NOP-998822',
+        nama: 'Wirata Atmaja',
+        kodeJiwa: '2 - Warakawuri/Duda',
+        jnsBayar: 'Restitusi',
+        fBayar: 'Transfer Bank',
+        cab: 'KC Utama Jakarta',
+        bank: 'BANK MANDIRI',
+        branch: 'KC Jakarta Thamrin',
+        mak: '511112 - Pensiun Janda',
+        pensPokok: 2800000,
+        tunjIstri: 0,
+        tunjAnak: 112000,
+        tunjLain: 30000,
+        jmlBruto: 2942000,
+        potAskes: 58840,
+        potHutang: 150000,
+        potLain: 0,
+        jmlPotong: 208840,
+        jmlNetto: 2733160,
+        pembulatan: 0
+      },
+      {
+        blnBayar: '2026-09',
+        nrpNip: '3273120105910011',
+        nopens: 'NOP-998823',
+        nama: 'Bambang Triyono',
+        kodeJiwa: '1 - Peserta Sendiri',
+        jnsBayar: 'Kekurangan Gaji',
+        fBayar: 'Transfer Bank',
+        cab: 'KC Bandung',
+        bank: 'BANK BNI',
+        branch: 'KC Bandung Perintis',
+        mak: '511111 - Pensiun',
+        pensPokok: 4100000,
+        tunjIstri: 410000,
+        tunjAnak: 164000,
+        tunjLain: 75000,
+        jmlBruto: 4749000,
+        potAskes: 94980,
+        potHutang: 0,
+        potLain: 10000,
+        jmlPotong: 104980,
+        jmlNetto: 4644020,
+        pembulatan: 0
+      }
+    ];
+
+    let currentSortColumn = '';
+    let currentSortAsc = true;
+    let searchQuery = '';
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Toggle sidebar handler
+      document.getElementById("sidebar-toggle")?.addEventListener("click", () => {
+        const sidebarNav = document.getElementById("sidebar-nav");
+        if (sidebarNav) {
+          sidebarNav.classList.toggle("w-0");
+          sidebarNav.classList.toggle("overflow-hidden");
+        }
+      });
+
+      // Populate select peserta in modal
+      populatePesertaSelect();
+
+      // Render table
+      renderTable();
+    });
+
+    function populatePesertaSelect() {
+      const select = document.getElementById("buat-peserta");
+      if (!select) return;
+
+      if (typeof MOCK_PESERTA !== "undefined") {
+        MOCK_PESERTA.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.nik || p.nrp_nip;
+          opt.innerText = `${p.nama} (${p.nrp_nip || p.nik}) - Nopens: ${p.nopens || '-'}`;
+          select.appendChild(opt);
+        });
+      }
+    }
+
+    function autoFillPeserta(val) {
+      if (!val || typeof MOCK_PESERTA === "undefined") return;
+      const p = MOCK_PESERTA.find(x => (x.nik === val || x.nrp_nip === val));
+      if (p) {
+        document.getElementById("buat-nrpnip").value = p.nrp_nip || p.nik;
+        document.getElementById("buat-nopens").value = p.nopens || 'NOP-' + Math.floor(100000 + Math.random() * 900000);
+      }
+    }
+
+    function formatRp(val) {
+      return 'Rp ' + Number(val || 0).toLocaleString('id-ID');
+    }
+
+    function calcFormValues() {
+      const pPokok = Number(document.getElementById("buat-penspokok").value || 0);
+      const tIstri = Number(document.getElementById("buat-tunjistri").value || 0);
+      const tAnak = Number(document.getElementById("buat-tunjanak").value || 0);
+      const tLain = Number(document.getElementById("buat-tunjlain").value || 0);
+
+      const bruto = pPokok + tIstri + tAnak + tLain;
+
+      const pAskes = Number(document.getElementById("buat-potaskes").value || 0);
+      const pHutang = Number(document.getElementById("buat-pothutang").value || 0);
+      const pLain = Number(document.getElementById("buat-potlain").value || 0);
+
+      const potong = pAskes + pHutang + pLain;
+      const netto = bruto - potong;
+
+      document.getElementById("lbl-buat-bruto").innerText = formatRp(bruto);
+      document.getElementById("lbl-buat-potong").innerText = formatRp(potong);
+      document.getElementById("lbl-buat-netto").innerText = formatRp(netto);
+    }
+
+    function handleSearch() {
+      searchQuery = document.getElementById("search-input").value.trim().toLowerCase();
+      renderTable();
+    }
+
+    function sortTable(col) {
+      if (currentSortColumn === col) {
+        currentSortAsc = !currentSortAsc;
+      } else {
+        currentSortColumn = col;
+        currentSortAsc = true;
+      }
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById("dapem-table-body");
+      const emptyState = document.getElementById("empty-state");
+
+      // Filter
+      let filtered = DATA_DAPEM_SUSULAN.filter(row => {
+        if (!searchQuery) return true;
+        return (
+          (row.blnBayar && row.blnBayar.toLowerCase().includes(searchQuery)) ||
+          (row.nrpNip && row.nrpNip.toLowerCase().includes(searchQuery)) ||
+          (row.nopens && row.nopens.toLowerCase().includes(searchQuery)) ||
+          (row.nama && row.nama.toLowerCase().includes(searchQuery)) ||
+          (row.bank && row.bank.toLowerCase().includes(searchQuery)) ||
+          (row.branch && row.branch.toLowerCase().includes(searchQuery)) ||
+          (row.mak && row.mak.toLowerCase().includes(searchQuery)) ||
+          (row.cab && row.cab.toLowerCase().includes(searchQuery))
+        );
+      });
+
+      // Sort
+      if (currentSortColumn) {
+        filtered.sort((a, b) => {
+          let valA = a[currentSortColumn];
+          let valB = b[currentSortColumn];
+
+          if (typeof valA === 'string') {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+          }
+
+          if (valA < valB) return currentSortAsc ? -1 : 1;
+          if (valA > valB) return currentSortAsc ? 1 : -1;
+          return 0;
+        });
+      }
+
+      // Update Header Indicators
+      const headers = ['blnBayar','nrpNip','nopens','nama','kodeJiwa','jnsBayar','fBayar','cab','bank','branch','mak','pensPokok','tunjIstri','tunjAnak','tunjLain','jmlBruto','potAskes','potHutang','potLain','jmlPotong','jmlNetto','pembulatan'];
+      headers.forEach(h => {
+        const el = document.getElementById(`sort-${h}`);
+        if (el) {
+          if (currentSortColumn === h) {
+            el.innerText = currentSortAsc ? '▲' : '▼';
+          } else {
+            el.innerText = '';
+          }
+        }
+      });
+
+      // Update Summary Stats
+      document.getElementById("stat-total-row").innerText = filtered.length;
+      const totalNetto = filtered.reduce((acc, curr) => acc + (curr.jmlNetto || 0), 0);
+      document.getElementById("stat-total-netto").innerText = formatRp(totalNetto);
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      tbody.innerHTML = filtered.map(r => `
+        <tr class="hover:bg-blue-50/30 transition-colors">
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.blnBayar || '-'}</td>
+          <td class="py-3 px-3 font-mono text-[11px] font-bold text-slate-700">${r.nrpNip || '-'}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-700">${r.nopens || '-'}</td>
+          <td class="py-3 px-3 font-bold text-asabri-blue">${r.nama || '-'}</td>
+          <td class="py-3 px-3 text-slate-600">${r.kodeJiwa || '-'}</td>
+          <td class="py-3 px-3 text-slate-600">${r.jnsBayar || '-'}</td>
+          <td class="py-3 px-3 text-slate-600">${r.fBayar || '-'}</td>
+          <td class="py-3 px-3 text-slate-600">${r.cab || '-'}</td>
+          <td class="py-3 px-3 font-semibold text-slate-700">${r.bank || '-'}</td>
+          <td class="py-3 px-3 text-slate-600">${r.branch || '-'}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.mak || '-'}</td>
+          <td class="py-3 px-3 text-right font-mono">${Number(r.pensPokok || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono">${Number(r.tunjIstri || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono">${Number(r.tunjAnak || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono">${Number(r.tunjLain || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono font-bold text-asabri-blue bg-blue-50/30">${Number(r.jmlBruto || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono">${Number(r.potAskes || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono font-bold text-rose-700">${Number(r.potHutang || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono">${Number(r.potLain || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono font-bold text-rose-700 bg-rose-50/30">${Number(r.jmlPotong || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono font-black text-emerald-800 bg-emerald-50/30">${Number(r.jmlNetto || 0).toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono">${Number(r.pembulatan || 0).toLocaleString('id-ID')}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Modal Control Functions
+    function formatBulanBayar(tanggalDipilih) {
+      if (!tanggalDipilih) return '';
+      const tgl = new Date(tanggalDipilih);
+      if (isNaN(tgl.getTime())) return '';
+      const tahun = tgl.getFullYear();
+      const bulan = String(tgl.getMonth() + 1).padStart(2, '0');
+      return `${tahun}${bulan}`; // format: YYYYMM, contoh: 202609
+    }
+
+    function handleTglDapemChange(val) {
+      const box = document.getElementById("box-konfirmasi-bulanbayar");
+      const lbl = document.getElementById("lbl-bulanbayar-yyyymm");
+      if (!val) {
+        if (box) box.classList.add("hidden");
+        return;
+      }
+      const yyyymm = formatBulanBayar(val);
+      if (lbl) lbl.innerText = yyyymm;
+      if (box) box.classList.remove("hidden");
+    }
+
+    function openModalBuat() {
+      const inputTgl = document.getElementById("buat-tgl-dapem");
+      inputTgl.value = ""; // Default kosong sebelum tanggal dipilih
+      handleTglDapemChange("");
+      document.getElementById("modal-buat").classList.remove("hidden");
+    }
+
+    function closeModalBuat() {
+      document.getElementById("modal-buat").classList.add("hidden");
+    }
+
+    function openModalPotong() {
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById("potong-tgl-induk").value = today;
+      document.getElementById("modal-potong").classList.remove("hidden");
+    }
+
+    function closeModalPotong() {
+      document.getElementById("modal-potong").classList.add("hidden");
+    }
+
+    function handleSaveBuat(e) {
+      e.preventDefault();
+      const tglInput = document.getElementById("buat-tgl-dapem").value;
+      if (!tglInput) return;
+
+      const yyyymm = formatBulanBayar(tglInput);
+      const blnFormatted = `${tglInput.substring(0, 4)}-${tglInput.substring(5, 7)}`;
+
+      // Update Bulan Bayar untuk seluruh data dapem di tabel utama
+      DATA_DAPEM_SUSULAN.forEach(item => {
+        item.blnBayar = blnFormatted;
+      });
+
+      renderTable();
+      closeModalBuat();
+      alert(`✅ Dapem Susulan Sementara untuk Bulan Bayar ${yyyymm} (${blnFormatted}) berhasil diproses untuk seluruh data peserta di tabel utama!`);
+    }
+
+    function handleProcessPotong(e) {
+      e.preventDefault();
+      const tglInduk = document.getElementById("potong-tgl-induk").value;
+      alert(`⚠️ [PROSES POTONG] Berhasil memproses pemotongan Dapem Susulan untuk Dapem Induk tanggal (${tglInduk}). Seluruh penyesuaian piutang telah diperbarui.`);
+      closeModalPotong();
+    }
+  </script>
+</body>
+</html>

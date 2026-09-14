@@ -1,0 +1,1959 @@
+diff --git a/kejadian.html b/kejadian.html
+index a29c59a..1d22d1c 100644
+--- a/kejadian.html
++++ b/kejadian.html
+@@ -663,16 +663,19 @@
+                   <!-- Footer: Action buttons and pending/forward -->
+                   <div class="flex justify-between items-center mt-6 border-t border-slate-150 pt-4">
+                     <button onclick="switchTab('tab-kejadian')" class="px-4 py-2 border border-slate-200 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-colors">Kembali</button>
+-                    <div class="flex items-center gap-2">
+-                      <button type="button" id="btn-pending-doc" onclick="processPendingDoc()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow transition-all disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed">
+-                        <i class="fas fa-circle-exclamation mr-1"></i> Pending
+-                      </button>
+-                      <button type="button" id="btn-tolak-doc" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow transition-all">
+-                        <i class="fas fa-circle-xmark mr-1"></i> Tolak
+-                      </button>
+-                      <button type="button" id="btn-teruskan-doc" onclick="processForwardDoc()" class="px-6 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow transition-all disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed">
+-                        <i class="fas fa-arrow-right mr-1"></i> Teruskan
+-                      </button>
++                    <div>
++                      <div id="msg-dokumen-belum-lengkap" class="hidden text-rose-500 text-[10px] font-bold text-right mb-1.5"><i class="fas fa-triangle-exclamation mr-1"></i>Dokumen mandatory wajib diverifikasi/diunggah terlebih dahulu sebelum lanjut</div>
++                      <div class="flex items-center justify-end gap-2">
++                        <button type="button" id="btn-pending-doc" onclick="processPendingDoc()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow transition-all disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed">
++                          <i class="fas fa-circle-exclamation mr-1"></i> Pending
++                        </button>
++                        <button type="button" id="btn-tolak-doc" onclick="showPopupTolak('Staf KANCAB', 'Dokumen Persyaratan')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow transition-all">
++                          <i class="fas fa-circle-xmark mr-1"></i> Tolak
++                        </button>
++                        <button type="button" id="btn-teruskan-doc" onclick="processForwardDoc()" class="px-6 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow transition-all disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed">
++                          <i class="fas fa-arrow-right mr-1"></i> Teruskan
++                        </button>
++                      </div>
+                     </div>
+                   </div>
+ 
+@@ -833,6 +836,49 @@
+       return isNaN(parsed) ? 0 : parsed;
+     }
+ 
++    // ─── Distribusi Potongan Hutang per Jenis ───────────────────────────────
++    // TGR/Non-TGR/Keterlanjuran → potong dari Pensiun/DAPEM saja
++    // BUM/PUM → potong dari THT dulu, sisa dari JKK/JKm
++    function distributePotonganHutang(hutangList, productTypes) {
++      const result = {}; // { productType: nominalPotongan }
++      productTypes.forEach(t => result[t] = 0);
++
++      const tgrTypes = ['TGR', 'Non-TGR', 'Keterlanjuran'];
++      const bumTypes = ['BUM', 'PUM'];
++
++      const pensiunTypes = ['PP', 'DAPEM', 'Pensiun', 'TA', 'NTTA'];
++      const thtTypes = ['TA', 'THT', 'NTTA'];
++      const jkkJkmTypes = ['JKK', 'JKm'];
++
++      hutangList.forEach(h => {
++        const jenis = h.jenis || 'Lainnya';
++        const amt = parseFloat(h.nominal || h.jumlah || 0);
++        if (amt <= 0) return;
++
++        if (tgrTypes.some(t => jenis.toLowerCase().includes(t.toLowerCase()))) {
++          // TGR/Non-TGR/Keterlanjuran → potong dari Tunjangan Terbatas, lalu Pensiun/DAPEM
++          const target = productTypes.find(pt => pt.includes('Tunjangan Terbatas')) || productTypes.find(pt => pensiunTypes.some(pen => pt.includes(pen)));
++          if (target) result[target] = (result[target] || 0) + amt;
++          else result[productTypes[0]] = (result[productTypes[0]] || 0) + amt;
++        } else if (bumTypes.some(t => jenis.toLowerCase().includes(t.toLowerCase()))) {
++          // BUM/PUM → potong dari THT dulu, sisa dari JKK/JKm
++          const thtTarget = productTypes.find(pt => thtTypes.some(t => pt.includes(t)));
++          if (thtTarget) {
++            result[thtTarget] = (result[thtTarget] || 0) + amt;
++          } else {
++            const jkkTarget = productTypes.find(pt => jkkJkmTypes.some(t => pt.includes(t)));
++            if (jkkTarget) result[jkkTarget] = (result[jkkTarget] || 0) + amt;
++            else result[productTypes[0]] = (result[productTypes[0]] || 0) + amt;
++          }
++        } else {
++          // Hutang lain → potong dari produk pertama
++          result[productTypes[0]] = (result[productTypes[0]] || 0) + amt;
++        }
++      });
++
++      return result;
++    }
++
+     function updateRingkasanKlaim() {
+       const ringkasanContainer = document.getElementById("ringkasan-klaim-container");
+       if (!ringkasanContainer) return;
+@@ -844,151 +890,138 @@
+       }
+ 
+       updateSkorsingSectionUI();
+-      
+-      let totalManfaat = 0;
+-      let rincianManfaatHtml = "";
+-      
++
++      // Kumpulkan nilai per produk
++      const productValues = {};
+       activeProducts.forEach(prod => {
+         const valEl = document.getElementById(`${prod.id}-besar`);
+         let val = valEl ? parseRupiah(valEl.value) : 0;
+-        
+         if ((prod.type === 'TA' || prod.type === 'NTTA') && claimState?.tdsStatus === 'Diproses' && claimState?.tdsPremium) {
+           val -= parseFloat(claimState.tdsPremium);
+         }
+-        
+-        totalManfaat += val;
+-        rincianManfaatHtml += `
+-          <div class="flex justify-between py-1 text-slate-650">
+-            <span>Klaim ${prod.type}${claimState?.tdsStatus === 'Diproses' && (prod.type === 'TA' || prod.type === 'NTTA') ? ' (Setelah Potongan TDS)' : ''}</span>
+-            <span class="font-mono font-semibold text-slate-800">${formatRupiah(val)}</span>
+-          </div>
+-        `;
++        productValues[prod.type] = { id: prod.id, val };
+       });
+-      
+-      let potonganHtml = "";
+-      let totalPotongan = 0;
+-      let totalPotonganHutang = 0;
+-      let debtRowsHtml = "";
+-      
++
++      // Ambil hutang
++      let hutangList = [];
+       if (currentParticipant && currentParticipant.nik) {
+-        const localHutang = localStorage.getItem("hutangData_" + currentParticipant.nik);
+-        if (localHutang) {
+-          try {
+-            const hutangList = JSON.parse(localHutang) || [];
+-            const unpaid = hutangList.filter(h => h.status !== 'Lunas' && h.status !== 'lunas');
+-            
+-            const grouped = {};
+-            unpaid.forEach(h => {
+-              const j = h.jenis || 'Lainnya';
+-              const amt = parseFloat(h.nominal || h.jumlah || 0);
+-              grouped[j] = (grouped[j] || 0) + amt;
+-            });
+-            
+-            for (const key in grouped) {
+-              const amt = grouped[key];
+-              if (amt > 0) {
+-                totalPotonganHutang += amt;
+-                debtRowsHtml += `
+-                  <div class="flex justify-between py-1 text-rose-650">
+-                    <span>Hutang ${key}</span>
+-                    <span class="font-mono font-semibold text-rose-600">-${formatRupiah(amt)}</span>
+-                  </div>
+-                `;
+-              }
+-            }
+-          } catch (e) {
+-            console.error("Failed to parse hutangData in updateRingkasanKlaim:", e);
++        try {
++          const localHutang = localStorage.getItem("hutangData_" + currentParticipant.nik);
++          if (localHutang) {
++            const parsed = JSON.parse(localHutang) || [];
++            hutangList = parsed.filter(h => h.status !== 'Lunas' && h.status !== 'lunas');
+           }
+-        }
++        } catch (e) { console.error("hutangData parse error:", e); }
+       }
+ 
+-      totalPotongan += totalPotonganHutang;
++      // Distribusi potongan hutang per produk
++      const productTypeList = activeProducts.map(p => p.type);
++      const potonganPerProduk = hutangList.length > 0
++        ? distributePotonganHutang(hutangList, productTypeList)
++        : {};
+ 
+-      let skorsingRowsHtml = "";
++      // Potongan skorsing (PTDH only)
+       let totalPotonganSkorsing = 0;
+       const jenisKejadian = document.getElementById("kejadian-jenis")?.value;
+       if (jenisKejadian === 'Berhenti tanpa Hak Pensiun (PTDH)') {
+         let skorsingList = [];
+-        try {
+-          const dataPeserta = JSON.parse(localStorage.getItem('dataPeserta'));
+-          skorsingList = dataPeserta?.gajiSkorsing || [];
+-        } catch (e) {}
++        try { const dp = JSON.parse(localStorage.getItem('dataPeserta')); skorsingList = dp?.gajiSkorsing || []; } catch(e) {}
+         if (skorsingList.length === 0 && currentParticipant?.nik) {
+-          try {
+-            const localSkorsing = localStorage.getItem("skorsingData_" + currentParticipant.nik);
+-            if (localSkorsing) skorsingList = JSON.parse(localSkorsing) || [];
+-          } catch(e) {}
+-          if (skorsingList.length === 0) {
+-            try {
+-              const dataPesertaNik = JSON.parse(localStorage.getItem(`dataPeserta_${currentParticipant.nik}`));
+-              skorsingList = dataPesertaNik?.gajiSkorsing || [];
+-            } catch(e) {}
+-          }
++          try { const ls = localStorage.getItem("skorsingData_" + currentParticipant.nik); if (ls) skorsingList = JSON.parse(ls) || []; } catch(e) {}
+         }
+-
+-        let gp = 0;
+-        const selectGajiNtta = document.querySelector("div[data-product='NTTA'] select[id$='-select-gaji-mkg']");
+-        const selectGajiNtip = document.querySelector("div[data-product='NTIP'] select[id$='-select-gaji-mkg']");
+-        if (selectGajiNtta) {
+-          try { gp = JSON.parse(selectGajiNtta.value).gaji; } catch(e){}
+-        } else if (selectGajiNtip) {
+-          try { gp = JSON.parse(selectGajiNtip.value).gaji; } catch(e){}
++        let gp = currentParticipant?.gaji_pokok || currentParticipant?.gajiPokok || 4500000;
++        const sg = document.querySelector("div[data-product='NTTA'] select[id$='-select-gaji-mkg']") || document.querySelector("div[data-product='NTIP'] select[id$='-select-gaji-mkg']");
++        if (sg) { try { gp = JSON.parse(sg.value).gaji || gp; } catch(e) {} }
++        if (skorsingList.length > 0) totalPotonganSkorsing = hitungPotonganSkorsing(skorsingList, gp);
++      }
++
++      // Render section terpisah per program
++      let totalSemuaManfaat = 0;
++      let totalSemuaPotongan = 0;
++      let sectionHtmlAll = '';
++
++      activeProducts.forEach((prod, idx) => {
++        const { val } = productValues[prod.type] || { val: 0 };
++        const potonganProd = potonganPerProduk[prod.type] || 0;
++        // Skorsing dikenakan ke produk pertama saja
++        const potonganSkors = idx === 0 ? totalPotonganSkorsing : 0;
++        const totalPotProd = potonganProd + potonganSkors;
++        const nettoProd = Math.max(0, val - totalPotProd);
++
++        totalSemuaManfaat += val;
++        totalSemuaPotongan += totalPotProd;
++
++        // Potongan detail rows
++        let potRowsHtml = '';
++        if (potonganProd > 0) {
++          // breakdown per jenis hutang untuk produk ini
++          hutangList.forEach(h => {
++            const jenis = h.jenis || 'Lainnya';
++            const amt = parseFloat(h.nominal || h.jumlah || 0);
++            if (amt <= 0) return;
++            // Hanya tampilkan jika produk ini yang menanggung hutang jenis ini
++            const assigned = distributePotonganHutang([h], productTypeList);
++            if ((assigned[prod.type] || 0) > 0) {
++              potRowsHtml += `
++                <div class="flex justify-between py-0.5 text-rose-600 text-[11px]">
++                  <span>Hutang ${jenis}</span>
++                  <span class="font-mono">-${formatRupiah(amt)}</span>
++                </div>`;
++            }
++          });
+         }
+-        const gapokok = gp || currentParticipant?.gaji_pokok || currentParticipant?.gajiPokok || 4500000;
+-        
+-        if (skorsingList.length > 0) {
+-          totalPotonganSkorsing = hitungPotonganSkorsing(skorsingList, gapokok);
++        if (potonganSkors > 0) {
++          potRowsHtml += `
++            <div class="flex justify-between py-0.5 text-rose-600 text-[11px]">
++              <span>Potongan Skorsing</span>
++              <span class="font-mono">-${formatRupiah(potonganSkors)}</span>
++            </div>`;
+         }
+ 
+-        totalPotongan += totalPotonganSkorsing;
+-        skorsingRowsHtml = `
+-          <div class="flex justify-between py-1 text-rose-650 font-mono">
+-            <span>Potongan Skorsing</span>
+-            <span class="font-semibold text-rose-600 font-bold">${totalPotonganSkorsing > 0 ? '-' : ''}${formatRupiah(totalPotonganSkorsing)}</span>
+-          </div>
+-        `;
+-      }
++        const tdsNote = (prod.type === 'TA' || prod.type === 'NTTA') && claimState?.tdsStatus === 'Diproses'
++          ? `<span class="text-[9px] text-amber-600 font-semibold ml-1">(Setelah Potongan TDS)</span>` : '';
+ 
+-      if (totalPotongan > 0 || jenisKejadian === 'Berhenti tanpa Hak Pensiun (PTDH)') {
+-        potonganHtml = `
+-          <div class="border-t border-slate-100 pt-3">
+-            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Potongan:</h4>
+-            <div class="space-y-1">
+-              ${debtRowsHtml}
+-              ${skorsingRowsHtml}
+-              <div class="flex justify-between py-1 font-bold text-rose-800 border-t border-rose-100 mt-2 pt-2">
+-                <span>Total Potongan</span>
+-                <span class="font-mono">${formatRupiah(totalPotongan)}</span>
++        sectionHtmlAll += `
++          <div class="border border-slate-200 rounded-xl overflow-hidden">
++            <div class="bg-slate-800 text-white px-4 py-2 flex items-center justify-between text-[11px] font-bold">
++              <span><i class="fas fa-layer-group mr-1.5 text-asabri-gold opacity-80"></i>Program ${prod.type}${tdsNote}</span>
++              <span class="font-mono">${formatRupiah(val)}</span>
++            </div>
++            <div class="px-4 py-3 space-y-1 text-xs bg-white">
++              <div class="flex justify-between text-slate-700">
++                <span>Hak Manfaat</span>
++                <span class="font-mono font-semibold">${formatRupiah(val)}</span>
++              </div>
++              ${totalPotProd > 0 ? `
++              <div class="border-t border-slate-100 pt-1 mt-1 space-y-0.5">
++                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Potongan:</span>
++                ${potRowsHtml}
++                <div class="flex justify-between text-rose-700 font-bold pt-0.5">
++                  <span>Total Potongan</span>
++                  <span class="font-mono">-${formatRupiah(totalPotProd)}</span>
++                </div>
++              </div>` : ''}
++              <div class="flex justify-between font-bold text-slate-800 border-t border-slate-200 pt-2 mt-2">
++                <span>Netto Program ${prod.type}</span>
++                <span class="font-mono text-asabri-blue">${formatRupiah(nettoProd)}</span>
+               </div>
+             </div>
+-          </div>
+-        `;
+-      }
+-      
+-      const jumlahDiterima = Math.max(0, totalManfaat - totalPotongan);
+-      
++          </div>`;
++      });
++
++      const jumlahDiterima = Math.max(0, totalSemuaManfaat - totalSemuaPotongan);
++
+       ringkasanContainer.innerHTML = `
+         <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
+           <i class="fas fa-clipboard-list text-asabri-blue text-base"></i>
+-          <h3 class="text-sm font-bold text-slate-800">📋 Ringkasan Klaim</h3>
++          <h3 class="text-sm font-bold text-slate-800">📋 Ringkasan Klaim — Per Program</h3>
++          <span class="text-[10px] text-slate-400 font-medium italic ml-1">(setiap program ditampilkan terpisah)</span>
+         </div>
+-        <div class="space-y-4 text-xs">
+-          <div>
+-            <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Rincian Manfaat:</h4>
+-            <div class="space-y-1">
+-              ${rincianManfaatHtml}
+-              <div class="flex justify-between py-1 font-bold text-slate-800 border-t border-slate-100 mt-2 pt-2">
+-                <span>Total Manfaat</span>
+-                <span class="font-mono">${formatRupiah(totalManfaat)}</span>
+-              </div>
+-            </div>
+-          </div>
+-          
+-          ${potonganHtml}
+-          
+-          <div class="bg-slate-50 rounded-2xl p-4 flex justify-between items-center border border-slate-200 mt-2">
+-            <span class="font-bold text-slate-700">Jumlah Diterima</span>
+-            <span class="text-xl font-extrabold text-asabri-blue font-mono">${formatRupiah(jumlahDiterima)}</span>
++        <div class="space-y-3 text-xs">
++          ${sectionHtmlAll}
++          <div class="bg-asabri-blue rounded-2xl p-4 flex justify-between items-center mt-2">
++            <span class="font-bold text-white">Jumlah Diterima (Total Bersih)</span>
++            <span class="text-xl font-extrabold text-asabri-gold font-mono">${formatRupiah(jumlahDiterima)}</span>
+           </div>
+         </div>
+       `;
+@@ -996,6 +1029,7 @@
+       ringkasanContainer.classList.remove("hidden");
+     }
+ 
++
+     function getPotonganHutangHtml(cardId) {
+       if (!currentParticipant || !currentParticipant.nik) {
+         return `
+@@ -2376,13 +2410,21 @@
+       }
+ 
+       const totalRaw = totalMP + totalIP;
+-      const finalTA = roundupToHundreds(totalRaw);
++      let finalTA = roundupToHundreds(totalRaw);
++      
++      const masaDinasBulan = mi1 + mi2 + (akumulasi > 0 ? Object.keys(Array.from({length: monthDiff(tmtMasuk, tmtKlaim)})).length : 0) ; // rough estimate or we can just use tmtMasuk and tmtKlaim diff
++      const md = monthDiff(tmtMasuk, tmtKlaim);
++      if (md < 120) {
++        finalTA = roundupToHundreds(akumulasi);
++      }
+ 
+       return {
+         mp: totalMP,
+         ip: totalIP,
++        akumulasi: akumulasi,
++        isUnder10Years: md < 120,
+         rawTotal: totalRaw,
+-        finalTotal: finalTA,
++        finalTotal: Math.max(500000, finalTA),
+         mi1Months: mi1,
+         mi2Months: mi2
+       };
+@@ -2489,7 +2531,8 @@
+           Gaji Pokok       : ${formatRupiah(gp)} (MKG: ${mkgYrs} Thn)<br>
+           Manfaat Pasti (MP < 2013) : ${formatRupiah(calcResult.mp)}<br>
+           Iuran Pasti (IP >= 2013)  : ${formatRupiah(calcResult.ip)}<br>
+-          Rumus Final       : MP + IP (ROUNDUP ke ratusan)<br>
++          Total Akumulasi Iuran     : ${formatRupiah(calcResult.akumulasi)}<br>
++          Rumus Final       : ${calcResult.isUnder10Years ? 'Akumulasi Iuran (Masa Dinas < 10 Thn)' : 'MP + IP (ROUNDUP ke ratusan)'}<br>
+           -------------------------------------<br>
+           <strong>TOTAL MANFAAT ${type}: ${formatRupiah(totalTARounded)}</strong>
+         `;
+@@ -3055,7 +3098,13 @@
+       }
+       
+       const regulasi = detectRegulasi(tanggalKejadian);
+-      if (regulasi === 'PP 102/2015') {
++      if (regulasi === 'PP 67/1991') {
++        container.innerHTML = `
++          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 mt-1.5">
++            <i class="fas fa-file-shield text-indigo-500"></i> PP 67 Tahun 1991
++          </div>
++        `;
++      } else if (regulasi === 'PP 102/2015') {
+         container.innerHTML = `
+           <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200 mt-1.5">
+             <i class="fas fa-file-shield text-slate-500"></i> PP 102 Tahun 2015
+@@ -3076,6 +3125,45 @@
+       claimState.tanggalKejadian = tanggalKejadian;
+       
+       updateTab4InfoBar();
++      applyRekeningLockState();
++    }
++
++    // Cek apakah rekening harus dikunci karena hutang aktif
++    function isRekeningLocked(peserta) {
++      if (!peserta) return false;
++      if (peserta.hutangAktif === true) return true;
++      // Cek dari localStorage hutangData
++      if (peserta.nik) {
++        try {
++          const localHutang = localStorage.getItem('hutangData_' + peserta.nik);
++          if (localHutang) {
++            const hutangList = JSON.parse(localHutang) || [];
++            const unpaid = hutangList.filter(h => h.status !== 'Lunas' && h.status !== 'lunas');
++            return unpaid.length > 0;
++          }
++        } catch(e) {}
++      }
++      return false;
++    }
++
++    // Terapkan state locked/unlocked pada dropdown rekening
++    function applyRekeningLockState() {
++      const rekeningDropdown = document.getElementById('pilih-rekening-dropdown');
++      const bannerFlagging = document.getElementById('banner-flagging-pinjaman');
++      if (!rekeningDropdown) return;
++
++      const locked = isRekeningLocked(currentParticipant);
++      if (locked) {
++        rekeningDropdown.disabled = true;
++        rekeningDropdown.classList.add('bg-rose-50', 'border-rose-200', 'text-rose-700', 'cursor-not-allowed');
++        rekeningDropdown.classList.remove('bg-white', 'border-slate-200');
++        if (bannerFlagging) bannerFlagging.classList.remove('hidden');
++      } else {
++        rekeningDropdown.disabled = false;
++        rekeningDropdown.classList.remove('bg-rose-50', 'border-rose-200', 'text-rose-700', 'cursor-not-allowed');
++        rekeningDropdown.classList.add('bg-white', 'border-slate-200');
++        if (bannerFlagging) bannerFlagging.classList.add('hidden');
++      }
+     }
+ 
+     function updateTab4InfoBar() {
+@@ -3100,7 +3188,18 @@
+       const regulasiFinal = detectRegulasi(tanggalKejadian);
+       const tglFormatted = formatIndoDate(tanggalKejadian);
+       
+-      if (regulasiFinal === 'PP 102/2015') {
++      if (regulasiFinal === 'PP 67/1991') {
++        container.innerHTML = `
++          <div class="p-4 bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-2xl flex items-start gap-3 text-xs font-semibold shadow-sm">
++            <i class="fas fa-clipboard-list text-indigo-600 text-lg mt-0.5"></i>
++            <div>
++              <h4 class="font-bold mb-0.5 text-indigo-950">📋 Regulasi Berlaku: PP 67 Tahun 1991</h4>
++              <p class="text-slate-650 font-medium">Berdasarkan Tanggal Kejadian: <strong class="text-indigo-950">${tglFormatted}</strong></p>
++              <p class="text-slate-600 font-medium mt-1">Kejadian sebelum 1 Juli 2015 — menggunakan parameter PP 67/1991</p>
++            </div>
++          </div>
++        `;
++      } else if (regulasiFinal === 'PP 102/2015') {
+         container.innerHTML = `
+           <div class="p-4 bg-sky-50/60 border border-sky-150 text-slate-700 rounded-2xl flex items-start gap-3 text-xs font-semibold shadow-sm">
+             <i class="fas fa-clipboard-list text-sky-600 text-lg mt-0.5"></i>
+@@ -3145,23 +3244,17 @@
+       'Berhenti tanpa Hak Pensiun (PTDH)',
+       'Istri/Suami Meninggal Dunia',
+       'Anak Meninggal Dunia',
+-      'Meninggal Dunia dalam Dinas Aktif (JKm)',
+-      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)',
+-      'Kecelakaan Kerja — Cacat Tetap Bekerja',
+-      'Kecelakaan Kerja — Cacat Pensiun',
+-      'Pensiun Sendiri — Meninggal Dunia',
+       'Pensiun Sendiri — Istri/Suami Meninggal Dunia',
+       'Pensiun Sendiri — Anak Meninggal Dunia',
+-      'Pensiun Warakawuri — Meninggal Dunia',
+-      'Tunjangan Yatim/Piatu — Meninggal Dunia',
+-      'Tunjangan Yatim/Piatu — Dewasa',
+-      'Tunjangan Orang Tua — Meninggal Dunia',
+-      'Beasiswa JKm',
+-      'Beasiswa JKK',
+-      'UKP Tanpa Perubahan Data',
+-      'UKP Dengan Perubahan Data',
+-      'UKP Pembayaran Tunjangan Cacat',
+-      'UKP Kelebihan Potongan Hutang',
++      'Meninggal Dunia dalam Dinas Aktif_Istri/Suami',
++      'Meninggal Dunia dalam Dinas Aktif_Anak',
++      'Meninggal Dunia dalam Dinas Aktif (JKm)',
++      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)',
++      'Kecelakaan Kerja — Cacat',
++      'Kecelakaan Kerja — Dirawat',
++      'Biaya Penggantian Pemakaman',
++      'Pensiun Warakawuri/Yatim-Piatu/Orangtua (Lanjutan)',
++      'Nilai Tunai Iuran Pensiun (NTIP)'
+     ];
+ 
+     document.addEventListener("DOMContentLoaded", () => {
+@@ -3221,6 +3314,8 @@
+           togglePTDHTMTFields(e.target.value);
+           toggleAhliWarisDropdown(e.target.value);
+           togglePensiunTMTField(e.target.value);
++          toggleTmtGajiTerakhir(e.target.value);
++          toggleTmtGajiTerakhir(e.target.value);
+           toggleSpouseDeathTMTField(e.target.value);
+         });
+       }
+@@ -3333,82 +3428,24 @@
+       }
+     }
+ 
+-    function togglePensiunTMTField(val) {
+-      const container = document.getElementById("pensiun-tmt-container");
+-      if (!container) return;
+-      container.classList.add("hidden"); // Always keep hidden
+-      if (val === 'Pensiun Pertama') {
+-        document.getElementById("pensiun-tmt").required = true;
+-      } else {
+-        document.getElementById("pensiun-tmt").required = false;
+-        const errTmt = document.getElementById("error-pensiun-tmt");
+-        if (errTmt) errTmt.classList.add("hidden");
+-        const tmtInput = document.getElementById("pensiun-tmt");
+-        if (tmtInput) {
+-          tmtInput.classList.remove("border-rose-500", "focus:ring-rose-500/30");
+-        }
+-      }
+-    }
+-
+-    function toggleSpouseDeathTMTField(val) {
+-      const container = document.getElementById("istri-suami-wafat-container");
+-      if (!container) return;
+-      container.classList.add("hidden"); // Always keep hidden
+-      if (val === 'Istri/Suami Meninggal Dunia' || val === 'Pensiun Sendiri — Istri/Suami Meninggal Dunia') {
+-        document.getElementById("istri-suami-wafat-tgl").required = true;
+-      } else {
+-        document.getElementById("istri-suami-wafat-tgl").required = false;
+-        const errTmt = document.getElementById("error-istri-suami-wafat-tgl");
+-        if (errTmt) errTmt.classList.add("hidden");
+-        const tmtInput = document.getElementById("istri-suami-wafat-tgl");
+-        if (tmtInput) {
+-          tmtInput.classList.remove("border-rose-500", "focus:ring-rose-500/30");
+-        }
+-      }
+-    }
+-
+-    function getSRKK(jenisKematian, regulasi) {
+-      if (regulasi === 'PP 102/2015') {
+-        return jenisKematian === 'Gugur' ? 400000000 : 275000000;
+-      }
+-      if (regulasi === 'PP 54/2020') {
+-        return jenisKematian === 'Gugur' ? 450000000 : 350000000;
+-      }
+-      return jenisKematian === 'Gugur' ? 450000000 : 350000000;
+-    }
+-
+-    function toggleJenisKematianKkDropdown(jenisKejadian) {
+-      const container = document.getElementById('jenis-kematian-kk-container');
+-      if (!container) return;
+-
+-      const isMeninggalKK = (jenisKejadian === 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)' || jenisKejadian === 'Kecelakaan Kerja — Meninggal Dunia');
+-      if (isMeninggalKK) {
+-        container.classList.remove('hidden');
+-        container.classList.add('flex');
+-      } else {
+-        container.classList.add('hidden');
+-        container.classList.remove('flex');
+-      }
+-    }
+-
+-    // Show/hide Bintang Jasa info box for KK — Meninggal Dunia
+-    function toggleBintangJasaInfo(jenisKejadian) {
+-      const container = document.getElementById('bintang-jasa-container');
+-      if (!container) return;
+-
+-      if (jenisKejadian !== 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)') {
+-        container.classList.add('hidden');
+-        return;
+-      }
+-
+-      container.classList.remove('hidden');
+-
+-      // Read from per-peserta localStorage
+-      const nik = currentParticipant?.nik || currentParticipant?.nrp_nip || '';
+-      const pesertaExtra = nik ? JSON.parse(localStorage.getItem(`dataPeserta_${nik}`) || '{}') : {};
+-      const bintangJasa = pesertaExtra.bintangJasa || 'Tidak Ada';
+-      const MASA_TERUSAN_MAP = { 'Tidak Ada': 6, 'Bintang Jasa': 12, 'Pahlawan Nasional': 18 };
+-      const masaTerusan = MASA_TERUSAN_MAP[bintangJasa] || 6;
++    function toggleTmtGajiTerakhir(val) {
++      const c = document.getElementById("container-tmt-gaji-terakhir");
++      const inp = document.getElementById("kejadian-tmt-gaji-terakhir");
++      'Berhenti dengan Hak Tunjangan': [
++        { nama: 'Formulir Pengajuan', mandatory: false },
++        { nama: 'Formulir SP3R', mandatory: false },
++        { nama: 'Asli Salinan Keputusan Tunjangan', mandatory: true },
++        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: false, viewSkpp: true },
++        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
++        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah dan telah berusia lebih dari 21 tahun s/d 25 tahun)', mandatory: false },
++        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
++        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
++        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
++        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
++        { nama: 'Fotokopi NPWP', mandatory: false },
++        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
++        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false },
++      ],
+ 
+       const elStatus = document.getElementById('bintang-jasa-status');
+       const elTerusan = document.getElementById('bintang-jasa-terusan');
+@@ -4172,35 +4209,35 @@
+     const PERSYARATAN_CONFIG = {
+ 
+       'Pensiun Pertama': [
+-        { nama: 'Formulir Pengajuan' },
+-        { nama: 'Formulir SP3R' },
+-        { nama: 'Asli Salinan Keputusan Pensiun' },
+-        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS' },
+-        { nama: 'Asli SKPP dari KPPN / e-SKPP', viewSkpp: true },
+-        { nama: 'Asli Riwayat Hidup Singkat (RHS)' },
+-        { nama: 'Asli Surat Keterangan Kuliah (anak >21 s/d 25 tahun)' },
+-        { nama: 'Fotokopi e-KTP Pengaju' },
+-        { nama: 'Fotokopi Kartu Keluarga (KK)' },
+-        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU' },
+-        { nama: 'Fotokopi NPWP' },
+-        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)' },
+-        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)' },
++        { nama: 'Formulir Pengajuan', mandatory: false },
++        { nama: 'Formulir SP3R', mandatory: false },
++        { nama: 'Asli Salinan Keputusan Pensiun', mandatory: true },
++        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
++        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: true, viewSkpp: true },
++        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
++        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah dan telah berusia lebih dari 21 tahun s/d 25 tahun)', mandatory: false },
++        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
++        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
++        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
++        { nama: 'Fotokopi NPWP', mandatory: false },
++        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
++        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false },
+       ],
+ 
+       'Berhenti dengan Hak Tunjangan': [
+-        { nama: 'Formulir Pengajuan' },
+-        { nama: 'Formulir SP3R' },
+-        { nama: 'Asli Salinan Keputusan Tunjangan' },
+-        { nama: 'Asli SKPP dari KPPN / e-SKPP', viewSkpp: true },
+-        { nama: 'Asli Riwayat Hidup Singkat (RHS)' },
+-        { nama: 'Asli Surat Keterangan Kuliah (anak >21 s/d 25 tahun)' },
+-        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS' },
+-        { nama: 'Fotokopi e-KTP Pengaju' },
+-        { nama: 'Fotokopi Kartu Keluarga (KK)' },
+-        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU' },
+-        { nama: 'Fotokopi NPWP' },
+-        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)' },
+-        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)' },
++        { nama: 'Formulir Pengajuan', mandatory: false },
++        { nama: 'Formulir SP3R', mandatory: false },
++        { nama: 'Asli Salinan Keputusan Tunjangan', mandatory: true },
++        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: false, viewSkpp: true },
++        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
++        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah dan telah berusia lebih dari 21 tahun s/d 25 tahun)', mandatory: false },
++        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
++        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
++        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
++        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
++        { nama: 'Fotokopi NPWP', mandatory: false },
++        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
++        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false },
+       ],
+ 
+       'Berhenti tanpa Hak Pensiun (PTDH)': [
+@@ -4415,7 +4452,19 @@
+       ],
+ 
+       'Berhenti dengan Hak Tunjangan': [
+-        'Asli Salinan Keputusan Tunjangan'
++        { nama: 'Formulir Pengajuan', mandatory: false },
++        { nama: 'Formulir SP3R', mandatory: false },
++        { nama: 'Asli Salinan Keputusan Tunjangan', mandatory: true },
++        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: false, viewSkpp: true },
++        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
++        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah dan telah berusia lebih dari 21 tahun s/d 25 tahun)', mandatory: false },
++        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
++        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
++        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
++        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
++        { nama: 'Fotokopi NPWP', mandatory: false },
++        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
++        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false },
+       ],
+ 
+       'Berhenti Tanpa Hak Pensiun': [
+@@ -4505,6 +4554,12 @@
+     }
+ 
+     function isDocumentMandatory(jenisKejadian, docNama) {
++      const fullList = getFullPersyaratanList(jenisKejadian);
++      const docDef = fullList.find(d => d.nama === docNama);
++      if (docDef && typeof docDef.mandatory === 'boolean') {
++          return docDef.mandatory;
++      }
++
+       const mandList = getMandatoryDocs(jenisKejadian);
+       if (!mandList || mandList.length === 0) return false;
+ 
+@@ -4574,6 +4629,21 @@
+       const mandList = getMandatoryDocs(jenisKejadian);
+       let mandCount = 0;
+ 
++      const extraNoteEl = document.getElementById("pensiun-extra-note");
++      if (jenisKejadian === 'Pensiun Pertama' || jenisKejadian === 'Pensiun') {
++        if (!extraNoteEl) {
++           const note = document.createElement("div");
++           note.id = "pensiun-extra-note";
++           note.className = "bg-blue-50 border border-blue-200 text-blue-700 p-3 rounded-xl mb-4 text-xs font-semibold flex items-start gap-2 shadow-sm";
++           note.innerHTML = `<i class="fas fa-info-circle text-base mt-0.5"></i> <div><b class="text-sm">Catatan Pensiun:</b><br>Apabila pindahan dari TASPEN, lampirkan voucher TASPEN atau surat keterangan belum menerima manfaat THT dari Taspen.</div>`;
++           if (container) container.insertBefore(note, container.firstChild);
++        } else {
++           extraNoteEl.classList.remove("hidden");
++        }
++      } else {
++        if (extraNoteEl) extraNoteEl.classList.add("hidden");
++      }
++
+       if (fullList.length === 0) {
+         const tr = document.createElement("tr");
+         tr.innerHTML = `
+@@ -4651,39 +4721,57 @@
+ 
+       const btnPending = document.getElementById('btn-pending-doc');
+       const btnTeruskan = document.getElementById('btn-teruskan-doc');
+-
+-      const checkboxes = document.querySelectorAll('.doc-verify-checkbox');
+-      const allChecked = checkboxes.length > 0 && Array.from(checkboxes).every(cb => cb.checked);
++      const msgBelumLengkap = document.getElementById('msg-dokumen-belum-lengkap');
+       
+-      let allMandatoryFilled = true;
++      let allMandatoryLengkap = true;
+       fullList.forEach((item, idx) => {
+         const isMandatory = isDocumentMandatory(currentJenis, item.nama);
+         if (isMandatory) {
++          // 1. Cek nomor dan tanggal
+           const numVal = document.getElementById(`doc-num-${idx}`)?.value.trim();
+           const dateVal = document.getElementById(`doc-date-${idx}`)?.value;
+           if (!numVal || !dateVal) {
+-            allMandatoryFilled = false;
++            allMandatoryLengkap = false;
++          }
++          
++          // 2. Cek apakah dicentang verif ATAU file diunggah
++          const checkbox = document.querySelectorAll('.doc-verify-checkbox')[idx];
++          const isVerified = checkbox ? checkbox.checked : false;
++          
++          let fileUploaded = false;
++          const fileInput = document.getElementById(`file-main-${idx}`);
++          if (fileInput && fileInput.files && fileInput.files.length > 0) {
++            fileUploaded = true;
++          } else if (item.viewSkpp) {
++            fileUploaded = true; // Anggap SKPP sudah ada dari sistem
++          }
++          
++          if (!isVerified && !fileUploaded) {
++            allMandatoryLengkap = false;
+           }
+         }
+       });
+ 
+-      const canForward = (checkboxes.length === 0 || allChecked) && allMandatoryFilled;
+-
+       if (btnPending && btnTeruskan) {
+-        if (canForward) {
++        if (allMandatoryLengkap) {
+           btnTeruskan.disabled = false;
+           btnTeruskan.classList.remove('opacity-50', 'cursor-not-allowed');
++          if (msgBelumLengkap) msgBelumLengkap.classList.add('hidden');
++          
++          // Pending button is opposite
+           btnPending.disabled = true;
+           btnPending.classList.add('opacity-50', 'cursor-not-allowed');
+         } else {
+           btnTeruskan.disabled = true;
+           btnTeruskan.classList.add('opacity-50', 'cursor-not-allowed');
++          if (msgBelumLengkap) msgBelumLengkap.classList.remove('hidden');
++          
+           btnPending.disabled = false;
+           btnPending.classList.remove('opacity-50', 'cursor-not-allowed');
+         }
+       }
+ 
+-      return canForward;
++      return allMandatoryLengkap;
+     }
+ 
+     function processPendingDoc() {
+@@ -4905,8 +4993,21 @@
+ 
+     const KEJADIAN_PRODUK_MAP = {
+       'Pensiun Pertama': ['TA', 'PP'],
+-      'Berhenti dengan Hak Tunjangan': ['NTTA', 'Tunjangan Terbatas'],
+-      'Berhenti tanpa Hak Pensiun (PTDH)': ['NTTA', 'NTIP'],
++      'Berhenti dengan Hak Tunjangan': [
++        { nama: 'Formulir Pengajuan', mandatory: false },
++        { nama: 'Formulir SP3R', mandatory: false },
++        { nama: 'Asli Salinan Keputusan Tunjangan', mandatory: true },
++        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: false, viewSkpp: true },
++        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
++        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah dan telah berusia lebih dari 21 tahun s/d 25 tahun)', mandatory: false },
++        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
++        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
++        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
++        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
++        { nama: 'Fotokopi NPWP', mandatory: false },
++        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
++        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false },
++      ],
+       'Istri/Suami Meninggal Dunia': ['BPI/S'],
+       'Anak Meninggal Dunia': ['BPA'],
+       'Meninggal Dunia dalam Dinas Aktif (JKm)': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+@@ -5322,24 +5423,35 @@
+               </select>
+             </div>
+             ${childCountHtml}
+-            <div class="sm:col-span-3 border-t border-slate-200 pt-3 mt-1 bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+-              <span class="text-xs font-bold text-slate-700 block uppercase tracking-wider text-[10px]">── Kalkulasi Pensiun Terusan ──</span>
+-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+-                <div>
+-                  <label class="block font-bold text-slate-600 mb-1">Kondisi Pensiun Terusan</label>
+-                  <select id="${cardId}-kondisi-terusan" onchange="calculateProduct('${cardId}', '${produk}')" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
+-                    <option value="Meninggal Biasa" selected>Meninggal Biasa (4 bulan)</option>
+-                    <option value="Bintang Jasa">Bintang Jasa (6 bulan)</option>
+-                    <option value="Pahlawan Nasional">Pahlawan Nasional (12 bulan)</option>
+-                  </select>
+-                </div>
+-                <div>
+-                  <label class="block font-bold text-slate-600 mb-1">Total Pensiun Terusan <span class="text-emerald-600 font-bold">(auto-kalkulasi)</span></label>
+-                  <input type="text" readonly id="${cardId}-total-terusan" placeholder="Kalkulasi Terusan..." class="field-nominal w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 font-semibold font-mono text-emerald-700 outline-none">
+-                  <span class="text-[10px] text-slate-400 italic block mt-0.5">Catatan: Tidak termasuk Tunjangan Cacat</span>
++            ${(() => {
++              const jk = claimState?.jenisKejadian || "";
++              const isMeninggalDunia = jk.startsWith("Meninggal Dunia dalam Dinas Aktif") || 
++                                       jk.startsWith("Pensiun Sendiri — Meninggal Dunia") || 
++                                       jk.startsWith("Kecelakaan Kerja — Meninggal Dunia");
++              
++              if (!isMeninggalDunia) return "";
++              
++              return `
++              <div class="sm:col-span-3 border-t border-slate-200 pt-3 mt-1 bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
++                <span class="text-xs font-bold text-slate-700 block uppercase tracking-wider text-[10px]">── Kalkulasi Pensiun Terusan ──</span>
++                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
++                  <div>
++                    <label class="block font-bold text-slate-600 mb-1">Kondisi Pensiun Terusan</label>
++                    <select id="${cardId}-kondisi-terusan" onchange="calculateProduct('${cardId}', '${produk}')" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
++                      <option value="Meninggal Biasa" selected>Meninggal Biasa (4 bulan)</option>
++                      <option value="Bintang Jasa">Bintang Jasa (6 bulan)</option>
++                      <option value="Pahlawan Nasional">Pahlawan Nasional (12 bulan)</option>
++                    </select>
++                  </div>
++                  <div>
++                    <label class="block font-bold text-slate-600 mb-1">Total Pensiun Terusan <span class="text-emerald-600 font-bold">(auto-kalkulasi)</span></label>
++                    <input type="text" readonly id="${cardId}-total-terusan" placeholder="Kalkulasi Terusan..." class="field-nominal w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 font-semibold font-mono text-emerald-700 outline-none">
++                    <span class="text-[10px] text-slate-400 italic block mt-0.5">Catatan: Tidak termasuk Tunjangan Cacat</span>
++                  </div>
+                 </div>
+               </div>
+-            </div>
++              `;
++            })()}
+ 
+             <div class="sm:col-span-3">
+               <label class="block font-bold text-slate-500 mb-1">Besar Manfaat Pensiun Pertama</label>
+@@ -5370,8 +5482,14 @@
+               <input type="date" id="${cardId}-tmt-tunjangan" data-field="tanggal_kejadian" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue">
+             </div>
+             <div>
+-              <label class="block font-bold text-slate-500 mb-1">Besar Tunjangan (Rp)</label>
+-              <input type="text" id="${cardId}-besar-tunjangan" placeholder="Besar Tunjangan..." class="field-nominal w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono outline-none focus:border-asabri-blue">
++              <label class="block font-bold text-slate-500 mb-1">% Skorsing (Maks 100)</label>
++              <div class="relative">
++                <input type="number" max="100" min="0" id="${cardId}-persen-skorsing" placeholder="75" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 pr-8 text-xs font-semibold outline-none focus:border-asabri-blue">
++                <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
++              </div>
++            </div>
++            <div class="hidden">
++              <input type="text" id="${cardId}-besar-tunjangan">
+             </div>
+             <div>
+               <label class="block font-bold text-slate-500 mb-1">Berlaku s.d <span class="text-rose-500">*</span></label>
+@@ -6498,18 +6616,34 @@
+ 
+         const breakdownEl = document.getElementById(`${cardId}-breakdown`);
+         if (breakdownEl) {
+-          breakdownEl.innerHTML = `
+-            <strong>Rincian Perhitungan PP &amp; Pensiun Terusan</strong><br>
+-            -------------------------------------<br>
+-            Pensiun Pokok (Penspok) : ${formatRupiah(penspok)}<br>
+-            Status Penerima        : ${factorLabel}<br>
+-            ${tunjDetails}-------------------------------------<br>
+-            <strong>TOTAL PP (Bulanan) : ${formatRupiah(computedVal)} / bulan</strong><br>
+-            -------------------------------------<br>
+-            Kondisi Terusan        : ${kondisiTerusan} (${durasiTerusan} bulan)<br>
+-            Rumus Terusan          : ${durasiTerusan} bulan &times; ${formatRupiah(penspokAdjusted)}<br>
+-            <strong>TOTAL PENSIUN TERUSAN: ${formatRupiah(totalPensiunTerusan)}</strong>
+-          `;
++          const jk = claimState?.jenisKejadian || "";
++          const isMeninggalDunia = jk.startsWith("Meninggal Dunia dalam Dinas Aktif") || 
++                                   jk.startsWith("Pensiun Sendiri — Meninggal Dunia") || 
++                                   jk.startsWith("Kecelakaan Kerja — Meninggal Dunia");
++
++          if (isMeninggalDunia) {
++            breakdownEl.innerHTML = `
++              <strong>Rincian Perhitungan PP &amp; Pensiun Terusan</strong><br>
++              -------------------------------------<br>
++              Pensiun Pokok (Penspok) : ${formatRupiah(penspok)}<br>
++              Status Penerima        : ${factorLabel}<br>
++              ${tunjDetails}-------------------------------------<br>
++              <strong>TOTAL PP (Bulanan) : ${formatRupiah(computedVal)} / bulan</strong><br>
++              -------------------------------------<br>
++              Kondisi Terusan        : ${kondisiTerusan} (${durasiTerusan} bulan)<br>
++              Rumus Terusan          : ${durasiTerusan} bulan &times; ${formatRupiah(penspokAdjusted)}<br>
++              <strong>TOTAL PENSIUN TERUSAN: ${formatRupiah(totalPensiunTerusan)}</strong>
++            `;
++          } else {
++            breakdownEl.innerHTML = `
++              <strong>Rincian Perhitungan PP</strong><br>
++              -------------------------------------<br>
++              Pensiun Pokok (Penspok) : ${formatRupiah(penspok)}<br>
++              Status Penerima        : ${factorLabel}<br>
++              ${tunjDetails}-------------------------------------<br>
++              <strong>TOTAL PP (Bulanan) : ${formatRupiah(computedVal)} / bulan</strong>
++            `;
++          }
+           breakdownEl.classList.remove('hidden');
+         }
+       } else if (type === "Pensiun Warakawuri") {
+@@ -6617,7 +6751,13 @@
+         }
+         updateRingkasanKlaim();
+       } else if (type === "Tunjangan Terbatas") {
+-        const besarTunjangan = getNumericValue(`${cardId}-besar-tunjangan`);
++        const pSkors = parseFloat(document.getElementById(`${cardId}-persen-skorsing`)?.value || 0);
++        const sg = document.querySelector("div[data-product='NTTA'] select[id$='-select-gaji-mkg']");
++        let gapokNormal = 4500000;
++        if (sg) { try { gapokNormal = JSON.parse(sg.value).gaji || gapokNormal; } catch(e){} }
++        
++        const besarTunjangan = (pSkors / 100) * gapokNormal;
++        document.getElementById(`${cardId}-besar-tunjangan`).value = formatRupiah(besarTunjangan);
+         const berlakuSdVal = document.getElementById(`${cardId}-berlaku-sd`)?.value || "";
+         const keteranganVal = document.getElementById(`${cardId}-keterangan-tunjangan`)?.value || "";
+         const tmtTunjanganVal = document.getElementById(`${cardId}-tmt-tunjangan`)?.value || "";
+@@ -6653,6 +6793,12 @@
+             Nomor SK         : ${skTunjanganVal || '-'}<br>
+             TMT Tunjangan    : ${tmtTunjanganVal ? formatIndoDate(tmtTunjanganVal) : '-'}<br>
+             Berlaku s.d      : ${formatIndoDate(berlakuSdVal)}<br>
++            % Skorsing       : ${pSkors}%<br>
++            Gapok Normal     : ${formatRupiah(gapokNormal)}<br>
++            % Skorsing       : ${pSkors}%<br>
++            Gapok Normal     : ${formatRupiah(gapokNormal)}<br>
++            % Skorsing       : ${pSkors}%<br>
++            Gapok Normal     : ${formatRupiah(gapokNormal)}<br>
+             Besar Tunjangan  : ${formatRupiah(besarTunjangan)}<br>
+             Keterangan       : ${keteranganVal || '-'}<br>
+             -------------------------------------<br>
+@@ -6962,7 +7108,6 @@
+           "Terverifikasi",
+           "Menunggu Approval",
+           "SP Terbit",
+-          "Proses Pembayaran",
+           "Selesai"
+         ];
+ 
+@@ -6975,11 +7120,11 @@
+         else if (s.includes("terverifikasi")) activeIndex = 5;
+         else if (s.includes("menunggu approval") || s.includes("approval")) activeIndex = 6;
+         else if (s.includes("sp terbit")) activeIndex = 7;
+-        else if (s.includes("proses pembayaran") || s.includes("pembayaran")) activeIndex = 8;
+-        else if (s.includes("selesai")) activeIndex = 9;
+-        else if (s.includes("staf") || s.includes("kembalikan")) activeIndex = 4; // Dikembalikan ke Staf
++        else if (s.includes("selesai")) activeIndex = 8;
++        else if (s.includes("dikembalikan ke verifikator")) activeIndex = 4;
++        else if (s.includes("staf") || s.includes("kembalikan")) activeIndex = 1; // Dikembalikan ke Staf (Dokumen Diterima / Terpending)
+ 
+-        const progressPercent = (activeIndex / 9) * 100;
++        const progressPercent = (activeIndex / 8) * 100;
+ 
+         let stepsHtml = `
+           <div class="absolute top-[28px] left-[5%] right-[5%] h-0.5 bg-slate-100 -z-1">
+@@ -7000,7 +7145,7 @@
+               </div>
+             `;
+           } else if (i === activeIndex) {
+-            if (i === 9) {
++            if (i === 8) {
+               stepsHtml += `
+                 <div class="flex flex-col items-center text-center min-w-[100px] relative z-10">
+                   <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-300 flex items-center justify-center font-bold text-sm mb-2 shadow-sm">
+@@ -7130,6 +7275,7 @@
+                       <i class="fas fa-paper-plane text-asabri-blue"></i> Aksi Staf KANCAB
+                     </h3>
+                   </div>
++                  ${getLpkPanelHtml('staf')}
+                   <div class="space-y-4">
+                     <div class="flex items-center gap-3">
+                       <button type="button" id="btn-staf-reject" onclick="showPopupTolak('Staf KANCAB', 'Status & Riwayat')" 
+@@ -7171,6 +7317,7 @@
+                   <div><strong>Waktu Verifikasi:</strong> ${logDate}</div>
+                   <div><strong>Catatan Verifikator:</strong> <span class="italic text-slate-800">"${logCatatan}"</span></div>
+                 </div>
++                ${getLpkPanelHtml('verifikator')}
+               </div>
+             `;
+           } else {
+@@ -7185,6 +7332,7 @@
+                     <i class="fas fa-shield-halved text-asabri-blue"></i> Verifikasi Klaim
+                   </h3>
+                 </div>
++                ${getLpkPanelHtml('verifikator')}
+                 <div class="space-y-4">
+                   <div class="space-y-2">
+                     <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Catatan Verifikasi (Opsional)</label>
+@@ -7249,6 +7397,17 @@
+                 <div class="border-b border-slate-100 pb-3">
+                   <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-user-check text-asabri-blue"></i> Approval KAKANCAB</h3>
+                 </div>
++                ${getLpkPanelHtml('kakancab')}
++                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2 text-xs">
++                  <div class="flex items-center gap-2 font-bold text-amber-800">
++                    <i class="fas fa-file-signature text-amber-600"></i>
++                    <span class="uppercase tracking-wider text-[10px]">Preview SP Sebelum Approval</span>
++                  </div>
++                  <p class="text-amber-700 text-[11px]">KAKANCAB wajib mereview isi Surat Pemberitahuan (SP) sebelum memberikan approval. Setelah approve, SP terbit resmi dan tidak dapat dibatalkan.</p>
++                  <button type="button" onclick="previewSPPreApproval()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm">
++                    <i class="fas fa-eye text-[10px]"></i> Preview SP (Pratinjau)
++                  </button>
++                </div>
+                 <div class="space-y-4">
+                   <div class="space-y-2">
+                     <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Catatan Approval (Opsional)</label>
+@@ -7258,7 +7417,7 @@
+                     <button type="button" id="btn-approve" onclick="approveKlaimKakancab()" 
+                             class="px-5 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
+                             ${approvalDisabled ? 'disabled style="opacity: 0.4;"' : ''} title="${approvalTooltip}">
+-                      <i class="fas fa-circle-check"></i> Approve
++                      <i class="fas fa-circle-check"></i> Approve & Terbitkan SP
+                     </button>
+                     <button type="button" id="btn-reject" onclick="showPopupTolak('KAKANCAB', 'Status & Riwayat')" 
+                             class="px-5 py-2.5 bg-rose-600 hover:bg-rose-750 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
+@@ -7279,7 +7438,7 @@
+           
+           // 4. GENERATE SP CARDS (IF SP TERBIT / APPROVED)
+           let spCardsHtml = "";
+-          if (isApproved || claimState?.status === "SP Terbit") {
++          if (isApproved || claimState?.status === "Selesai") {
+             spCardsHtml = `
+               <div id="sp-container" class="space-y-6 mt-6">
+                 <!-- Mapped SP cards will be rendered dynamically -->
+@@ -7293,7 +7452,7 @@
+           // TDS OFFER SECTION
+           let tdsCardHtml = "";
+           const isPensiun = claimState?.jenisKejadian === 'Pensiun Pertama';
+-          const isSPTerbit = claimState?.status === 'SP Terbit';
++          const isSPTerbit = claimState?.status === 'SP Terbit' || claimState?.status === 'Selesai';
+           
+           if (isPensiun && isSPTerbit && claimState?.tdsStatus !== 'Ditolak') {
+             if (claimState?.tdsStatus === 'Diproses') {
+@@ -7352,7 +7511,25 @@
+             }
+           }
+           
+-          actionHtml = stafCardHtml + verifikasiCardHtml + kakancabCardHtml + spCardsHtml + tdsCardHtml;
++          if (isStaf) {
++            actionHtml = stafCardHtml + spCardsHtml + tdsCardHtml;
++          } else if (isVerifikator) {
++            const submitLog = (claimState?.logs || []).find(l => l.aksi === "Pengajuan Klaim" || l.aksi === "Ajukan Klaim") || {};
++            let historyHtml = "";
++            if (submitLog.tanggal) {
++              historyHtml = `<div class="bg-blue-50 border border-blue-200 p-3 rounded-2xl mb-4 text-xs text-blue-800 flex items-center gap-2 shadow-sm"><i class="fas fa-info-circle text-blue-600"></i><span><strong>Histori:</strong> Berkas diajukan oleh Staf KANCAB pada ${submitLog.tanggal}</span></div>`;
++            }
++            actionHtml = historyHtml + verifikasiCardHtml + spCardsHtml + tdsCardHtml;
++          } else if (isKakancab) {
++            const verifLog = (claimState?.logs || []).find(l => l.aksi === "Verifikasi Klaim" || l.aksi === "Klaim Diverifikasi") || {};
++            let historyHtml = "";
++            if (verifLog.tanggal) {
++              historyHtml = `<div class="bg-blue-50 border border-blue-200 p-3 rounded-2xl mb-4 text-xs text-blue-800 flex items-center gap-2 shadow-sm"><i class="fas fa-info-circle text-blue-600"></i><span><strong>Histori:</strong> Berkas telah diverifikasi oleh Verifikator pada ${verifLog.tanggal}</span></div>`;
++            }
++            actionHtml = historyHtml + kakancabCardHtml + spCardsHtml + tdsCardHtml;
++          } else {
++            actionHtml = stafCardHtml + verifikasiCardHtml + kakancabCardHtml + spCardsHtml + tdsCardHtml;
++          }
+         }
+         
+         approvalContainer.innerHTML = actionHtml;
+@@ -7484,6 +7661,300 @@
+       renderTab5Data();
+     }
+ 
++    // ─── GENERATOR LPK ──────────────────────────────────────────────────────
++
++    function buildLPKContext() {
++      const cs = claimState || {};
++      const pes = currentParticipant || {};
++      const now = new Date();
++      const tglProses = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
++      // Nomor Agenda LPK: DDMMYYYY/NNNNNN
++      const pad = (n, len) => String(n).padStart(len, '0');
++      const noAgendaLPK = `${pad(now.getDate(),2)}${pad(now.getMonth()+1,2)}${now.getFullYear()}/${pad(Math.floor(Math.random()*999999)+1, 6)}`;
++
++      // Rekening
++      const rekeningEl = document.getElementById('pilih-rekening-dropdown');
++      const rekeningVal = rekeningEl ? (rekeningEl.options[rekeningEl.selectedIndex]?.text || '-') : '-';
++      const norekEl = document.getElementById('bayar-norek');
++      const anEl = document.getElementById('bayar-an');
++
++      // Hutang
++      let jnsHutang = '-'; let besarHutang = 'Rp 0';
++      if (pes.nik) {
++        try {
++          const lh = JSON.parse(localStorage.getItem('hutangData_' + pes.nik) || '[]');
++          const unpaid = lh.filter(h => h.status !== 'Lunas');
++          if (unpaid.length > 0) {
++            jnsHutang = unpaid.map(h => h.jenis || 'Lainnya').join(', ');
++            const total = unpaid.reduce((s, h) => s + parseFloat(h.nominal || h.jumlah || 0), 0);
++            besarHutang = formatRupiah(total);
++          }
++        } catch(e) {}
++      }
++
++      // Produk & kalkulasi
++      const products = (activeProducts || []).map(prod => {
++        const valEl = document.getElementById(`${prod.id}-besar`);
++        const val = valEl ? parseRupiah(valEl.value) : 0;
++        const potEl = document.getElementById(`${prod.id}-total-hutang-val`);
++        const pot = potEl ? parseFloat(potEl.dataset.val || 0) : 0;
++        return { type: prod.type, hak: val, potongan: pot, netto: Math.max(0, val - pot) };
++      });
++      const totalHak = products.reduce((s, p) => s + p.hak, 0);
++      const totalPot = products.reduce((s, p) => s + p.potongan, 0);
++      const totalNetto = Math.max(0, totalHak - totalPot);
++
++      return {
++        tglProses, noAgendaLPK,
++        noAgenda: cs.noAgenda || '-',
++        namaKancab: pes.kantorCabang || cs.kantorCabang || 'KC JAKARTA UTAMA',
++        namaKakancab: 'Kepala Kantor Cabang',
++        // Peserta
++        ktpa: pes.noKTPA || pes.ktpa || '-',
++        nrp: pes.nrp_nip || pes.nrp || '-',
++        nama: pes.namaPeserta || pes.nama || '-',
++        jnsKelamin: pes.jenisKelamin || '-',
++        tglLahir: pes.tanggalLahir || pes.tglLahir || '-',
++        tmtPeserta: pes.tmtPeserta || '-',
++        pangkatPertama: pes.pangkatPertama || pes.pangkat || '-',
++        satkerPertama: pes.satkerPertama || pes.satker || '-',
++        pangkatAkhir: pes.pangkat || '-',
++        satkerAkhir: pes.satker || '-',
++        // Layanan
++        jnsLayanan: cs.jenisKejadian || '-',
++        tanggalKejadian: cs.tanggalKejadian || '-',
++        noSkep: cs.noSkep || '-',
++        tglSkep: cs.tglSkep || '-',
++        masaKerjaGaji: pes.masaKerja || '-',
++        masaKerjasDinas: pes.masaKerjasDinas || '-',
++        kodeJiwa: pes.kodeJiwa || '-',
++        gajiPokokPertama: formatRupiah(pes.gajiPokokPertama || 0),
++        gajiPokokAkhir: formatRupiah(pes.gajiPokok || pes.gaji_pokok || 0),
++        jnsHutang, besarHutang,
++        // Pembayaran
++        namaPenerima: cs.penerima?.nama || pes.namaPeserta || pes.nama || '-',
++        hubKeluarga: cs.penerima?.hubKeluarga || 'Diri Sendiri',
++        identitas: cs.penerima?.identitas || `KTP: ${pes.nik || '-'}`,
++        alamat: pes.alamatKTP || pes.alamat || '-',
++        saranaBayar: rekeningVal,
++        noRek: norekEl?.value || '-',
++        anRek: anEl?.value || pes.namaPeserta || '-',
++        mediaBayar: document.getElementById('bayar-mitra')?.value || 'PT POS Indonesia',
++        products, totalHak, totalPot, totalNetto,
++        regulasi: cs.regulasi || 'PP 54/2020',
++        tglGenerate: tglProses + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB'
++      };
++    }
++
++    function generateLPKGabunganHtml(ctx) {
++      const prodHtml = ctx.products.map((p, i) => `
++        <div style="margin-bottom:8px">
++          <strong>PROGRAM ${p.type}</strong><br>
++          <table style="width:100%;font-size:11px;border-collapse:collapse">
++            <tr><td style="padding:2px 6px">Hak Manfaat</td><td style="text-align:right">Rp ${p.hak.toLocaleString('id-ID')}</td></tr>
++            <tr><td style="padding:2px 6px;color:#c00">Potongan</td><td style="text-align:right;color:#c00">- Rp ${p.potongan.toLocaleString('id-ID')}</td></tr>
++            <tr style="border-top:1px solid #ccc"><td style="padding:4px 6px;font-weight:bold">Sub Total Program</td><td style="text-align:right;font-weight:bold">Rp ${p.netto.toLocaleString('id-ID')}</td></tr>
++          </table>
++        </div>`).join('');
++
++      return `<div style="font-family:Arial,sans-serif;font-size:12px;max-width:680px;margin:0 auto;padding:24px;border:1px solid #ccc">
++        <div style="text-align:center;border-bottom:2px solid #003580;padding-bottom:12px;margin-bottom:16px">
++          <strong style="font-size:14px;color:#003580">LEMBAR PENETAPAN KLAIM</strong><br>
++          <span style="font-size:11px">PT ASABRI (PERSERO)</span>
++        </div>
++        <table style="width:100%;font-size:11px;margin-bottom:12px">
++          <tr><td><b>Tanggal Proses</b></td><td>: ${ctx.tglProses}</td>
++              <td><b>Nomor Agenda</b></td><td>: ${ctx.noAgendaLPK}</td></tr>
++          <tr><td><b>Nomor Registrasi</b></td><td>: ${ctx.noAgenda}</td>
++              <td><b>Regulasi</b></td><td>: ${ctx.regulasi}</td></tr>
++        </table>
++
++        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">A. PESERTA</div>
++        <table style="width:100%;font-size:11px;margin-bottom:12px">
++          <tr><td>Nomor KTPA</td><td>: ${ctx.ktpa}</td><td>Tgl Lahir</td><td>: ${ctx.tglLahir}</td></tr>
++          <tr><td>NRP/NIP</td><td>: ${ctx.nrp}</td><td>TMT Peserta</td><td>: ${ctx.tmtPeserta}</td></tr>
++          <tr><td>Nama Peserta</td><td colspan="3">: <strong>${ctx.nama}</strong></td></tr>
++          <tr><td>Jns Kelamin</td><td>: ${ctx.jnsKelamin}</td><td>Pkt/Gol Pertama</td><td>: ${ctx.pangkatPertama}</td></tr>
++          <tr><td></td><td></td><td>Satker Pertama</td><td>: ${ctx.satkerPertama}</td></tr>
++        </table>
++
++        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">B. LAYANAN</div>
++        <table style="width:100%;font-size:11px;margin-bottom:12px">
++          <tr><td>Jns Layanan</td><td>: ${ctx.jnsLayanan}</td><td>Tanggal Kejadian</td><td>: ${ctx.tanggalKejadian}</td></tr>
++          <tr><td>Pkt/Gol Akhir</td><td>: ${ctx.pangkatAkhir}</td><td>Satker Akhir</td><td>: ${ctx.satkerAkhir}</td></tr>
++          <tr><td>Masa Kerja Gaji</td><td>: ${ctx.masaKerjaGaji}</td><td>Kode Jiwa</td><td>: ${ctx.kodeJiwa}</td></tr>
++          <tr><td>Gaji Pokok Pertama</td><td>: ${ctx.gajiPokokPertama}</td><td>Gaji Pokok Akhir</td><td>: ${ctx.gajiPokokAkhir}</td></tr>
++          <tr><td>Jenis Hutang</td><td>: ${ctx.jnsHutang}</td><td>Besar Hutang</td><td>: ${ctx.besarHutang}</td></tr>
++        </table>
++
++        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">C. PERHITUNGAN (Per Program — Terpisah)</div>
++        <div style="margin-bottom:12px">${prodHtml}</div>
++        <table style="width:100%;font-size:11px;border-top:2px solid #003580;margin-bottom:12px">
++          <tr><td><b>Total Hak</b></td><td style="text-align:right"><b>Rp ${ctx.totalHak.toLocaleString('id-ID')}</b></td></tr>
++          <tr><td style="color:#c00">Total Potongan</td><td style="text-align:right;color:#c00">- Rp ${ctx.totalPot.toLocaleString('id-ID')}</td></tr>
++          <tr style="background:#003580;color:white"><td style="padding:4px 6px"><b>Jumlah Diterima</b></td><td style="text-align:right;padding:4px 6px"><b>Rp ${ctx.totalNetto.toLocaleString('id-ID')}</b></td></tr>
++        </table>
++
++        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">D. PEMBAYARAN</div>
++        <table style="width:100%;font-size:11px;margin-bottom:16px">
++          <tr><td>Nama Penerima</td><td>: ${ctx.namaPenerima}</td></tr>
++          <tr><td>Hubungan Keluarga</td><td>: ${ctx.hubKeluarga}</td></tr>
++          <tr><td>Identitas Diri</td><td>: ${ctx.identitas}</td></tr>
++          <tr><td>Alamat (KTP)</td><td>: ${ctx.alamat}</td></tr>
++          <tr><td>Sarana Bayar</td><td>: Rekening No. ${ctx.noRek} a/n ${ctx.anRek}</td></tr>
++          <tr><td>Media Bayar</td><td>: ${ctx.mediaBayar}</td></tr>
++          <tr><td>Kancab ASABRI</td><td>: ${ctx.namaKancab}</td></tr>
++        </table>
++
++        <div style="text-align:center;border-top:1px solid #ccc;padding-top:12px;font-size:10px;color:#666">
++          Generate: ${ctx.tglGenerate} &nbsp;|&nbsp; Dokumen ini digenerate oleh Sistem YANDU ASABRI
++        </div>
++      </div>`;
++    }
++
++    function generateLPKTerpisahHtml(ctx, productCode) {
++      const products = productCode ? ctx.products.filter(p => (p.type || '').toUpperCase() === productCode.toUpperCase()) : ctx.products;
++      return products.map(p => `
++        <div style="font-family:Arial,sans-serif;font-size:12px;max-width:680px;margin:0 auto 32px;padding:24px;border:1px solid #ccc;page-break-after:always">
++          <div style="text-align:center;border-bottom:2px solid #003580;padding-bottom:12px;margin-bottom:16px">
++            <strong style="font-size:13px;color:#003580">DATA KLAIM MANFAAT ${p.type.toUpperCase()}</strong><br>
++            <span style="font-size:11px">PT ASABRI (PERSERO) — ${ctx.namaKancab}</span>
++          </div>
++          <table style="width:100%;font-size:11px;margin-bottom:8px">
++            <tr><td>Nomor Agenda LPK</td><td>: ${ctx.noAgendaLPK}</td><td>KTPA</td><td>: ${ctx.ktpa}</td></tr>
++            <tr><td>Jenis Manfaat</td><td>: ${p.type}</td><td>Regulasi</td><td>: ${ctx.regulasi}</td></tr>
++          </table>
++
++          <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin:10px 0 6px">A. DATA PESERTA</div>
++          <table style="width:100%;font-size:11px;margin-bottom:10px">
++            <tr><td>1. NRP/NIP</td><td>: ${ctx.nrp}</td></tr>
++            <tr><td>2. Nama Penerima</td><td>: ${ctx.namaPenerima}</td></tr>
++            <tr><td>3. Jenis Kelamin</td><td>: ${ctx.jnsKelamin}</td></tr>
++            <tr><td>4. Tanggal Lahir</td><td>: ${ctx.tglLahir}</td></tr>
++            <tr><td>5. Pangkat/Gol Akhir</td><td>: ${ctx.pangkatAkhir}</td></tr>
++            <tr><td>6. Satker Akhir</td><td>: ${ctx.satkerAkhir}</td></tr>
++            <tr><td>7. Tanggal Kejadian</td><td>: ${ctx.tanggalKejadian}</td></tr>
++            <tr><td>8. Masa Kerja Gaji</td><td>: ${ctx.masaKerjaGaji}</td></tr>
++            <tr><td>9. Kode Jiwa</td><td>: ${ctx.kodeJiwa}</td></tr>
++            <tr><td>10. Gaji Pokok</td><td>: ${ctx.gajiPokokAkhir}</td></tr>
++            <tr><td>11. Jenis Hutang</td><td>: ${ctx.jnsHutang}</td></tr>
++            <tr><td>12. Besar Hutang</td><td>: ${ctx.besarHutang}</td></tr>
++            <tr><td>13. No. Rekening</td><td>: ${ctx.noRek} a/n ${ctx.anRek}</td></tr>
++            <tr><td>14. Alamat (KTP)</td><td>: ${ctx.alamat}</td></tr>
++            <tr><td>15. Media Bayar</td><td>: ${ctx.mediaBayar}</td></tr>
++          </table>
++
++          <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin:10px 0 6px">B. PERHITUNGAN MANFAAT ${p.type.toUpperCase()}</div>
++          <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:16px">
++            <tr style="background:#f5f5f5"><td style="padding:4px 6px">Hak Manfaat ${p.type}</td><td style="text-align:right;padding:4px 6px">${formatRupiah(p.hak)}</td></tr>
++            <tr style="color:#c00"><td style="padding:4px 6px">Potongan Hutang</td><td style="text-align:right;padding:4px 6px">- ${formatRupiah(p.potongan)}</td></tr>
++            <tr style="background:#003580;color:white"><td style="padding:6px"><b>Jumlah Diterima</b></td><td style="text-align:right;padding:6px"><b>${formatRupiah(p.netto)}</b></td></tr>
++          </table>
++
++          <div style="text-align:right;font-size:11px;margin-top:24px">
++            ${ctx.namaKancab}, ${ctx.tglProses}<br><br><br>
++            <strong>${ctx.namaKakancab}</strong>
++          </div>
++          <div style="text-align:center;border-top:1px solid #ccc;padding-top:8px;font-size:10px;color:#666;margin-top:16px">
++            Generate: ${ctx.tglGenerate} &nbsp;|&nbsp; Sistem YANDU ASABRI
++          </div>
++        </div>`).join('');
++    }
++
++    function previewLPK(type, productCode = null) {
++      // type: 'gabungan' | 'terpisah'
++      const ctx = buildLPKContext();
++      let html = "";
++      let title = "";
++      if (type === 'gabungan') {
++        html = generateLPKGabunganHtml(ctx);
++        title = "Preview LPK Gabungan";
++      } else {
++        html = generateLPKTerpisahHtml(ctx, productCode);
++        title = productCode ? `Preview LPK - ${productCode}` : "Preview LPK Terpisah";
++      }
++      
++      const w = window.open('', '_blank', 'width=780,height=900,scrollbars=yes');
++      if (!w) { showToast('Error', 'Popup diblokir browser. Izinkan popup untuk preview LPK.', 'danger'); return; }
++      w.document.write(`<!DOCTYPE html><html><head><title>${title}</title></head><body style="margin:0;padding:16px;background:#f5f5f5">${html}</body>
++</html>`);
++      w.document.close();
++    }
++
++    function downloadLPK(type, productCode = null) {
++      const ctx = buildLPKContext();
++      let html = "";
++      let title = "";
++      let filename = "";
++      
++      if (type === 'gabungan') {
++        html = generateLPKGabunganHtml(ctx);
++        title = "LPK Gabungan";
++        filename = `LPK_${ctx.noAgenda || 'ASABRI'}.html`;
++      } else {
++        html = generateLPKTerpisahHtml(ctx, productCode);
++        title = productCode ? `LPK - ${productCode}` : "LPK Terpisah";
++        filename = productCode ? `LPK_${productCode}_${ctx.noAgenda || 'ASABRI'}.html` : `LPK_Terpisah_${ctx.noAgenda || 'ASABRI'}.html`;
++      }
++      
++      const blob = new Blob([`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{body{margin:0}}</style></head><body>${html}</body>
++</html>`], { type: 'text/html' });
++      const a = document.createElement('a');
++      a.href = URL.createObjectURL(blob);
++      a.download = filename;
++      a.click();
++      URL.revokeObjectURL(a.href);
++      showToast('Unduh LPK', `Dokumen ${title} berhasil diunduh.`, 'success');
++    }
++
++    function getLpkPanelHtml(variant) {
++      // variant: 'staf' | 'verifikator' | 'kakancab'
++      let label = 'Dokumen LPK — Untuk Verifikasi';
++      if (variant === 'kakancab') label = 'Dokumen LPK — Untuk Review KAKANCAB';
++      else if (variant === 'staf') label = 'Dokumen LPK — Preview Staf KANCAB';
++      
++      let terpisahButtons = '';
++      if (typeof activeProducts !== 'undefined' && activeProducts && activeProducts.length > 0) {
++        activeProducts.forEach(prod => {
++          const codeUpper = (prod.type || 'Manfaat').toUpperCase();
++          terpisahButtons += `
++            <div class="flex items-center gap-2 border border-slate-200 p-2 rounded-xl bg-slate-50">
++              <span class="text-xs font-bold text-slate-700 w-24 px-2">LPK - ${codeUpper}</span>
++              <button type="button" onclick="previewLPK('terpisah', '${codeUpper}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-[10px] font-bold transition-all shadow-sm">
++                <i class="fas fa-eye text-[10px]"></i> Preview
++              </button>
++              <button type="button" onclick="downloadLPK('terpisah', '${codeUpper}')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-asabri-blue border border-blue-200 rounded-lg text-[10px] font-bold transition-all shadow-sm">
++                <i class="fas fa-download text-[10px]"></i> Unduh
++              </button>
++            </div>
++          `;
++        });
++      }
++
++      return `
++        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-3 mb-4 animate-fade-in">
++          <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
++            <i class="fas fa-file-alt text-asabri-blue"></i>
++            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">${label}</h4>
++          </div>
++          <p class="text-[11px] text-slate-500 font-medium">Preview dan unduh dokumen LPK sebelum proses lanjut. LPK Gabungan berisi ringkasan semua manfaat; LPK Terpisah berisi 1 dokumen per jenis manfaat.</p>
++          <div class="space-y-2">
++            <div class="flex items-center gap-2 border border-slate-200 p-2 rounded-xl bg-slate-50">
++              <span class="text-xs font-bold text-slate-700 w-24 px-2">LPK</span>
++              <button type="button" onclick="previewLPK('gabungan')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-lg text-[10px] font-bold transition-all shadow-sm">
++                <i class="fas fa-eye text-[10px]"></i> Preview
++              </button>
++              <button type="button" onclick="downloadLPK('gabungan')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-[10px] font-bold transition-all shadow-sm">
++                <i class="fas fa-download text-[10px]"></i> Unduh
++              </button>
++            </div>
++            ${terpisahButtons}
++          </div>
++        </div>`;
++    }
++
++
++
+     function verifikasiKlaimSuccess() {
+       // Validasi State/Status Klaim dari database/localStorage sebelum memproses
+       const freshDataRaw = localStorage.getItem("registrasiKlaim");
+@@ -7586,7 +8057,7 @@
+       
+       const jk = claimState.jenisKejadian || '';
+       
+-      claimState.status = "SP Terbit";
++      claimState.status = "Selesai";
+       claimState.spDate = spDate;
+       
+       let spNames = [];
+@@ -7597,10 +8068,21 @@
+         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
+         claimState.spNumberPen = `SP-PEN/JKT/${romanMonth}/${currentYear}/${suffix}`;
+         spNames = ["SP THT", "SP Pensiun"];
+-      } else if (key === 'Berhenti dengan Hak Tunjangan') {
+-        claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
+-        claimState.spNumberTuj = `SP-TUJ/JKT/${romanMonth}/${currentYear}/${suffix}`;
+-        spNames = ["SP THT", "SP Tunjangan Terbatas"];
++      'Berhenti dengan Hak Tunjangan': [
++        { nama: 'Formulir Pengajuan', mandatory: false },
++        { nama: 'Formulir SP3R', mandatory: false },
++        { nama: 'Asli Salinan Keputusan Tunjangan', mandatory: true },
++        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: false, viewSkpp: true },
++        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
++        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah dan telah berusia lebih dari 21 tahun s/d 25 tahun)', mandatory: false },
++        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
++        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
++        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
++        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
++        { nama: 'Fotokopi NPWP', mandatory: false },
++        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
++        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false },
++      ],
+       } else if (key === 'Berhenti tanpa Hak Pensiun') {
+         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
+         claimState.spNumberNtip = `SP-NTIP/JKT/${romanMonth}/${currentYear}/${suffix}`;
+@@ -7706,7 +8188,7 @@
+       const claims = getClaims();
+       const idx = claims.findIndex(c => c.noAgenda === noAgenda || c.noRegistrasi === noAgenda);
+       if (idx !== -1) {
+-        claims[idx].status = "SP Terbit";
++        claims[idx].status = "Selesai";
+         saveClaims(claims);
+       }
+       
+@@ -7721,7 +8203,7 @@
+         tanggal: `${todayStr} ${timeStr}`,
+         user: "KAKANCAB",
+         aksi: "SP Diterbitkan",
+-        status: "SP Terbit",
++        status: "Selesai",
+         keterangan: logMsg
+       });
+       
+@@ -7729,12 +8211,89 @@
+       
+       showToast("Approval Sukses", "Klaim disetujui dan Surat Perintah Bayar berhasil diterbitkan.", "success");
+       
++      // Trigger simulasi AP3 — kirim data pembayaran ke sistem AP3
++      setTimeout(() => {
++        const ap3Log = {
++          tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
++          user: "SISTEM",
++          aksi: "Kirim ke AP3",
++          status: "Selesai",
++          keterangan: `Data pembayaran ${spNames.join(' & ')} berhasil dikirim ke sistem AP3 untuk diproses.`
++        };
++        if (!claimState.logs) claimState.logs = [];
++        claimState.logs.push(ap3Log);
++        localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
++        showToast("✅ AP3 — Data Pembayaran", `Data pembayaran ${spNames.join(' & ')} berhasil dikirim ke sistem AP3.`, "success");
++      }, 1500);
++      
+       if (jk === 'Kecelakaan Kerja — Cacat Pensiun') {
+         alert("SP Santunan Cacat telah terbit. Silakan ajukan klaim Pensiun Pertama untuk mendapatkan Tunjangan Cacat.");
+       }
+       renderTab5Data();
+     }
+ 
++    // Preview SP sebelum KAKANCAB klik Approval — tampilkan draft SP di popup
++    function previewSPPreApproval() {
++      const cs = claimState || {};
++      const pes = currentParticipant || {};
++      const jk = cs.jenisKejadian || '-';
++      const now = new Date();
++      const roman = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
++      const spDate = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
++      const noAgenda = cs.noAgenda || '-';
++      const suffix = noAgenda.split('-').pop() || '001';
++      const romanMonth = roman[now.getMonth()];
++      const yr = now.getFullYear();
++      const norekEl = document.getElementById('bayar-norek');
++      const anEl = document.getElementById('bayar-an');
++      const mitraEl = document.getElementById('bayar-mitra');
++
++      // Build SP preview per produk
++      const prodRows = (activeProducts || []).map(p => {
++        const valEl = document.getElementById(`${p.id}-besar`);
++        const val = valEl ? parseRupiah(valEl.value) : 0;
++        return `<tr><td style="padding:2px 8px">${p.type}</td><td style="text-align:right;padding:2px 8px">${formatRupiah(val)}</td></tr>`;
++      }).join('');
++
++      const draftHtml = `<div style="font-family:Arial,sans-serif;font-size:12px;max-width:680px;margin:0 auto;padding:24px;border:1px solid #ccc">
++        <div style="text-align:center;margin-bottom:20px">
++          <strong style="font-size:15px;color:#003580">DRAFT — SURAT PEMBERITAHUAN (SP)</strong><br>
++          <span style="font-size:11px;color:#c00;font-style:italic">⚠ Dokumen ini DRAFT — belum resmi terbit. Akan terbit setelah KAKANCAB klik Approve.</span>
++        </div>
++        <table style="width:100%;font-size:11px;margin-bottom:12px">
++          <tr><td><b>Nomor SP</b></td><td>: S-XXX/YYY/KC-XX/${romanMonth}/${yr} <em>(auto-generate)</em></td></tr>
++          <tr><td><b>Tanggal</b></td><td>: ${spDate}</td></tr>
++          <tr><td><b>Sifat</b></td><td>: Biasa</td></tr>
++          <tr><td><b>Hal</b></td><td>: Surat Pemberitahuan (SP) Pembayaran Manfaat Program ${jk}</td></tr>
++        </table>
++        <hr style="border-color:#ccc;margin:12px 0">
++        <strong>Yth. Bapak/Ibu/Sdr/Sdri</strong><br>
++        ${pes.namaPeserta || pes.nama || '-'}<br>
++        ${pes.nrp_nip || pes.nrp || '-'}<br>
++        ${pes.alamatKTP || pes.alamat || '[Alamat KTP peserta]'}<br><br>
++        <p style="text-align:justify;font-size:11px">Diberitahukan bahwa pengajuan klaim manfaat Program <strong>${jk}</strong> Bapak/Ibu/Sdr/Sdri sudah selesai diproses. Rincian pembayaran:</p>
++        <table style="width:100%;font-size:11px;border-collapse:collapse;margin:10px 0">
++          <tr style="background:#003580;color:white"><th style="padding:4px 8px;text-align:left">Program / Manfaat</th><th style="padding:4px 8px;text-align:right">Jumlah (Rp)</th></tr>
++          ${prodRows}
++          <tr style="border-top:2px solid #003580"><td style="padding:4px 8px"><b>Nama Penerima</b></td><td style="padding:4px 8px">${anEl?.value || pes.namaPeserta || '-'}</td></tr>
++          <tr><td style="padding:4px 8px"><b>Nomor Rekening</b></td><td style="padding:4px 8px">${norekEl?.value || '-'} a/n ${anEl?.value || '-'}</td></tr>
++          <tr><td style="padding:4px 8px"><b>Mitra Bayar</b></td><td style="padding:4px 8px">${mitraEl?.value || 'PT POS Indonesia'}</td></tr>
++        </table>
++        <div style="text-align:right;margin-top:32px;font-size:11px">
++          ${pes.kantorCabang || cs.kantorCabang || 'Jakarta'}, ${spDate}<br><br><br>
++          <strong>KEPALA KANTOR CABANG</strong><br>
++          PT ASABRI (PERSERO)<br><br><br>
++          <strong>( Nama Kakancab )</strong>
++        </div>
++      </div>`;
++
++      const w = window.open('', '_blank', 'width=780,height=900,scrollbars=yes');
++      if (!w) { showToast('Error', 'Popup diblokir browser. Izinkan popup untuk preview SP.', 'danger'); return; }
++      w.document.write(`<!DOCTYPE html><html><head><title>Draft Preview SP</title></head><body style="margin:0;padding:16px;background:#f5f5f5">${draftHtml}</body>
++</html>`);
++      w.document.close();
++    }
++
+     function rejectKlaimKakancab() {
+       const currentRole = localStorage.getItem('currentRole') || 'Staf KANCAB';
+       if (currentRole !== 'KAKANCAB') {
+@@ -8529,25 +9088,25 @@
+       switch(key) {
+         // 1. Pensiun
+         case 'Pensiun':
++        case 'Pensiun Pertama':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP Pensiun', preview: () => previewSPPensiun(ctxPen), download: () => downloadSPPensiun(ctxPen) }
++            { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP Pensiun', html: () => generateSPPensiun(ctxPen) }
+           ]);
+           break;
+ 
+-        // 2. Berhenti dengan Hak Tunjangan
+         case 'Berhenti dengan Hak Tunjangan':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP Tunjangan Terbatas', preview: () => previewSPTunjangan(ctxTuj), download: () => downloadSPTunjangan(ctxTuj) }
++            { label: 'SP NTTA', html: () => generateSPNTTA(ctxNtta) },
++            { label: 'SP Tunjangan Terbatas', html: () => generateSPTunj(ctxTunj) }
+           ]);
+           break;
+ 
+         // 3. Berhenti tanpa Hak Pensiun
+         case 'Berhenti tanpa Hak Pensiun':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP NTIP', preview: () => previewSPNTIP(ctxNtip), download: () => downloadSPNTIP(ctxNtip) }
++            { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP NTIP', html: () => generateSPNTIP(ctxNtip) }
+           ]);
+           break;
+ 
+@@ -8555,7 +9114,7 @@
+         case 'Istri/Suami Meninggal Dunia':
+         case 'Pensiun Sendiri — Istri/Suami Meninggal Dunia':
+           showSP([
+-            { label: 'SP BPI/S', preview: () => previewSPBPIS(ctxBpis), download: () => downloadSPBPIS(ctxBpis) }
++            { label: 'SP BPI/S', html: () => generateSPBPIS(ctxBpis) }
+           ]);
+           break;
+ 
+@@ -8563,141 +9122,141 @@
+         case 'Anak Meninggal Dunia':
+         case 'Pensiun Sendiri — Anak Meninggal Dunia':
+           showSP([
+-            { label: 'SP BPA', preview: () => previewSPBPA(ctxBpa), download: () => downloadSPBPA(ctxBpa) }
++            { label: 'SP BPA', html: () => generateSPBPA(ctxBpa) }
+           ]);
+           break;
+ 
+         // 6. Meninggal Dinas Aktif — Istri/Suami
+         case 'Meninggal Dunia dalam Dinas Aktif_Istri/Suami':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP JKm', preview: () => previewSPJKm(ctxJkm), download: () => downloadSPJKm(ctxJkm) },
+-            { label: 'SP Pensiun Warakawuri', preview: () => previewSPPensiun(ctxPen), download: () => downloadSPPensiun(ctxPen) }
++            { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP JKm', html: () => generateSPJKm(ctxJkm) },
++            { label: 'SP Pensiun Warakawuri', html: () => generateSPPensiun(ctxPen) }
+           ]);
+           break;
+ 
+         // 7. Meninggal Dinas Aktif — Anak
+         case 'Meninggal Dunia dalam Dinas Aktif_Anak':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP JKm', preview: () => previewSPJKm(ctxJkm), download: () => downloadSPJKm(ctxJkm) },
+-            { label: 'SP Tunjangan Yatim/Piatu', preview: () => previewSPAlihStatus(ctxAlih), download: () => downloadSPAlihStatus(ctxAlih) }
++            { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP JKm', html: () => generateSPJKm(ctxJkm) },
++            { label: 'SP Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
+           ]);
+           break;
+ 
+         // 8. Meninggal Dinas Aktif — Lainnya
+         case 'Meninggal Dunia dalam Dinas Aktif_Lainnya':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP JKm', preview: () => previewSPJKm(ctxJkm), download: () => downloadSPJKm(ctxJkm) },
+-            { label: 'SP NTIP', preview: () => previewSPNTIP(ctxNtip), download: () => downloadSPNTIP(ctxNtip) }
++            { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP JKm', html: () => generateSPJKm(ctxJkm) },
++            { label: 'SP NTIP', html: () => generateSPNTIP(ctxNtip) }
+           ]);
+           break;
+ 
+         // 9. KK Meninggal — Istri/Suami
+         case 'Kecelakaan Kerja — Meninggal Dunia_Istri/Suami':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP JKK', preview: () => previewSPJKK(ctxJkk), download: () => downloadSPJKK(ctxJkk) },
+-            { label: 'SP Pensiun Warakawuri', preview: () => previewSPPensiun(ctxPen), download: () => downloadSPPensiun(ctxPen) }
++            { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) },
++            { label: 'SP Pensiun Warakawuri', html: () => generateSPPensiun(ctxPen) }
+           ]);
+           break;
+ 
+         // 10. KK Meninggal — Anak
+         case 'Kecelakaan Kerja — Meninggal Dunia_Anak':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP JKK', preview: () => previewSPJKK(ctxJkk), download: () => downloadSPJKK(ctxJkk) },
+-            { label: 'SP Tunjangan Yatim/Piatu', preview: () => previewSPAlihStatus(ctxAlih), download: () => downloadSPAlihStatus(ctxAlih) }
++            { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) },
++            { label: 'SP Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
+           ]);
+           break;
+ 
+         // 11. KK Meninggal — Orang Tua
+         case 'Kecelakaan Kerja — Meninggal Dunia_Orang Tua':
+           showSP([
+-            { label: 'SP THT', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP JKK', preview: () => previewSPJKK(ctxJkk), download: () => downloadSPJKK(ctxJkk) },
+-            { label: 'SP Tunjangan Orang Tua', preview: () => previewSPAlihStatus(ctxAlih), download: () => downloadSPAlihStatus(ctxAlih) }
++            { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) },
++            { label: 'SP Tunjangan Orang Tua', html: () => generateSPAlihStatus(ctxAlih) }
+           ]);
+           break;
+ 
+         // 12. KK Cacat Tetap Bekerja
+         case 'Kecelakaan Kerja — Cacat Tetap Bekerja':
+           showSP([
+-            { label: 'SP JKK (Santunan Cacat)', preview: () => previewSPSantunanCacat(ctxCacat), download: () => downloadSPSantunanCacat(ctxCacat) }
++            { label: 'SP JKK (Santunan Cacat)', html: () => generateSPSantunanCacat(ctxCacat) }
+           ]);
+           break;
+ 
+         // 13. KK Cacat Pensiun
+         case 'Kecelakaan Kerja — Cacat Pensiun':
+           showSP([
+-            { label: 'SP JKK (Santunan Cacat)', preview: () => previewSPSantunanCacat(ctxCacat), download: () => downloadSPSantunanCacat(ctxCacat) }
++            { label: 'SP JKK (Santunan Cacat)', html: () => generateSPSantunanCacat(ctxCacat) }
+           ]);
+           break;
+ 
+         // 14. Pensiun Sendiri Meninggal — Istri/Suami
+         case 'Pensiun Sendiri — Meninggal Dunia_Istri/Suami':
+           showSP([
+-            { label: 'SP THT (BPPP+UDW)', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP Pensiun Warakawuri', preview: () => previewSPPensiun(ctxPen), download: () => downloadSPPensiun(ctxPen) }
++            { label: 'SP THT (BPPP+UDW)', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP Pensiun Warakawuri', html: () => generateSPPensiun(ctxPen) }
+           ]);
+           break;
+ 
+         // 15. Pensiun Sendiri Meninggal — Anak
+         case 'Pensiun Sendiri — Meninggal Dunia_Anak':
+           showSP([
+-            { label: 'SP THT (BPPP+UDW)', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP Tunjangan Yatim/Piatu', preview: () => previewSPAlihStatus(ctxAlih), download: () => downloadSPAlihStatus(ctxAlih) }
++            { label: 'SP THT (BPPP+UDW)', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
+           ]);
+           break;
+ 
+         // 16. Pensiun Sendiri Meninggal — Lainnya
+         case 'Pensiun Sendiri — Meninggal Dunia_Lainnya':
+           showSP([
+-            { label: 'SP THT (BPPP+UDW)', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) }
++            { label: 'SP THT (BPPP+UDW)', html: () => generateSPTHT(ctxTht) }
+           ]);
+           break;
+ 
+         // 17. Pensiun Warakawuri Meninggal — Anak
+         case 'Pensiun Warakawuri — Meninggal Dunia_Anak':
+           showSP([
+-            { label: 'SP THT (BPI/S + UDW)', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) },
+-            { label: 'SP Tunjangan Yatim/Piatu', preview: () => previewSPAlihStatus(ctxAlih), download: () => downloadSPAlihStatus(ctxAlih) }
++            { label: 'SP THT (BPI/S + UDW)', html: () => generateSPTHT(ctxTht) },
++            { label: 'SP Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
+           ]);
+           break;
+ 
+         // 18. Pensiun Warakawuri Meninggal — Lainnya
+         case 'Pensiun Warakawuri — Meninggal Dunia_Lainnya':
+           showSP([
+-            { label: 'SP THT (BPI/S + UDW)', preview: () => previewSPTHT(ctxTht), download: () => downloadSPTHT(ctxTht) }
++            { label: 'SP THT (BPI/S + UDW)', html: () => generateSPTHT(ctxTht) }
+           ]);
+           break;
+ 
+         // 19. Tunjangan Yatim/Piatu — Meninggal
+         case 'Tunjangan Yatim/Piatu/Yatim-Piatu — Meninggal':
+           showSP([
+-            { label: 'SP Alih Status Tunjangan Yatim/Piatu', preview: () => previewSPAlihStatus(ctxAlih), download: () => downloadSPAlihStatus(ctxAlih) }
++            { label: 'SP Alih Status Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
+           ]);
+           break;
+ 
+         // 20. Tunjangan Yatim/Piatu — Dewasa
+         case 'Tunjangan Yatim/Piatu/Yatim-Piatu — Dewasa':
+           showSP([
+-            { label: 'SP Alih Status Tunjangan Yatim/Piatu', preview: () => previewSPAlihStatus(ctxAlih), download: () => downloadSPAlihStatus(ctxAlih) }
++            { label: 'SP Alih Status Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
+           ]);
+           break;
+ 
+         // 21. Tunjangan Orang Tua — Meninggal
+         case 'Tunjangan Orang Tua — Meninggal':
+           showSP([
+-            { label: 'SP Alih Status Tunjangan Orang Tua', preview: () => previewSPAlihStatus(ctxAlih), download: () => downloadSPAlihStatus(ctxAlih) }
++            { label: 'SP Alih Status Tunjangan Orang Tua', html: () => generateSPAlihStatus(ctxAlih) }
+           ]);
+           break;
+ 
+         // 22. KK Dirawat
+         case 'Kecelakaan Kerja — Dirawat':
+           showSP([
+-            { label: 'SJP', preview: () => previewSJP(ctxSjp), download: () => downloadSJP(ctxSjp) }
++            { label: 'SJP', html: () => generateSJP(ctxSjp) }
+           ]);
+           break;
+       }
+@@ -8707,57 +9266,97 @@
+       const container = document.getElementById('sp-container');
+       if (!container) return;
+       
+-      const spDate = claimState.spDate || new Date().toLocaleDateString('id-ID');
+-      const pesName = currentParticipant?.nama || "Peserta";
+-      const agendaNo = claimState.noAgenda || "REG-2026-XXXXX";
+-
+-      container.innerHTML = spList.map((sp, idx) => {
+-        let spNumber = claimState.spNumber || `SP/JKT/VIII/2026/0091`;
+-        if (sp.label === 'SP THT') spNumber = claimState.spNumberTht || spNumber;
+-        else if (sp.label === 'SP Pensiun' || sp.label === 'SP Pensiun Warakawuri') spNumber = claimState.spNumberPen || spNumber;
+-        else if (sp.label === 'SP Tunjangan Terbatas') spNumber = claimState.spNumberTuj || spNumber;
+-        else if (sp.label === 'SP NTIP') spNumber = claimState.spNumberNtip || spNumber;
+-        else if (sp.label === 'SP BPI/S') spNumber = claimState.spNumberBpis || spNumber;
+-        else if (sp.label === 'SP BPA') spNumber = claimState.spNumberBpa || spNumber;
+-        else if (sp.label === 'SP JKm') spNumber = claimState.spNumberJkm || spNumber;
+-        else if (sp.label === 'SP JKK') spNumber = claimState.spNumberJkk || spNumber;
+-        else if (sp.label === 'SP JKK (Santunan Cacat)') spNumber = claimState.spNumberCacat || spNumber;
+-        else if (sp.label === 'SP Tunjangan Cacat') spNumber = claimState.spNumberTujCacat || spNumber;
+-        else if (sp.label === 'SP THT (BPPP+UDW)' || sp.label === 'SP THT (BPI/S + UDW)') spNumber = claimState.spNumberTht || spNumber;
+-        else if (sp.label.includes('Alih Status')) spNumber = claimState.spNumberAlih || spNumber;
+-        else if (sp.label === 'SJP') spNumber = claimState.sjpNumber || spNumber;
+-
+-        window[`previewSpCall_${idx}`] = sp.preview;
+-        window[`downloadSpCall_${idx}`] = sp.download;
++      let combinedInnerHtml = "";
++      let extractedStyle = "";
++      
++      spList.forEach((sp, index) => {
++         let fullHtml = sp.html();
++         
++         // Extract style only once from the first SP
++         if (index === 0) {
++             let styleMatch = fullHtml.match(/<style>([\s\S]*?)<\/style>/i);
++             if (styleMatch) extractedStyle = styleMatch[1];
++         }
++         
++         let bodyMatch = fullHtml.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
++         let bodyHtml = bodyMatch ? bodyMatch[1] : fullHtml;
++         
++         if (index < spList.length - 1) {
++             bodyHtml += '<div style="page-break-after: always; clear: both; height: 1px;"></div>';
++         }
++         combinedInnerHtml += bodyHtml;
++      });
++      
++      // Reconstruct document with the correct styles
++      const combinedHtmlDoc = `<!DOCTYPE html><html><head><title>SP Gabungan</title><style>${extractedStyle} @media print{body{margin:0} .page-break { page-break-after: always; }}</style></head><body style="padding:20px;">${combinedInnerHtml}</body></html>`;
++
++      const spNumber = claimState?.spNumber || `SP/JKT/VIII/2026/0091`;
++      let sanitizedNumber = spNumber.replace(/\//g, '_');
++      let filename = `SP_${sanitizedNumber}.html`;
++
++      window.previewSPGabungan = () => {
++         const modal = document.getElementById('sp-preview-modal');
++         const iframe = document.getElementById('sp-preview-iframe');
++         if(modal && iframe) {
++             modal.classList.remove('hidden');
++             modal.classList.add('flex');
++             // small delay to allow display block before opacity transition
++             setTimeout(() => {
++               modal.classList.add('opacity-100');
++               modal.querySelector('div').classList.add('scale-100');
++             }, 10);
++             
++             // Inject html into iframe
++             const doc = iframe.contentWindow.document;
++             doc.open();
++             doc.write(combinedHtmlDoc);
++             doc.close();
++         }
++      };
++      
++      window.downloadSPGabungan = () => {
++         const blob = new Blob([combinedHtmlDoc], { type: 'text/html' });
++         const a = document.createElement('a');
++         a.href = URL.createObjectURL(blob);
++         a.download = filename;
++         a.click();
++         URL.revokeObjectURL(a.href);
++         showToast('Unduh SP', `Dokumen SP Gabungan dengan nama file ${filename} berhasil diunduh.`, 'success');
++      };
+ 
+-        return `
+-          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 animate-fade-in mb-6">
+-            <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+-              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+-                <i class="fas fa-file-invoice-dollar text-emerald-500"></i> ${sp.label}
+-              </h3>
+-              <span class="bg-emerald-100 text-emerald-800 border border-emerald-250 px-2.5 py-0.5 rounded font-mono font-bold text-[9px]">VALID</span>
+-            </div>
+-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 font-mono text-[11px] leading-relaxed text-slate-700 space-y-1 max-w-md shadow-inner">
+-              <div> Nomor SP    : ${spNumber}</div>
+-              <div> Tanggal     : ${spDate}</div>
+-              <div> Peserta     : ${pesName}</div>
+-              <div> No. Agenda  : ${agendaNo}</div>
+-              <div> Rekening    : ${currentParticipant?.rekening || '0012-01-098321-50-8 - BRI'}</div>
++      container.innerHTML = `
++        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm space-y-4">
++          <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
++            <div class="flex items-center gap-2">
++              <i class="fas fa-folder-open text-emerald-600"></i>
++              <h4 class="text-sm font-bold text-slate-800 tracking-wide">DOKUMEN SP — TERBIT</h4>
+             </div>
+-            <div class="flex items-center gap-3">
+-              <button type="button" onclick="window.previewSpCall_${idx}()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5">
+-                <i class="fas fa-eye"></i> Preview
+-              </button>
+-              <button type="button" onclick="window.downloadSpCall_${idx}()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5">
+-                <i class="fas fa-download"></i> Download
+-              </button>
++            <span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md text-[9px] font-bold uppercase tracking-wider border border-emerald-200">Final</span>
++          </div>
++          <div class="space-y-3">
++            <div class="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl hover:border-asabri-blue/30 transition-all shadow-sm">
++              <div class="flex items-center gap-3">
++                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
++                  <i class="fas fa-file-invoice-dollar"></i>
++                </div>
++                <div>
++                  <div class="text-xs font-bold text-slate-800">SP - ${spNumber}</div>
++                  <div class="text-[10px] text-slate-500">Diterbitkan otomatis oleh sistem (${spList.length} halaman)</div>
++                </div>
++              </div>
++              <div class="flex items-center gap-2">
++                <button type="button" onclick="window.previewSPGabungan()" class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg text-xs font-bold transition-colors shadow-sm flex items-center gap-1.5 border border-slate-200">
++                  <i class="fas fa-eye text-[10px]"></i> Preview
++                </button>
++                <button type="button" onclick="window.downloadSPGabungan()" class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-bold transition-colors shadow-sm flex items-center gap-1.5 border border-blue-200">
++                  <i class="fas fa-download text-[10px]"></i> Unduh
++                </button>
++              </div>
+             </div>
+           </div>
+-        `;
+-      }).join('');
++        </div>
++      `;
+     }
+-
+     let activeRejectRole = "";
+     let activeRejectTab = "";
+ 
+@@ -8810,11 +9409,11 @@
+       
+       const roleLower = role.toLowerCase().trim();
+       if (roleLower === 'kakancab') {
+-        setStatus('Menunggu Verifikasi');
++        setStatus('Dikembalikan ke Verifikator');
+         showNotifikasi('Dikembalikan ke Verifikator');
+       } else if (roleLower === 'verifikator') {
+-        setStatus('Dokumen Diterima');
+-        showNotifikasi('Dikembalikan ke Officer');
++        setStatus('Dikembalikan ke Staf');
++        showNotifikasi('Dikembalikan ke Staf KANCAB');
+       } else {
+         setStatus('Ditolak');
+         showNotifikasi('Klaim ditolak. Alasan: ' + alasan);
+@@ -9184,5 +9783,50 @@
+     </div>
+   </div>
+ 
++
++  <!-- MODAL PREVIEW SP -->
++  <div id="sp-preview-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[150] hidden items-center justify-center opacity-0 transition-opacity duration-300">
++    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col transform scale-95 transition-transform duration-300 overflow-hidden relative">
++      <div class="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/80">
++        <div class="flex items-center gap-3">
++          <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
++            <i class="fas fa-file-invoice-dollar"></i>
++          </div>
++          <div>
++            <h3 class="font-bold text-slate-800 text-sm" id="sp-preview-title">Preview SP Gabungan</h3>
++            <p class="text-[10px] text-slate-500">Pratinjau dokumen final sebelum diunduh.</p>
++          </div>
++        </div>
++        <button type="button" onclick="closeSPPreviewModal()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-700 transition-colors">
++          <i class="fas fa-times"></i>
++        </button>
++      </div>
++      <div class="flex-1 overflow-auto bg-slate-200 p-8 flex justify-center">
++        <!-- iframe to sandbox the SP styles from tailwind -->
++        <iframe id="sp-preview-iframe" class="bg-white shadow-lg w-full max-w-[210mm] min-h-[297mm] border-0"></iframe>
++      </div>
++      <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
++        <button type="button" onclick="closeSPPreviewModal()" class="px-4 py-2 text-slate-600 font-bold text-xs hover:bg-slate-200 rounded-xl transition-colors">Tutup</button>
++        <button type="button" onclick="window.downloadSPGabungan()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-colors flex items-center gap-2">
++          <i class="fas fa-download"></i> Unduh PDF
++        </button>
++      </div>
++    </div>
++  </div>
++  <script>
++    function closeSPPreviewModal() {
++      const modal = document.getElementById('sp-preview-modal');
++      if(modal) {
++        modal.classList.remove('opacity-100');
++        modal.querySelector('div').classList.remove('scale-100');
++        setTimeout(() => {
++          modal.classList.add('hidden');
++          modal.classList.remove('flex');
++        }, 300);
++      }
++    }
++  </script>
+ </body>
++
++
+ </html>

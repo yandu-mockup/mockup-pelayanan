@@ -1,7 +1,8 @@
 // Global Shared Logic for ASABRI YANDU NG Multi-Page App
 
 // Database Methods
-const DATA_VERSION = "1.4"; // Increment this whenever MOCK_CLAIMS structure changes
+const DATA_VERSION = "2.0"; // Increment this whenever MOCK_CLAIMS structure changes
+
 
 function getCurrentUser() {
   return {
@@ -11,8 +12,8 @@ function getCurrentUser() {
   };
 }
 
-function getNextNomorUrut(kodeKancab, bulan, tahun) {
-  const key = `seq_${kodeKancab}_${bulan}_${tahun}`;
+function getNextNomorUrut(kodeKancab, tahun) {
+  const key = `seq_${kodeKancab}_${tahun}`;
   let currentSeq = parseInt(localStorage.getItem(key) || "0");
   currentSeq += 1;
   localStorage.setItem(key, currentSeq.toString());
@@ -30,11 +31,12 @@ function generateNomorRegistrasi(kodeKancab) {
   const bulan = bulanRomawi[now.getMonth()];
   const tahun = now.getFullYear();
 
-  // Nomor urut 6 digit, reset tiap bulan
-  const nomorUrut = getNextNomorUrut(kodeKancab, bulan, tahun)
+  // Nomor urut 6 digit, reset tiap tahun per kode cabang
+  const nomorUrut = getNextNomorUrut(kodeKancab, tahun)
     .toString().padStart(6, '0');
 
-  return `REG/${kodeKancab}/${bulan}/${tahun}/${nomorUrut}`;
+  // Format BARU: REG/[No Urut]/[Kode Cabang]/[Bulan Romawi]/[Tahun]
+  return `REG/${nomorUrut}/${kodeKancab}/${bulan}/${tahun}`;
 }
 
 function getClaims() {
@@ -216,6 +218,7 @@ function initializeSharedRoleSelector() {
 
   const roles = [
     { value: 'staf-kancab', label: 'ROLE: Staf KANCAB' },
+    { value: 'program1', label: 'ROLE: Bidang Layanan Program 1' },
     { value: 'verifikator', label: 'ROLE: Verifikator' },
     { value: 'verifikator-medis', label: 'ROLE: Verifikator Medis (khusus JKK Perawatan)' },
     { value: 'kakancab', label: 'ROLE: KAKANCAB / Kabid Layanan' },
@@ -224,6 +227,7 @@ function initializeSharedRoleSelector() {
 
   const roleLegacyMap = {
     'staf-kancab': 'Staf KANCAB',
+    'program1': 'Bidang Layanan Program 1',
     'verifikator': 'Verifikator',
     'verifikator-medis': 'Verifikator Medis',
     'kakancab': 'KAKANCAB',
@@ -233,6 +237,8 @@ function initializeSharedRoleSelector() {
   const legacyToNewMap = {
     'Staf KANCAB': 'staf-kancab',
     'staf-kancab': 'staf-kancab',
+    'Bidang Layanan Program 1': 'program1',
+    'program1': 'program1',
     'Verifikator': 'verifikator',
     'verifikator': 'verifikator',
     'Verifikator Medis': 'verifikator-medis',

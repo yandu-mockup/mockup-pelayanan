@@ -11,9 +11,22 @@ function renderSidebar(activePage) {
     { id: 'data-peserta', label: '3. Data Peserta', icon: 'fas fa-magnifying-glass', href: 'data-peserta.html', subMenu: [] },
     { id: 'riwayat', label: '4. Riwayat Transaksi Klaim', icon: 'fas fa-clock-rotate-left', href: 'riwayat.html', subMenu: [] },
     { id: 'kejadian', label: '5. Pelayanan Klaim', icon: 'fas fa-file-invoice', href: 'kejadian.html', subMenu: [] },
+    { id: 'verifikasi', label: '6. List Verifikasi', icon: 'fas fa-file-signature', href: 'verifikasi.html', subMenu: [] },
+    { id: 'approval-produk', label: '7. List Request Approval Produk', icon: 'fas fa-file-circle-check', href: 'approval-produk.html', subMenu: [] },
+    { id: 'dapem-susulan', label: '8. Dapem Susulan Sementara', icon: 'fas fa-file-invoice-dollar', href: 'dapem-susulan.html', subMenu: [] },
+    {
+      id: 'perbandingan-dapem',
+      label: '9. Perbandingan DAPEM',
+      icon: 'fas fa-scale-balanced',
+      href: '#',
+      subMenu: [
+        { label: 'Daftar AP3 Sementara', href: 'ap3-sementara.html' },
+        { label: 'Daftar Pensiun', href: 'daftar-pensiun.html' }
+      ]
+    },
     {
       id: 'perawatan',
-      label: '6. Perawatan JKK',
+      label: '10. Perawatan JKK',
       icon: 'fas fa-hand-holding-medical',
       href: '#',
       subMenu: [
@@ -42,7 +55,7 @@ function renderSidebar(activePage) {
     },
     {
       id: 'komunikasi',
-      label: '7. Pelayanan Komunikasi Pelanggan',
+      label: '11. Pelayanan Komunikasi Pelanggan',
       icon: 'fas fa-comments',
       href: '#',
       subMenu: [

@@ -396,12 +396,19 @@
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <!-- 1. Sumber Pengajuan (Otomatis Kantor Cabang, disabled) -->
+                <!-- 1. Sumber Pengajuan (Dropdown: Kantor Cabang / ASABRI-Link) -->
                 <div class="flex flex-col gap-1.5">
                   <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                     <span>Sumber Pengajuan <span class="text-rose-500">*</span></span>
                   </label>
-                  <input type="text" id="sumber-pengajuan" value="Kantor Cabang" disabled class="border border-slate-200 bg-slate-100 rounded-xl px-3 py-2 text-xs font-bold text-slate-500 cursor-not-allowed">
+                  <select id="sumber-pengajuan" onchange="handleSumberPengajuanChange()" class="border border-slate-200 bg-slate-50/50 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
+                    <option value="Kantor Cabang" selected>Kantor Cabang</option>
+                    <option value="ASABRI-Link">ASABRI-Link</option>
+                  </select>
+                  <!-- Badge indikator jalur -->
+                  <span id="sumber-badge" class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full w-fit bg-blue-50 border border-blue-200 text-blue-700">
+                    <i class="fas fa-building text-[9px]"></i> Kantor Cabang
+                  </span>
                 </div>
 
                 <!-- 2. Kantor Cabang ASABRI (auto-fill dari user yang login, disabled) -->
@@ -458,13 +465,14 @@
       { ktpa: 'ASB-2015-087211', nrp: '3171092801890001', nopens: '-', nama: 'Wirata Atmaja', angkatan: 'TNI-AD', nik: '3171092801890001', pangkat: 'Mayor Inf', gajiPokok: 4900000, status: 'Aktif' },
       { ktpa: 'ASB-2018-095431', nrp: '3273120105910011', nopens: '-', nama: 'Bambang Triyono', angkatan: 'TNI-AD', nik: '3273120105910011', pangkat: 'Kapten', gajiPokok: 4200000, status: 'Aktif' },
       { ktpa: 'ASB-2020-112345', nrp: '3578140902940004', nopens: '-', nama: 'Kartika Sari', angkatan: 'PNS', nik: '3578140902940004', pangkat: 'Penata', gajiPokok: 3500000, status: 'Aktif' },
-      { ktpa: 'ASB-1985-004321', nrp: '3374110304620002', nopens: '-', nama: 'Budi Santoso', angkatan: 'TNI-AD', nik: '3374110304620002', pangkat: 'Kolonel', gajiPokok: 5800000, status: 'Aktif' },
+      { ktpa: 'ASB-1985-004321', nrp: '3374110304620002', nopens: '-', nama: 'Budi Santoso', angkatan: 'TNI-AD', nik: '3374110304620002', pangkat: 'Kolonel', gajiPokok: 5800000, status: 'Aktif', tingkat_cacat: 'III', golongan_cacat: 'C' },
       { ktpa: 'ASB-2019-078901', nrp: '3273120105910200', nopens: '-', nama: 'Agus Salim', angkatan: 'TNI-AL', nik: '3273120105910200', pangkat: 'Lettu', gajiPokok: 3800000, status: 'Aktif' },
       { ktpa: 'ASB-2021-034567', nrp: '3273120105910201', nopens: '-', nama: 'Dewi Anggraini', angkatan: 'PNS', nik: '3273120105910201', pangkat: 'Penata Muda Tk.I', gajiPokok: 3100000, status: 'Aktif' },
       { ktpa: 'ASB-2017-056789', nrp: '3273120105910202', nopens: '-', nama: 'Firman Hidayat', angkatan: 'TNI-AU', nik: '3273120105910202', pangkat: 'Mayor', gajiPokok: 4600000, status: 'Aktif' },
       { ktpa: 'ASB-2022-089012', nrp: '3273120105910203', nopens: '-', nama: 'Gita Lestari', angkatan: 'POLRI', nik: '3273120105910203', pangkat: 'Brigadir', gajiPokok: 3300000, status: 'Aktif' },
       { ktpa: 'ASB-2016-023456', nrp: '3273120105910204', nopens: '-', nama: 'Hadi Purnomo', angkatan: 'TNI-AD', nik: '3273120105910204', pangkat: 'Letkol', gajiPokok: 5200000, status: 'Aktif' },
       { ktpa: 'ASB-2023-067890', nrp: '3273120105910205', nopens: '-', nama: 'Ika Ratnasari', angkatan: 'PNS', nik: '3273120105910205', pangkat: 'Pengatur', gajiPokok: 2600000, status: 'Aktif' },
+      { ktpa: 'KTPA-0001', nrp: '31800101', nopens: '-', nama: 'Budi Santoso (Peserta Cacat)', angkatan: 'TNI-AD', nik: '3201010101800001', pangkat: 'Serda', gajiPokok: 4200000, status: 'Aktif', tingkat_cacat: 'III', golongan_cacat: 'C' },
       { ktpa: 'ASB-1990-012345', nrp: '3273120105910206', nopens: '2019-045678', nama: 'Jauhari Anwar', angkatan: 'TNI-AD', nik: '3273120105910206', pangkat: 'Brigjen (Purn)', gajiPokok: 6500000, status: 'Pensiun' },
       { ktpa: 'ASB-1995-034567', nrp: '3273120105910207', nopens: '2020-056789', nama: 'Karmini Slamet', angkatan: 'PNS', nik: '3273120105910207', pangkat: 'Pembina (Purn)', gajiPokok: 5100000, status: 'Pensiun' },
       { ktpa: 'ASB-2000-056789', nrp: '3273120105910208', nopens: '2022-067890', nama: 'Lukman Hakim', angkatan: 'TNI-AL', nik: '3273120105910208', pangkat: 'Kapten (Purn)', gajiPokok: 4300000, status: 'Pensiun' },
@@ -495,32 +503,50 @@
     }));
 
     const DAFTAR_KEJADIAN = [
-      "Pensiun",
-      "Berhenti dengan Hak Tunjangan",
-      "Berhenti tanpa Hak Pensiun",
-      "Istri/Suami Meninggal Dunia",
-      "Anak Meninggal Dunia",
-      "Meninggal Dunia dalam Dinas Aktif",
-      "Kecelakaan Kerja — Dirawat",
-      "Kecelakaan Kerja — Meninggal Dunia",
-      "Kecelakaan Kerja — Cacat Tetap Bekerja",
-      "Kecelakaan Kerja — Cacat Pensiun",
-      "Pensiun Sendiri — Meninggal Dunia",
-      "Pensiun Sendiri — Istri/Suami Meninggal Dunia",
-      "Pensiun Sendiri — Anak Meninggal Dunia",
-      "Pensiun Warakawuri — Meninggal Dunia",
-      "Tunjangan Yatim/Piatu/Yatim-Piatu — Meninggal",
-      "Tunjangan Yatim/Piatu/Yatim-Piatu — Dewasa",
-      "Tunjangan Orang Tua — Meninggal",
-      "Beasiswa JKm",
-      "Beasiswa JKK",
-      "UKP Tanpa Perubahan Data",
-      "UKP Dengan Perubahan Data",
-      "UKP Pembayaran Tunjangan Cacat",
-      "UKP Kelebihan Potongan Hutang"
+      'Pensiun Pertama',
+      'Berhenti dengan Hak Tunjangan',
+      'Berhenti Tanpa Hak Pensiun',
+      'Istri/Suami Meninggal Dunia',
+      'Anak Meninggal Dunia',
+      'Meninggal Dunia Dalam Dinas Aktif',
+      'Kecelakaan Kerja - Meninggal Dunia (Gugur/Tewas)',
+      'Kecelakaan Kerja - Cacat',
+      'Pensiun Sendiri - Meninggal Dunia',
+      'Pensiun Sendiri - Istri/Suami Meninggal Dunia',
+      'Pensiun Sendiri - Anak Meninggal Dunia',
+      'Pensiun Warakawuri - Meninggal Dunia',
+      'Tunjangan Yatim/Piatu/YatimPiatu',
+      'Tunjangan Orang Tua',
+      'Beasiswa JKK/JKM',
+      'Uang Kekurangan Pensiun (UKP)',
     ];
 
 
+
+    const SUMBER_PENGAJUAN_CONFIG = {
+      'Kantor Cabang': {
+        badgeClass: 'bg-blue-50 border border-blue-200 text-blue-700',
+        icon: 'fa-building',
+        label: 'Kantor Cabang'
+      },
+      'ASABRI-Link': {
+        badgeClass: 'bg-emerald-50 border border-emerald-200 text-emerald-700',
+        icon: 'fa-mobile-screen-button',
+        label: 'ASABRI-Link'
+      }
+    };
+
+    function handleSumberPengajuanChange() {
+      const sumberEl = document.getElementById('sumber-pengajuan');
+      const badgeEl = document.getElementById('sumber-badge');
+      if (!sumberEl || !badgeEl) return;
+
+      const selected = sumberEl.value;
+      const config = SUMBER_PENGAJUAN_CONFIG[selected] || SUMBER_PENGAJUAN_CONFIG['Kantor Cabang'];
+
+      badgeEl.className = `inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full w-fit ${config.badgeClass}`;
+      badgeEl.innerHTML = `<i class="fas ${config.icon} text-[9px]"></i> ${config.label}`;
+    }
 
     function autoFillKantorCabang() {
       const userKancab = getCurrentUser().kantorCabang;
@@ -641,6 +667,10 @@
       
       if (!currentParticipant) return;
       
+      const selectedVisitorRadio = document.querySelector('input[name="tipe-pengunjung"]:checked');
+      const selectedVisitor = selectedVisitorRadio ? selectedVisitorRadio.value : "Peserta";
+      const isPesertaSendiri = (selectedVisitor === "Peserta");
+
       DAFTAR_KEJADIAN.forEach(item => {
         const opt = document.createElement("option");
         opt.value = item;
@@ -981,6 +1011,8 @@
       } else if (selectedType === "Belum Terdaftar") {
         secBelumTerdaftar.classList.remove("hidden");
       }
+
+      updateJenisKejadianDropdown();
     }
 
     function populateFamilyTable() {
@@ -1250,12 +1282,14 @@
       const user = getCurrentUser();
       const regNo = generateNomorRegistrasi(user.kodeKancab);
 
+      const sumberPengajuanVal = document.getElementById("sumber-pengajuan")?.value || "Kantor Cabang";
+
       // Assemble state data to save
       const registrationState = {
         noAgenda: regNo,
         peserta: currentParticipant,
         tipePengunjung: visitorData,
-        sumberPengajuan: "Kantor Cabang",
+        sumberPengajuan: sumberPengajuanVal,
         kantorCabang: document.getElementById("kantor-cabang").value,
         jenisKejadian: jenisKejadian,
         status: currentParticipant.isManual ? "PENDING" : "Diterima",

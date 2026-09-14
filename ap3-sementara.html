@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI - YANDU NG (Daftar AP3 Sementara)</title>
+  <meta name="description" content="Daftar AP3 Sementara — Perbandingan DAPEM peserta ASABRI.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="sidebar.js"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { asabri: { blue: '#0141A8', blueDark: '#01358C' } }, fontFamily: { sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'] } } }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:#f1f5f9}::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+    th.sortable{cursor:pointer;user-select:none}th.sortable:hover{background-color:#e2e8f0}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}.animate-fade-in{animation:fadeIn 0.25s ease}
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        <div class="h-8 w-px bg-white/20"></div>
+        <button id="sidebar-toggle" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors text-base"><i class="fas fa-bars"></i></button>
+        <div class="flex flex-col ml-1">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">HIGH DENSITY MANAGEMENT SYSTEM</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-semibold text-white tracking-wide">ROLE : Staf KANCAB</span>
+      </div>
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">SK</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">SK | Staf Kancab Utama</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19930708001</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex flex-1 overflow-hidden">
+    <div id="sidebar"></div>
+    <script>renderSidebar('perbandingan-dapem');</script>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+          <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="text-slate-500">11. Perbandingan DAPEM</span>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="font-bold text-asabri-blue">Daftar AP3 Sementara</span>
+        </div>
+        <div class="flex items-center gap-1 bg-slate-100 rounded-xl p-1">
+          <a href="ap3-sementara.html" class="px-4 py-1.5 rounded-lg text-xs font-bold bg-asabri-blue text-white shadow transition-all"><i class="fas fa-table-list mr-1.5"></i>AP3 Sementara</a>
+          <a href="daftar-pensiun.html" class="px-4 py-1.5 rounded-lg text-xs font-bold text-slate-500 hover:bg-white hover:text-asabri-blue transition-all"><i class="fas fa-users mr-1.5"></i>Daftar Pensiun</a>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-5">
+        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+
+          <!-- Header -->
+          <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-indigo-50/30 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-600/10 border border-indigo-600/20 text-indigo-700 flex items-center justify-center text-xl shadow-sm">
+                <i class="fas fa-scale-balanced"></i>
+              </div>
+              <div>
+                <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">Daftar AP3 Sementara</h1>
+                <p class="text-xs font-medium text-slate-500">Perbandingan DAPEM — Generate, sesuaikan, dan kelola hutang dapem &amp; polis peserta ASABRI.</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button onclick="openModal('modal-generate-ulang')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                <i class="fas fa-rotate text-xs"></i> Generate Ulang AP3
+              </button>
+              <button onclick="openModal('modal-generate-nopens')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                <i class="fas fa-user-gear text-xs"></i> Generate per Nopens
+              </button>
+              <button onclick="handleSimpanYarali()" class="bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                <i class="fas fa-floppy-disk text-xs"></i> Simpan ke AP3 Yar Ali
+              </button>
+              <button onclick="openModal('modal-potong-dapem')" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                <i class="fas fa-scissors text-xs"></i> Potong Hutang Dapem
+              </button>
+              <button onclick="openModal('modal-potong-polis')" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                <i class="fas fa-file-circle-minus text-xs"></i> Potong Hutang Polis
+              </button>
+              <button onclick="handleUnduhExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                <i class="fas fa-file-excel text-xs"></i> Unduh Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter Bar -->
+          <div class="bg-slate-50/60 px-6 py-4 border-b border-slate-200/60">
+            <div class="flex flex-wrap items-end gap-3">
+              <div class="flex flex-col gap-1 min-w-[150px]">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Nopens</label>
+                <input type="text" id="filter-nopens" oninput="renderTable()" placeholder="Cari nopens..." class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+              </div>
+              <div class="flex flex-col gap-1 min-w-[160px]">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Cabang</label>
+                <select id="filter-cabang" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+                  <option value="">Semua Cabang</option>
+                  <option>KC Utama Jakarta</option><option>KC Bandung</option><option>KANCAB AMBON</option><option>KC Surabaya</option><option>KC Medan</option><option>KC Makassar</option><option>KC Denpasar</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-1 min-w-[180px]">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Status Hutang</label>
+                <select id="filter-status-hutang" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+                  <option value="">Semua</option><option value="hutang">Memiliki Hutang</option><option value="tidak">Tidak Memiliki Hutang</option>
+                </select>
+              </div>
+              <div class="flex flex-col gap-1 min-w-[220px]">
+                <label class="text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">Tipe AP3</label>
+                <select id="filter-tipe" onchange="renderTable()" class="bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue shadow-inner">
+                  <option value="">Semua Tipe</option><option>AP3 Sementara Bulan Depan</option><option>AP3 Sementara Bulan Sebelumnya</option><option>Perbandingan</option>
+                </select>
+              </div>
+              <button onclick="resetFilter()" class="px-4 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-500 hover:border-slate-300 hover:text-slate-700 transition-all flex items-center gap-1.5 self-end">
+                <i class="fas fa-filter-circle-xmark"></i> Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- Stats + Search -->
+          <div class="bg-white px-6 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div class="relative w-full max-w-xs">
+              <i class="fas fa-search absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+              <input type="text" id="search-input" oninput="renderTable()" placeholder="Cari nopens, bank, cabang..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+            </div>
+            <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
+              <div class="bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-xl">Total: <span class="font-extrabold text-asabri-blue" id="stat-total">0</span></div>
+              <div class="bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-xl">Jml Bruto: <span class="font-extrabold text-asabri-blue font-mono" id="stat-bruto">Rp 0</span></div>
+              <div class="bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-xl">Pot Hutang: <span class="font-extrabold text-rose-700 font-mono" id="stat-pot-hutang">Rp 0</span></div>
+              <div class="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl">Jml Netto: <span class="font-extrabold text-emerald-700 font-mono" id="stat-netto">Rp 0</span></div>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse min-w-[1300px]">
+              <thead>
+                <tr class="bg-slate-100/90 text-slate-700 font-extrabold text-[11px] uppercase tracking-wider border-b border-slate-200">
+                  <th onclick="sortTable('blnByr')" class="py-3.5 px-3 sortable whitespace-nowrap">Blnbyr <span id="sort-blnByr"></span></th>
+                  <th onclick="sortTable('cabang')" class="py-3.5 px-3 sortable whitespace-nowrap">Cabang <span id="sort-cabang"></span></th>
+                  <th onclick="sortTable('nopens')" class="py-3.5 px-3 sortable whitespace-nowrap">Nopens <span id="sort-nopens"></span></th>
+                  <th onclick="sortTable('kodeJiwa')" class="py-3.5 px-3 sortable whitespace-nowrap">Kode Jiwa <span id="sort-kodeJiwa"></span></th>
+                  <th onclick="sortTable('noRekening')" class="py-3.5 px-3 sortable whitespace-nowrap">No Rekening <span id="sort-noRekening"></span></th>
+                  <th onclick="sortTable('bank')" class="py-3.5 px-3 sortable whitespace-nowrap">Bank <span id="sort-bank"></span></th>
+                  <th onclick="sortTable('branch')" class="py-3.5 px-3 sortable whitespace-nowrap">Branch <span id="sort-branch"></span></th>
+                  <th onclick="sortTable('jmlBruto')" class="py-3.5 px-3 text-right sortable whitespace-nowrap bg-blue-50/50 text-asabri-blue">Jml Bruto <span id="sort-jmlBruto"></span></th>
+                  <th onclick="sortTable('potHutang')" class="py-3.5 px-3 text-right sortable whitespace-nowrap text-rose-700">Pot Hutang <span id="sort-potHutang"></span></th>
+                  <th onclick="sortTable('jmlNetto')" class="py-3.5 px-3 text-right sortable whitespace-nowrap bg-emerald-50/50 text-emerald-800">Jml Netto <span id="sort-jmlNetto"></span></th>
+                  <th class="py-3.5 px-3 text-center whitespace-nowrap">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="ap3-table-body" class="divide-y divide-slate-100 font-medium"></tbody>
+            </table>
+          </div>
+
+          <div id="empty-state" class="hidden p-12 text-center space-y-3">
+            <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto text-2xl"><i class="fas fa-folder-open"></i></div>
+            <h3 class="text-sm font-bold text-slate-700">Tidak ada data AP3 Sementara</h3>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">Tidak ditemukan data yang sesuai dengan filter yang diterapkan.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: Generate Ulang AP3 -->
+  <div id="modal-generate-ulang" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-slate-200 w-full max-w-md shadow-2xl animate-fade-in">
+      <div class="px-6 py-4 bg-asabri-blue text-white flex items-center justify-between rounded-t-3xl">
+        <h3 class="text-sm font-bold flex items-center gap-2"><i class="fas fa-rotate"></i> Generate Ulang AP3 Sementara</h3>
+        <button onclick="closeModal('modal-generate-ulang')" class="text-white/80 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="p-6 space-y-4">
+        <p class="text-xs text-slate-600 font-medium leading-relaxed">Proses ini akan men-generate ulang data AP3 Sementara untuk <strong>semua peserta</strong> berdasarkan data terkini.</p>
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Bulan Bayar <span class="text-rose-500">*</span></label>
+          <input type="month" id="gen-bln-bayar" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-asabri-blue">
+        </div>
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tipe AP3</label>
+          <select id="gen-tipe" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-asabri-blue">
+            <option>AP3 Sementara Bulan Depan</option><option>AP3 Sementara Bulan Sebelumnya</option><option>Perbandingan</option>
+          </select>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3.5 flex items-start gap-3">
+          <i class="fas fa-triangle-exclamation text-amber-500 mt-0.5"></i>
+          <p class="text-xs font-semibold text-amber-800">Data AP3 Sementara yang sudah ada akan diganti. Proses tidak dapat dibatalkan.</p>
+        </div>
+        <div class="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+          <button onclick="closeModal('modal-generate-ulang')" class="px-5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+          <button onclick="handleGenerateUlang()" class="px-5 py-2 rounded-xl bg-asabri-blue hover:bg-asabri-blueDark text-white text-xs font-bold shadow-md flex items-center gap-1.5"><i class="fas fa-play-circle"></i> Proses Generate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Generate per Nopens -->
+  <div id="modal-generate-nopens" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-indigo-200 w-full max-w-md shadow-2xl animate-fade-in">
+      <div class="px-6 py-4 bg-indigo-600 text-white flex items-center justify-between rounded-t-3xl">
+        <h3 class="text-sm font-bold flex items-center gap-2"><i class="fas fa-user-gear"></i> Generate Ulang per Nopens</h3>
+        <button onclick="closeModal('modal-generate-nopens')" class="text-white/80 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Nopens <span class="text-rose-500">*</span></label>
+          <input type="text" id="gen-nopens-input" placeholder="Contoh: NOP-998821 (pisah koma untuk beberapa)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-indigo-500">
+        </div>
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Bulan Bayar <span class="text-rose-500">*</span></label>
+          <input type="month" id="gen-nopens-bln" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-indigo-500">
+        </div>
+        <div class="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+          <button onclick="closeModal('modal-generate-nopens')" class="px-5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+          <button onclick="handleGenerateNopens()" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5"><i class="fas fa-play-circle"></i> Proses</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Potong Hutang Dapem -->
+  <div id="modal-potong-dapem" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-amber-200 w-full max-w-md shadow-2xl animate-fade-in">
+      <div class="px-6 py-4 bg-amber-600 text-white flex items-center justify-between rounded-t-3xl">
+        <h3 class="text-sm font-bold flex items-center gap-2"><i class="fas fa-scissors"></i> Potong Hutang Dapem</h3>
+        <button onclick="closeModal('modal-potong-dapem')" class="text-white/80 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Bulan Bayar <span class="text-rose-500">*</span></label>
+          <input type="month" id="potong-dapem-bln" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-amber-500">
+        </div>
+        <div class="bg-rose-50 border-2 border-rose-400 p-3.5 rounded-2xl flex items-start gap-3">
+          <div class="w-7 h-7 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 text-sm font-bold">⚠️</div>
+          <div>
+            <h4 class="text-xs font-extrabold text-rose-800 uppercase tracking-wider mb-0.5">PERINGATAN PENTING</h4>
+            <p class="text-xs font-bold text-rose-700 leading-snug">Pastikan bulan bayar yang dipilih sudah benar. Proses ini tidak dapat dibatalkan.</p>
+          </div>
+        </div>
+        <div class="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+          <button onclick="closeModal('modal-potong-dapem')" class="px-5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+          <button onclick="handlePotongDapem()" class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5"><i class="fas fa-check-circle"></i> Proses Potong Dapem</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Potong Hutang Polis -->
+  <div id="modal-potong-polis" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl border border-rose-200 w-full max-w-md shadow-2xl animate-fade-in">
+      <div class="px-6 py-4 bg-rose-600 text-white flex items-center justify-between rounded-t-3xl">
+        <h3 class="text-sm font-bold flex items-center gap-2"><i class="fas fa-file-circle-minus"></i> Potong Hutang Polis</h3>
+        <button onclick="closeModal('modal-potong-polis')" class="text-white/80 hover:text-white"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Bulan Bayar <span class="text-rose-500">*</span></label>
+          <input type="month" id="potong-polis-bln" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-rose-500">
+        </div>
+        <div>
+          <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Nomor Polis / Keterangan</label>
+          <input type="text" id="potong-polis-no" placeholder="Opsional: nomor polis atau keterangan" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:border-rose-500">
+        </div>
+        <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3.5 flex items-start gap-3">
+          <i class="fas fa-triangle-exclamation text-rose-500 mt-0.5"></i>
+          <p class="text-xs font-semibold text-rose-800">Pemotongan hutang polis bersifat permanen. Pastikan data polis sudah terverifikasi.</p>
+        </div>
+        <div class="pt-2 flex items-center justify-end gap-3 border-t border-slate-100">
+          <button onclick="closeModal('modal-potong-polis')" class="px-5 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+          <button onclick="handlePotongPolis()" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md flex items-center gap-1.5"><i class="fas fa-check-circle"></i> Proses Potong Polis</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="shared.js"></script>
+  <script>
+    const DATA_AP3 = [
+      { blnByr:'202610', cabang:'KC Utama Jakarta', nopens:'NOP-998821', kodeJiwa:'1 - Peserta Sendiri', noRekening:'1240001234567', bank:'BANK MANDIRI', branch:'KC Thamrin', jmlBruto:5200000, potHutang:350000, jmlNetto:4850000, statusHutang:'hutang', tipe:'AP3 Sementara Bulan Depan' },
+      { blnByr:'202610', cabang:'KC Bandung', nopens:'NOP-998822', kodeJiwa:'2 - Warakawuri/Duda', noRekening:'0087654321098', bank:'BANK BNI', branch:'KC Bandung Perintis', jmlBruto:3800000, potHutang:0, jmlNetto:3800000, statusHutang:'tidak', tipe:'AP3 Sementara Bulan Depan' },
+      { blnByr:'202610', cabang:'KANCAB AMBON', nopens:'NOP-998823', kodeJiwa:'1 - Peserta Sendiri', noRekening:'0093456789012', bank:'BANK BRI', branch:'KC Ambon Utama', jmlBruto:4600000, potHutang:200000, jmlNetto:4400000, statusHutang:'hutang', tipe:'AP3 Sementara Bulan Depan' },
+      { blnByr:'202610', cabang:'KC Surabaya', nopens:'NOP-998824', kodeJiwa:'3 - Yatim-Piatu', noRekening:'1127890123456', bank:'BANK BTN', branch:'KC Surabaya Selatan', jmlBruto:2900000, potHutang:120000, jmlNetto:2780000, statusHutang:'hutang', tipe:'Perbandingan' },
+      { blnByr:'202609', cabang:'KC Medan', nopens:'NOP-998825', kodeJiwa:'1 - Peserta Sendiri', noRekening:'0056123098765', bank:'BANK MANDIRI', branch:'KC Medan Merdeka', jmlBruto:6100000, potHutang:0, jmlNetto:6100000, statusHutang:'tidak', tipe:'AP3 Sementara Bulan Sebelumnya' },
+      { blnByr:'202609', cabang:'KC Makassar', nopens:'NOP-998826', kodeJiwa:'4 - Orang Tua', noRekening:'0071234567890', bank:'BANK BRI', branch:'KC Makassar Ahmad Yani', jmlBruto:3300000, potHutang:450000, jmlNetto:2850000, statusHutang:'hutang', tipe:'AP3 Sementara Bulan Sebelumnya' },
+      { blnByr:'202609', cabang:'KC Denpasar', nopens:'NOP-998827', kodeJiwa:'1 - Peserta Sendiri', noRekening:'0084567890123', bank:'BANK BNI', branch:'KC Denpasar Renon', jmlBruto:5750000, potHutang:0, jmlNetto:5750000, statusHutang:'tidak', tipe:'Perbandingan' },
+      { blnByr:'202610', cabang:'KC Utama Jakarta', nopens:'NOP-998828', kodeJiwa:'2 - Warakawuri/Duda', noRekening:'1240009876543', bank:'BANK MANDIRI', branch:'KC Sudirman', jmlBruto:4150000, potHutang:175000, jmlNetto:3975000, statusHutang:'hutang', tipe:'AP3 Sementara Bulan Depan' },
+      { blnByr:'202610', cabang:'KC Bandung', nopens:'NOP-998829', kodeJiwa:'1 - Peserta Sendiri', noRekening:'0089012345678', bank:'BANK BNI', branch:'KC Bandung Asia Afrika', jmlBruto:7200000, potHutang:0, jmlNetto:7200000, statusHutang:'tidak', tipe:'AP3 Sementara Bulan Depan' },
+      { blnByr:'202609', cabang:'KC Surabaya', nopens:'NOP-998830', kodeJiwa:'3 - Yatim-Piatu', noRekening:'1122233344455', bank:'BANK BTN', branch:'KC Surabaya Utara', jmlBruto:2100000, potHutang:300000, jmlNetto:1800000, statusHutang:'hutang', tipe:'Perbandingan' },
+    ];
+
+    let sortCol='', sortAsc=true;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
+        const s = document.getElementById('sidebar-nav');
+        if (s) { s.classList.toggle('w-0'); s.classList.toggle('overflow-hidden'); }
+      });
+      const now = new Date();
+      const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+      ['gen-bln-bayar','gen-nopens-bln','potong-dapem-bln','potong-polis-bln'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.value = ym;
+      });
+      renderTable();
+    });
+
+    function fmt(v){ return 'Rp '+Number(v||0).toLocaleString('id-ID'); }
+
+    function resetFilter(){
+      ['filter-nopens','search-input'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      ['filter-cabang','filter-status-hutang','filter-tipe'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+      renderTable();
+    }
+
+    function sortTable(c){ if(sortCol===c){sortAsc=!sortAsc;}else{sortCol=c;sortAsc=true;} renderTable(); }
+
+    function renderTable(){
+      const tbody=document.getElementById('ap3-table-body');
+      const empt=document.getElementById('empty-state');
+      const fN=document.getElementById('filter-nopens').value.trim().toLowerCase();
+      const fC=document.getElementById('filter-cabang').value;
+      const fH=document.getElementById('filter-status-hutang').value;
+      const fT=document.getElementById('filter-tipe').value;
+      const fS=document.getElementById('search-input').value.trim().toLowerCase();
+
+      let filtered=DATA_AP3.filter(r=>{
+        if(fN&&!r.nopens.toLowerCase().includes(fN))return false;
+        if(fC&&r.cabang!==fC)return false;
+        if(fH&&r.statusHutang!==fH)return false;
+        if(fT&&r.tipe!==fT)return false;
+        if(fS){const s=fS;return(r.nopens+r.cabang+r.kodeJiwa+r.bank+r.branch+r.noRekening+r.blnByr).toLowerCase().includes(s);}
+        return true;
+      });
+
+      if(sortCol){
+        filtered.sort((a,b)=>{
+          let vA=a[sortCol],vB=b[sortCol];
+          if(typeof vA==='string'){vA=vA.toLowerCase();vB=vB.toLowerCase();}
+          return vA<vB?(sortAsc?-1:1):vA>vB?(sortAsc?1:-1):0;
+        });
+      }
+
+      const cols=['blnByr','cabang','nopens','kodeJiwa','noRekening','bank','branch','jmlBruto','potHutang','jmlNetto'];
+      cols.forEach(c=>{const el=document.getElementById(`sort-${c}`);if(el)el.innerText=(sortCol===c)?(sortAsc?'▲':'▼'):'';});
+
+      document.getElementById('stat-total').innerText=filtered.length;
+      document.getElementById('stat-bruto').innerText=fmt(filtered.reduce((s,r)=>s+r.jmlBruto,0));
+      document.getElementById('stat-pot-hutang').innerText=fmt(filtered.reduce((s,r)=>s+r.potHutang,0));
+      document.getElementById('stat-netto').innerText=fmt(filtered.reduce((s,r)=>s+r.jmlNetto,0));
+
+      if(!filtered.length){tbody.innerHTML='';empt.classList.remove('hidden');return;}
+      empt.classList.add('hidden');
+
+      function jiwaClass(k){
+        if(k.includes('1 -'))return 'bg-blue-100 text-blue-800';
+        if(k.includes('2 -'))return 'bg-purple-100 text-purple-800';
+        if(k.includes('3 -'))return 'bg-amber-100 text-amber-800';
+        if(k.includes('4 -'))return 'bg-teal-100 text-teal-800';
+        return 'bg-slate-100 text-slate-700';
+      }
+
+      tbody.innerHTML=filtered.map(r=>`
+        <tr class="hover:bg-indigo-50/30 transition-colors">
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.blnByr}</td>
+          <td class="py-3 px-3 text-slate-700 font-semibold text-[11px]">${r.cabang}</td>
+          <td class="py-3 px-3 font-mono text-[11px] text-asabri-blue font-bold">${r.nopens}</td>
+          <td class="py-3 px-3"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${jiwaClass(r.kodeJiwa)}">${r.kodeJiwa}</span></td>
+          <td class="py-3 px-3 font-mono text-[11px] text-slate-600">${r.noRekening}</td>
+          <td class="py-3 px-3 font-semibold text-slate-700 text-[11px]">${r.bank}</td>
+          <td class="py-3 px-3 text-slate-600 text-[11px]">${r.branch}</td>
+          <td class="py-3 px-3 text-right font-mono font-bold text-asabri-blue bg-blue-50/30">${r.jmlBruto.toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-right font-mono font-bold ${r.potHutang>0?'text-rose-700':'text-slate-400'}">${r.potHutang>0?r.potHutang.toLocaleString('id-ID'):'—'}</td>
+          <td class="py-3 px-3 text-right font-mono font-black text-emerald-800 bg-emerald-50/30">${r.jmlNetto.toLocaleString('id-ID')}</td>
+          <td class="py-3 px-3 text-center">
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="handleSesuaikan('${r.nopens}')" class="px-3 py-1.5 rounded-lg bg-asabri-blue hover:bg-asabri-blueDark text-white text-[10px] font-bold transition-all shadow-sm flex items-center gap-1"><i class="fas fa-sliders"></i> Sesuaikan</button>
+              <button onclick="handleHitungUlang('${r.nopens}')" class="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold transition-all flex items-center gap-1"><i class="fas fa-calculator"></i> Hitung Ulang</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function handleSesuaikan(nopens){ window.location.href=`daftar-pensiun.html?nopens=${encodeURIComponent(nopens)}`; }
+    function handleHitungUlang(nopens){
+      if(confirm(`Hitung ulang data AP3 Sementara untuk Nopens: ${nopens}?\n\nProses ini akan menghitung ulang komponen bruto dan netto berdasarkan data DAPEM terkini.`)){
+        alert(`✅ Hitung ulang untuk Nopens ${nopens} berhasil diproses.`);
+      }
+    }
+    function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+    function handleGenerateUlang(){
+      const bln=document.getElementById('gen-bln-bayar').value;
+      const tipe=document.getElementById('gen-tipe').value;
+      if(!bln){alert('Harap pilih Bulan Bayar.');return;}
+      closeModal('modal-generate-ulang');
+      alert(`✅ Generate Ulang AP3 Sementara untuk Bulan Bayar ${bln.replace('-','')} (${tipe}) berhasil diproses. Data telah diperbarui.`);
+      renderTable();
+    }
+    function handleGenerateNopens(){
+      const nopens=document.getElementById('gen-nopens-input').value.trim();
+      const bln=document.getElementById('gen-nopens-bln').value;
+      if(!nopens||!bln){alert('Harap isi Nopens dan Bulan Bayar.');return;}
+      closeModal('modal-generate-nopens');
+      alert(`✅ Generate Ulang AP3 Sementara untuk Nopens: ${nopens}\nBulan Bayar: ${bln.replace('-','')}\n\nProses berhasil.`);
+      renderTable();
+    }
+    function handleSimpanYarali(){
+      if(confirm('Simpan data AP3 Sementara yang tampil saat ini ke AP3 Yar Ali?\n\nData yang tersimpan tidak dapat diubah kembali ke status sementara.')){
+        alert('✅ Data AP3 Sementara berhasil disimpan ke AP3 Yar Ali.');
+      }
+    }
+    function handlePotongDapem(){
+      const bln=document.getElementById('potong-dapem-bln').value;
+      if(!bln){alert('Harap pilih Bulan Bayar.');return;}
+      closeModal('modal-potong-dapem');
+      alert(`✅ Pemotongan Hutang Dapem untuk Bulan Bayar ${bln.replace('-','')} berhasil diproses.`);
+    }
+    function handlePotongPolis(){
+      const bln=document.getElementById('potong-polis-bln').value;
+      if(!bln){alert('Harap pilih Bulan Bayar.');return;}
+      closeModal('modal-potong-polis');
+      alert(`✅ Pemotongan Hutang Polis untuk Bulan Bayar ${bln.replace('-','')} berhasil diproses.`);
+    }
+    function handleUnduhExcel(){ alert('📥 Mengunduh data AP3 Sementara ke format Excel...\n\n(Fitur aktif di lingkungan produksi)'); }
+  </script>
+</body>
+</html>

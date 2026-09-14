@@ -1227,7 +1227,7 @@
       const tahun = now.getFullYear();
       const noUrut = customNoUrut !== null ? customNoUrut : getNoUrut(kode);
 
-      return `REG/${kode}/${kodeKancab}/${bulan}/${tahun}/${String(noUrut).padStart(5, '0')}`;
+      return `REG/${String(noUrut).padStart(5, '0')}/${kode}/${kodeKancab}/${bulan}/${tahun}`;
     }
 
     // Master data pengajuan khusus sesuai kolom yang ditentukan (Setiap layanan memiliki counter terpisah dari 00001)
