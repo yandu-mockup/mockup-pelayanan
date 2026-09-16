@@ -120,3 +120,18 @@ body .shadow-md{box-shadow:var(--shadow-panel)}
   padding:12px; border-top:1px solid var(--line-soft); background:rgba(248,250,252,.5);
   font-size:10px; color:#9ca3af; text-align:center;
 }
+
+/* Custom Minimalist Scrollbar for Sidebar Navigation */
+#sidebar-nav nav::-webkit-scrollbar {
+  width: 5px;
+}
+#sidebar-nav nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+#sidebar-nav nav::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+#sidebar-nav nav::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

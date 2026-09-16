@@ -63,7 +63,19 @@ function renderSidebar(activePage) {
         { label: 'Riwayat Interaksi', href: 'komunikasi-riwayat.html' }
       ]
     },
-    { id: 'request-umum', label: '12. Request Umum', icon: 'fas fa-envelope-open-text', href: 'request-umum.html', subMenu: [] }
+    { id: 'request-umum', label: '12. Request Umum', icon: 'fas fa-envelope-open-text', href: 'request-umum.html', subMenu: [] },
+    { id: 'sejarah-sp', label: '13. Sejarah SP', icon: 'fas fa-clock-rotate-left', href: 'sejarah-sp.html', subMenu: [] },
+    { id: 'rekap-waktu-layanan', label: '14. Rekap Waktu Layanan', icon: 'fas fa-chart-line', href: 'rekap-waktu-layanan.html', subMenu: [] },
+    {
+      id: 'monitoring-sp3r',
+      label: '15. Monitoring SP3R',
+      icon: 'fas fa-chart-pie',
+      href: '#',
+      subMenu: [
+        { label: 'Monitoring SP3R', href: 'monitoring-sp3r.html' },
+        { label: 'Data Nominatif Peserta', href: 'nominatif-peserta.html' }
+      ]
+    }
   ];
 
   const currentFullUrl = window.location.pathname.split('/').pop() + window.location.search;
@@ -118,17 +130,17 @@ function renderSidebar(activePage) {
   const collapsedClass = isCollapsed ? " w-0 overflow-hidden" : "";
 
   const containerHTML = `
-    <aside id="sidebar-nav" class="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 transition-all duration-300${collapsedClass}">
-      <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto">
+    <aside id="sidebar-nav" class="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0 transition-all duration-300 h-full overflow-hidden${collapsedClass}">
+      <nav class="flex-1 p-3 space-y-0.5 overflow-y-auto min-h-0">
         <p class="nav-section px-2.5 pt-1 pb-2">Menu Layanan</p>${sidebarHTML}
       </nav>
-      <div class="sidebar-foot">ASABRI YANDU NG v1.2.0</div>
+      <div class="sidebar-foot flex-shrink-0">ASABRI YANDU NG v1.2.0</div>
     </aside>
   `;
 
   const sidebarContainer = document.getElementById('sidebar');
   if (sidebarContainer) {
-    sidebarContainer.className = "h-full flex flex-col flex-shrink-0";
+    sidebarContainer.className = "h-full flex flex-col flex-shrink-0 overflow-hidden";
     sidebarContainer.innerHTML = containerHTML;
   }
 }

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI YANDU - Rekap Waktu Layanan</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- SheetJS CDN for Excel Generation -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Sidebar & Shared Components -->
+  <script src="sidebar.js"></script>
+  <script src="data.js"></script>
+  <script src="shared.js?v=1.0.1"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asabri: { blue: '#0141A8', blueDark: '#01358C', gold: '#FFDE24', softBlue: '#F8FAFC', textDark: '#0F172A' }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'],
+            mono: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+
+  <!-- TOPBAR / HEADER BAR -->
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center">
+          <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        </div>
+        <div class="h-8 w-px bg-white/20"></div>
+        <button id="sidebar-toggle" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors text-base">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="flex flex-col ml-1">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">SLA & REKAP WAKTU LAYANAN</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right-side Topbar Controls -->
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-semibold text-white tracking-wide">ROLE : KAKANCAB / KABID LAYANAN</span>
+      </div>
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">RW</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">Staf Analis SLA</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19910410012</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTAINER -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR: Navigation Panel -->
+    <div id="sidebar"></div>
+    <script>
+      renderSidebar('rekap-waktu-layanan');
+    </script>
+
+    <!-- CONTENT CONTAINER -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- BREADCRUMB BAR -->
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+          <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="font-bold text-asabri-blue">14. Rekap Waktu Layanan</span>
+        </div>
+      </div>
+
+      <!-- WORKSPACE PANELS -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/50 flex flex-col justify-start">
+
+        <!-- HEADER & DESCRIPTION -->
+        <div>
+          <h1 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+            <i class="fas fa-stopwatch text-asabri-blue"></i> Rekap Waktu Layanan (SLA)
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">Generate dan unduh laporan SLA kecepatan penyelesaian klaim dalam format Excel.</p>
+        </div>
+
+        <!-- FILTER & CETAK PANEL -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-6 max-w-4xl">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+              <i class="fas fa-sliders text-asabri-blue"></i> Parameter Laporan Waktu Layanan
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Cetak <span class="text-rose-500">*</span></label>
+              <select id="filter-cetak" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-asabri-blue transition-colors">
+                <option value="Rekap Waktu Layan Global">Rekap Waktu Layan Global</option>
+                <option value="Rekap Waktu Layan Per Kejadian">Rekap Waktu Layan Per Kejadian</option>
+                <option value="Nominatif Waktu Layan">Nominatif Waktu Layan</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Periode Awal <span class="text-rose-500">*</span></label>
+              <input type="date" id="filter-periode-awal" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-asabri-blue transition-colors" value="2026-09-01">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 mb-1">Periode Akhir <span class="text-rose-500">*</span></label>
+              <input type="date" id="filter-periode-akhir" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-800 outline-none focus:border-asabri-blue transition-colors" value="2026-09-14">
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-end">
+            <button onclick="cetakExcel()" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/20 flex items-center gap-2">
+              <i class="fas fa-file-excel text-base"></i> Cetak (Export Excel)
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // LIST 33 KANCAB ASABRI (KC01 s.d KC33)
+    const LIST_33_KANCAB = [
+      "KC01 KCU JAKARTA", "KC02 KC MEDAN", "KC03 KC SURABAYA", "KC04 KC BANDUNG", "KC05 KC SEMARANG",
+      "KC06 KC MAKASSAR", "KC07 KC PALEMBANG", "KC08 KC BALIKPAPAN", "KC09 KC AMBON", "KC10 KC JAYAPURA",
+      "KC11 KC DENPASAR", "KC12 KC MANADO", "KC13 KC PADANG", "KC14 KC PEKANBARU", "KC15 KC LAMPUNG",
+      "KC16 KC BANJARMASIN", "KC17 KC PONTIANAK", "KC18 KC KUPANG", "KC19 KC MATARAM", "KC20 KC YOGYAKARTA",
+      "KC21 KC SURAKARTA", "KC22 KC CIREBON", "KC23 KC SERANG", "KC24 KC BOGOR", "KC25 KC JAMBI",
+      "KC26 KC BENGKULU", "KC27 KC ACEH", "KC28 KC PALU", "KC29 KC KENDARI", "KC30 KC GORONTALO",
+      "KC31 KC TERNATE", "KC32 KC MANOKWARI", "KC33 KC SORONG"
+    ];
+
+    // LIST 17 KEJADIAN UNTUK OPTION PER KEJADIAN
+    const LIST_KEJADIAN = [
+      "Pensiun Sendiri TNI", "Pensiun Sendiri POLRI", "Pensiun Warakawuri", "Tunjangan Yatim Piatu",
+      "Tunjangan Orang Tua", "Tabungan Hari Tua (THT)", "JKK Santunan Meninggal Operasional",
+      "JKK Santunan Cacat", "JKK Perawatan Restitusi", "JKK Perawatan Jaminan", "JKM Santunan Kematian",
+      "Beasiswa Anak", "UDW Pemakaman", "Pensiun Pertama ASN Kemhan", "UKP Pangkat Penghargaan",
+      "Biaya Pemakaman JKK", "Pengembalian Nilai Tunai Asuransi"
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Toggle sidebar functionality
+      document.getElementById("sidebar-toggle")?.addEventListener("click", () => {
+        const sidebarNav = document.getElementById("sidebar-nav");
+        if (sidebarNav) {
+          sidebarNav.classList.toggle("w-0");
+          sidebarNav.classList.toggle("overflow-hidden");
+        }
+      });
+    });
+
+    function formatDateIndo(dateStr) {
+      if (!dateStr) return "-";
+      const parts = dateStr.split("-");
+      if (parts.length === 3) {
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      return dateStr;
+    }
+
+    function generateGlobalData() {
+      return LIST_33_KANCAB.map((kancab, idx) => {
+        const h01 = Math.floor(Math.random() * 40) + 15;
+        const h14 = Math.floor(Math.random() * 8) + 1;
+        const h48 = Math.floor(Math.random() * 4);
+        const h82d = Math.floor(Math.random() * 2);
+        const h2dPlus = idx % 7 === 0 ? 1 : 0;
+        const total = h01 + h14 + h48 + h82d + h2dPlus;
+
+        return {
+          kantor: kancab,
+          h01: h01,
+          h14: h14,
+          h48: h48,
+          h82d: h82d,
+          h2dPlus: h2dPlus,
+          total: total
+        };
+      });
+    }
+
+    function generateKejadianData() {
+      return LIST_KEJADIAN.map((kejadian, idx) => {
+        const h01 = Math.floor(Math.random() * 50) + 20;
+        const h14 = Math.floor(Math.random() * 10) + 2;
+        const h48 = Math.floor(Math.random() * 5);
+        const h82d = Math.floor(Math.random() * 3);
+        const h2dPlus = idx % 5 === 0 ? 1 : 0;
+        const total = h01 + h14 + h48 + h82d + h2dPlus;
+
+        return {
+          kejadian: kejadian,
+          h01: h01,
+          h14: h14,
+          h48: h48,
+          h82d: h82d,
+          h2dPlus: h2dPlus,
+          total: total
+        };
+      });
+    }
+
+    function generateNominatifData() {
+      const names = ["Sutrisno", "Bambang Herman", "Agus Prasetyo", "Dewi Lestari", "Hendra Gunawan", "Siti Aminah", "Rian Hidayat", "Sri Wahyuni", "Eko Prasetyo", "Budi Santoso"];
+      const dummyNominatif = [];
+
+      for (let i = 1; i <= 25; i++) {
+        const nama = names[i % names.length] + ` (${i})`;
+        const ktpa = `KTPA-2026-${String(i).padStart(4, '0')}`;
+        const kancab = LIST_33_KANCAB[i % LIST_33_KANCAB.length];
+        const kejadian = LIST_KEJADIAN[i % LIST_KEJADIAN.length];
+        const durasiJam = (Math.random() * 3 + 0.2).toFixed(1);
+
+        dummyNominatif.push({
+          no: i,
+          nama: nama,
+          ktpa: ktpa,
+          kejadian: kejadian,
+          kancab: kancab,
+          waktuKunjungan: `2026-09-${String((i%12)+1).padStart(2,'0')} 08:30`,
+          waktuSPTerbit: `2026-09-${String((i%12)+1).padStart(2,'0')} ${String(9 + Math.floor(i%4)).padStart(2,'0')}:15`,
+          durasi: `${durasiJam} Jam`
+        });
+      }
+      return dummyNominatif;
+    }
+
+    function cetakExcel() {
+      if (typeof XLSX === 'undefined') {
+        alert("Library SheetJS (xlsx) sedang dimuat, mohon coba sebentar lagi.");
+        return;
+      }
+
+      const opsi = document.getElementById("filter-cetak").value;
+      const tglAwal = formatDateIndo(document.getElementById("filter-periode-awal").value);
+      const tglAkhir = formatDateIndo(document.getElementById("filter-periode-akhir").value);
+
+      const wb = XLSX.utils.book_new();
+      let sheetData = [];
+
+      if (opsi === "Rekap Waktu Layan Global") {
+        sheetData.push(["REKAP WAKTU PROSES PELAYANAN PROGRAM MANFAAT ASURANSI"]);
+        sheetData.push([`TERBIT SP ${tglAwal} S/D ${tglAkhir} PER KANCAB/KCP`]);
+        sheetData.push([]); // Baris 3 kosong
+
+        sheetData.push(["KANTOR", "0 - 1 JAM", "> 1 JAM s.d 4 JAM", "> 4 JAM s.d 8 JAM", "> 8 JAM s.d 2 HARI", "> 2 HARI", "JUMLAH KLAIM"]);
+
+        let sum01 = 0, sum14 = 0, sum48 = 0, sum82d = 0, sum2dPlus = 0, sumTotal = 0;
+
+        const dataGlobal = generateGlobalData();
+        dataGlobal.forEach(row => {
+          sum01 += row.h01;
+          sum14 += row.h14;
+          sum48 += row.h48;
+          sum82d += row.h82d;
+          sum2dPlus += row.h2dPlus;
+          sumTotal += row.total;
+
+          sheetData.push([row.kantor, row.h01, row.h14, row.h48, row.h82d, row.h2dPlus, row.total]);
+        });
+
+        sheetData.push(["TOTAL", sum01, sum14, sum48, sum82d, sum2dPlus, sumTotal]);
+
+      } else if (opsi === "Rekap Waktu Layan Per Kejadian") {
+        sheetData.push(["REKAP WAKTU PROSES PELAYANAN PROGRAM MANFAAT ASURANSI"]);
+        sheetData.push([`TERBIT SP ${tglAwal} S/D ${tglAkhir} PER JENIS KEJADIAN`]);
+        sheetData.push([]);
+
+        sheetData.push(["JENIS KEJADIAN", "0 - 1 JAM", "> 1 JAM s.d 4 JAM", "> 4 JAM s.d 8 JAM", "> 8 JAM s.d 2 HARI", "> 2 HARI", "JUMLAH KLAIM"]);
+
+        let sum01 = 0, sum14 = 0, sum48 = 0, sum82d = 0, sum2dPlus = 0, sumTotal = 0;
+
+        const dataKejadian = generateKejadianData();
+        dataKejadian.forEach(row => {
+          sum01 += row.h01;
+          sum14 += row.h14;
+          sum48 += row.h48;
+          sum82d += row.h82d;
+          sum2dPlus += row.h2dPlus;
+          sumTotal += row.total;
+
+          sheetData.push([row.kejadian, row.h01, row.h14, row.h48, row.h82d, row.h2dPlus, row.total]);
+        });
+
+        sheetData.push(["TOTAL", sum01, sum14, sum48, sum82d, sum2dPlus, sumTotal]);
+
+      } else {
+        // Nominatif Waktu Layan
+        sheetData.push(["NOMINATIF WAKTU LAYANAN PELAYANAN KLAIM ASABRI"]);
+        sheetData.push([`PERIODE ${tglAwal} S/D ${tglAkhir}`]);
+        sheetData.push([]);
+
+        sheetData.push(["NO", "NAMA PESERTA", "KTPA", "KEJADIAN", "KANCAB", "WAKTU KUNJUNGAN", "WAKTU SP TERBIT", "DURASI"]);
+
+        const dataNominatif = generateNominatifData();
+        dataNominatif.forEach(row => {
+          sheetData.push([row.no, row.nama, row.ktpa, row.kejadian, row.kancab, row.waktuKunjungan, row.waktuSPTerbit, row.durasi]);
+        });
+      }
+
+      const ws = XLSX.utils.aoa_to_sheet(sheetData);
+      
+      const colWidths = sheetData[3] ? sheetData[3].map((_, colIdx) => {
+        let maxLen = 10;
+        sheetData.forEach(r => {
+          if (r[colIdx]) {
+            const valStr = String(r[colIdx]);
+            if (valStr.length > maxLen) maxLen = valStr.length;
+          }
+        });
+        return { wch: maxLen + 3 };
+      }) : [];
+      ws['!cols'] = colWidths;
+
+      XLSX.utils.book_append_sheet(wb, ws, "Laporan SLA");
+
+      const cleanTitle = opsi.replace(/\s+/g, '_');
+      const filename = `Laporan_${cleanTitle}_${tglAwal}_sd_${tglAkhir}.xlsx`;
+      XLSX.writeFile(wb, filename);
+
+      alert(`File Excel '${filename}' berhasil di-generate dan diunduh!`);
+    }
+  </script>
+
+</body>
+</html>

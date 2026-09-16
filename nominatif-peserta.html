@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI YANDU - Data Nominatif Peserta</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Sidebar & Shared Components -->
+  <script src="sidebar.js"></script>
+  <script src="data.js"></script>
+  <script src="shared.js?v=1.0.1"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asabri: { blue: '#0141A8', blueDark: '#01358C', gold: '#FFDE24', softBlue: '#F8FAFC', textDark: '#0F172A' }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'],
+            mono: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+
+  <!-- TOPBAR / HEADER BAR -->
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center">
+          <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        </div>
+        <div class="h-8 w-px bg-white/20"></div>
+        <button id="sidebar-toggle" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors text-base">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="flex flex-col ml-1">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">DATA NOMINATIF PESERTA SP3R</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right-side Topbar Controls -->
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-semibold text-white tracking-wide">ROLE : STAF KANCAB / ADMIN</span>
+      </div>
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">NP</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">Staf Pengelola Data</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19930214008</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTAINER -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR: Navigation Panel -->
+    <div id="sidebar"></div>
+    <script>
+      renderSidebar('monitoring-sp3r');
+    </script>
+
+    <!-- CONTENT CONTAINER -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- BREADCRUMB BAR -->
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+          <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span>Monitoring SP3R</span>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="font-bold text-asabri-blue">Data Nominatif Peserta</span>
+        </div>
+
+        <a href="monitoring-sp3r.html" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5">
+          <i class="fas fa-arrow-left"></i> Back (Monitoring SP3R)
+        </a>
+      </div>
+
+      <!-- WORKSPACE PANELS -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/50">
+
+        <!-- HEADER TITLE -->
+        <div>
+          <h1 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+            <i class="fas fa-id-card text-asabri-blue"></i> Data Nominatif Peserta SP3R
+          </h1>
+          <p class="text-xs text-slate-500 mt-1">Daftar rincian peserta pensiunan untuk konfirmasi dan kelengkapan dokumen SP3R.</p>
+        </div>
+
+        <!-- FILTER SECTION -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+              <i class="fas fa-filter text-asabri-blue"></i> Filter Data Nominatif
+            </span>
+            <div class="flex items-center gap-2">
+              <button onclick="resetFilter()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
+                <i class="fas fa-undo"></i> Reset
+              </button>
+              <button onclick="applyFilter()" class="px-4 py-1.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <i class="fas fa-search"></i> Cari
+              </button>
+              <button onclick="exportCSV()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <i class="fas fa-file-csv"></i> Export CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- GRID FILTER FIELDS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Kantor Cabang</label>
+              <select id="filter-kantor-cabang" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Kantor Cabang</option>
+                <option value="KC01 KCU JAKARTA">KC01 KCU JAKARTA</option>
+                <option value="KC02 KC MEDAN">KC02 KC MEDAN</option>
+                <option value="KC03 KC SURABAYA">KC03 KC SURABAYA</option>
+                <option value="KC04 KC BANDUNG">KC04 KC BANDUNG</option>
+                <option value="KC05 KC SEMARANG">KC05 KC SEMARANG</option>
+                <option value="KC06 KC MAKASSAR">KC06 KC MAKASSAR</option>
+                <option value="KC07 KC PALEMBANG">KC07 KC PALEMBANG</option>
+                <option value="KC08 KC BALIKPAPAN">KC08 KC BALIKPAPAN</option>
+                <option value="KC09 KC AMBON">KC09 KC AMBON</option>
+                <option value="KC10 KC JAYAPURA">KC10 KC JAYAPURA</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Status Laporan</label>
+              <select id="filter-status-laporan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Status Laporan</option>
+                <option value="Terverifikasi">Terverifikasi</option>
+                <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                <option value="Belum Upload">Belum Upload</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Dari Tanggal</label>
+              <input type="date" id="filter-dari-tgl" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Sampai Tanggal</label>
+              <input type="date" id="filter-sampai-tgl" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mitra</label>
+              <select id="filter-mitra" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Mitra</option>
+                <option value="BANK MANDIRI">BANK MANDIRI</option>
+                <option value="BANK BRI">BANK BRI</option>
+                <option value="BANK BNI">BANK BNI</option>
+                <option value="BANK BSI">BANK BSI</option>
+                <option value="BANK BTPN">BANK BTPN</option>
+                <option value="PT POS INDONESIA">PT POS INDONESIA</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Status Pensiun</label>
+              <select id="filter-status-pensiun" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Status Pensiun</option>
+                <option value="Pensiun Sendiri">Pensiun Sendiri</option>
+                <option value="Pensiun Warakawuri">Pensiun Warakawuri</option>
+                <option value="Tunjangan Yatim Piatu">Tunjangan Yatim Piatu</option>
+                <option value="Tunjangan Orang Tua">Tunjangan Orang Tua</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- SEARCH BOX BARIS KEDUA -->
+          <div class="pt-2 border-t border-slate-100 flex items-center gap-3">
+            <div class="flex-1 relative">
+              <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+              <input type="text" id="filter-keyword" oninput="applyFilter()" placeholder="Cari NOPENS / KTPA / NRP / Nama Peserta..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-asabri-blue transition-colors">
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN TABLE SECTION -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Daftar Data Nominatif Peserta</span>
+            <span id="record-count" class="text-xs font-semibold text-slate-400">Total: 0 Record</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-[11px]">
+              <thead class="bg-slate-100/90 text-slate-700 font-extrabold uppercase tracking-wider border-b border-slate-200">
+                <tr>
+                  <th class="py-3.5 px-3 text-center">No</th>
+                  <th class="py-3.5 px-4">Nopens</th>
+                  <th class="py-3.5 px-4">KTPA</th>
+                  <th class="py-3.5 px-4">NRP</th>
+                  <th class="py-3.5 px-4">Nama Peserta</th>
+                  <th class="py-3.5 px-4">No HP</th>
+                  <th class="py-3.5 px-4">Kancab Dapem</th>
+                  <th class="py-3.5 px-4">Kancab User Upload</th>
+                  <th class="py-3.5 px-4">Mitra</th>
+                  <th class="py-3.5 px-4">Tgl Dokumen</th>
+                  <th class="py-3.5 px-4 text-center">Status Laporan</th>
+                  <th class="py-3.5 px-4">Status Pensiun</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-nominatif" class="divide-y divide-slate-100 text-slate-700 font-medium">
+                <!-- Dynamic Rows JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- PAGINATION FOOTER -->
+          <div class="px-6 py-3.5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-xs">
+            <span id="pagination-info" class="text-slate-500 font-semibold">Menampilkan 1 - 10 dari 0 data</span>
+            <div class="flex items-center gap-2">
+              <button id="btn-prev" onclick="changePage(-1)" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-sm">
+                <i class="fas fa-chevron-left text-[10px]"></i> Sebelumnya
+              </button>
+              <span id="page-num" class="px-3 py-1.5 font-bold text-asabri-blue bg-blue-50 border border-blue-200 rounded-lg">1</span>
+              <button id="btn-next" onclick="changePage(1)" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-sm">
+                Selanjutnya <i class="fas fa-chevron-right text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let DATA_NOMINATIF_FULL = [];
+    let filteredData = [];
+    let currentPage = 1;
+    const pageSize = 10;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Toggle sidebar functionality
+      document.getElementById("sidebar-toggle")?.addEventListener("click", () => {
+        const sidebarNav = document.getElementById("sidebar-nav");
+        if (sidebarNav) {
+          sidebarNav.classList.toggle("w-0");
+          sidebarNav.classList.toggle("overflow-hidden");
+        }
+      });
+
+      // Auto-fill Kancab from URL param if redirected from Monitoring SP3R
+      const urlParams = new URLSearchParams(window.location.search);
+      const kancabParam = urlParams.get('kancab');
+      if (kancabParam) {
+        const selectKancab = document.getElementById('filter-kantor-cabang');
+        for (let i = 0; i < selectKancab.options.length; i++) {
+          if (selectKancab.options[i].value === kancabParam || selectKancab.options[i].text.includes(kancabParam)) {
+            selectKancab.selectedIndex = i;
+            break;
+          }
+        }
+      }
+
+      loadNominatifData();
+      applyFilter();
+    });
+
+    function loadNominatifData() {
+      // Enriched from MOCK_PESERTA and getClaims()
+      const pesertaList = typeof MOCK_PESERTA !== 'undefined' ? MOCK_PESERTA : [];
+      const kancabList = [
+        "KC01 KCU JAKARTA", "KC02 KC MEDAN", "KC03 KC SURABAYA", "KC04 KC BANDUNG", "KC05 KC SEMARANG",
+        "KC06 KC MAKASSAR", "KC07 KC PALEMBANG", "KC08 KC BALIKPAPAN", "KC09 KC AMBON", "KC10 KC JAYAPURA"
+      ];
+      const mitraList = ["BANK MANDIRI", "BANK BRI", "BANK BNI", "BANK BSI", "BANK BTPN", "PT POS INDONESIA"];
+      const statusLaporanList = ["Terverifikasi", "Menunggu Verifikasi", "Belum Upload"];
+      const statusPensiunList = ["Pensiun Sendiri", "Pensiun Warakawuri", "Tunjangan Yatim Piatu", "Tunjangan Orang Tua"];
+
+      DATA_NOMINATIF_FULL = [];
+
+      for (let i = 1; i <= 65; i++) {
+        const p = pesertaList[(i - 1) % pesertaList.length] || {};
+        const nama = p.nama || `Peserta SP3R ${i}`;
+        const nopens = `NPS-2026-${String(100 + i).padStart(4, '0')}`;
+        const ktpa = `KTPA-99${String(i).padStart(4, '0')}`;
+        const nrp = p.nrp_nip || `NRP-19800${i}`;
+        const kancabDapem = kancabList[i % kancabList.length];
+        const kancabUpload = kancabList[(i + 2) % kancabList.length];
+        const mitra = mitraList[i % mitraList.length];
+        const statusLaporan = statusLaporanList[i % statusLaporanList.length];
+        const statusPensiun = statusPensiunList[i % statusPensiunList.length];
+        const tglDok = `2026-09-${String((i % 14) + 1).padStart(2, '0')}`;
+
+        DATA_NOMINATIF_FULL.push({
+          no: i,
+          nopens: nopens,
+          ktpa: ktpa,
+          nrp: nrp,
+          namaPeserta: nama,
+          noHp: `08129876${String(1000 + i)}`,
+          kancabDapem: kancabDapem,
+          kancabUserUpload: kancabUpload,
+          mitra: mitra,
+          tglDokumen: tglDok,
+          status: statusLaporan,
+          statusPensiun: statusPensiun
+        });
+      }
+    }
+
+    function applyFilter() {
+      const kancab = document.getElementById('filter-kantor-cabang').value;
+      const statusLaporan = document.getElementById('filter-status-laporan').value;
+      const dariTgl = document.getElementById('filter-dari-tgl').value;
+      const sampaiTgl = document.getElementById('filter-sampai-tgl').value;
+      const mitra = document.getElementById('filter-mitra').value;
+      const statusPensiun = document.getElementById('filter-status-pensiun').value;
+      const keyword = document.getElementById('filter-keyword').value.toLowerCase().trim();
+
+      filteredData = DATA_NOMINATIF_FULL.filter(item => {
+        if (kancab && item.kancabDapem !== kancab && item.kancabUserUpload !== kancab) return false;
+        if (statusLaporan && item.status !== statusLaporan) return false;
+        if (dariTgl && item.tglDokumen < dariTgl) return false;
+        if (sampaiTgl && item.tglDokumen > sampaiTgl) return false;
+        if (mitra && item.mitra !== mitra) return false;
+        if (statusPensiun && item.statusPensiun !== statusPensiun) return false;
+        if (keyword && !(
+          item.nopens.toLowerCase().includes(keyword) ||
+          item.ktpa.toLowerCase().includes(keyword) ||
+          item.nrp.toLowerCase().includes(keyword) ||
+          item.namaPeserta.toLowerCase().includes(keyword)
+        )) return false;
+        return true;
+      });
+
+      currentPage = 1;
+      renderTablePage();
+    }
+
+    function renderTablePage() {
+      const tbody = document.getElementById('tbody-nominatif');
+      tbody.innerHTML = '';
+
+      const totalRecord = filteredData.length;
+      document.getElementById('record-count').textContent = `Total: ${totalRecord} Record`;
+
+      if (totalRecord === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="12" class="text-center py-8 text-slate-400 italic">
+              Tidak ada data nominatif peserta yang sesuai filter.
+            </td>
+          </tr>`;
+        document.getElementById('pagination-info').textContent = "Menampilkan 0 - 0 dari 0 data";
+        document.getElementById('btn-prev').disabled = true;
+        document.getElementById('btn-next').disabled = true;
+        return;
+      }
+
+      const totalPages = Math.ceil(totalRecord / pageSize);
+      if (currentPage > totalPages) currentPage = totalPages;
+      if (currentPage < 1) currentPage = 1;
+
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, totalRecord);
+      const pageData = filteredData.slice(startIndex, endIndex);
+
+      pageData.forEach((item, idx) => {
+        let badgeStatus = '';
+        if (item.status === 'Terverifikasi') {
+          badgeStatus = `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded-full font-bold text-[10px]">Terverifikasi</span>`;
+        } else if (item.status === 'Menunggu Verifikasi') {
+          badgeStatus = `<span class="bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full font-bold text-[10px]">Menunggu Verifikasi</span>`;
+        } else {
+          badgeStatus = `<span class="bg-rose-50 text-rose-600 border border-rose-200 px-2 py-0.5 rounded-full font-bold text-[10px]">Belum Upload</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/70 transition-colors';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-400">${startIndex + idx + 1}</td>
+          <td class="py-2.5 px-4 font-mono font-bold text-asabri-blue whitespace-nowrap">${item.nopens}</td>
+          <td class="py-2.5 px-4 font-mono whitespace-nowrap">${item.ktpa}</td>
+          <td class="py-2.5 px-4 font-mono whitespace-nowrap">${item.nrp}</td>
+          <td class="py-2.5 px-4 font-bold text-slate-800 whitespace-nowrap">${item.namaPeserta}</td>
+          <td class="py-2.5 px-4 font-mono text-slate-600 whitespace-nowrap">${item.noHp}</td>
+          <td class="py-2.5 px-4 whitespace-nowrap">${item.kancabDapem}</td>
+          <td class="py-2.5 px-4 whitespace-nowrap">${item.kancabUserUpload}</td>
+          <td class="py-2.5 px-4 font-bold text-slate-700 whitespace-nowrap">${item.mitra}</td>
+          <td class="py-2.5 px-4 font-mono text-slate-600 whitespace-nowrap">${item.tglDokumen}</td>
+          <td class="py-2.5 px-4 text-center whitespace-nowrap">${badgeStatus}</td>
+          <td class="py-2.5 px-4 whitespace-nowrap"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-bold">${item.statusPensiun}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('pagination-info').textContent = `Menampilkan ${startIndex + 1} - ${endIndex} dari ${totalRecord} data`;
+      document.getElementById('page-num').textContent = currentPage;
+
+      document.getElementById('btn-prev').disabled = currentPage === 1;
+      document.getElementById('btn-next').disabled = currentPage === totalPages;
+    }
+
+    function changePage(delta) {
+      currentPage += delta;
+      renderTablePage();
+    }
+
+    function resetFilter() {
+      document.getElementById('filter-kantor-cabang').value = '';
+      document.getElementById('filter-status-laporan').value = '';
+      document.getElementById('filter-dari-tgl').value = '';
+      document.getElementById('filter-sampai-tgl').value = '';
+      document.getElementById('filter-mitra').value = '';
+      document.getElementById('filter-status-pensiun').value = '';
+      document.getElementById('filter-keyword').value = '';
+      applyFilter();
+    }
+
+    function exportCSV() {
+      if (!filteredData || filteredData.length === 0) {
+        alert("Tidak ada data untuk diexport.");
+        return;
+      }
+
+      let csv = "No,Nopens,KTPA,NRP,Nama Peserta,No HP,Kancab Dapem,Kancab User Upload,Mitra,Tgl Dokumen,Status Laporan,Status Pensiun\n";
+      filteredData.forEach((row, idx) => {
+        csv += `"${idx+1}","${row.nopens}","${row.ktpa}","${row.nrp}","${row.namaPeserta}","${row.noHp}","${row.kancabDapem}","${row.kancabUserUpload}","${row.mitra}","${row.tglDokumen}","${row.status}","${row.statusPensiun}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Nominatif_Peserta_SP3R_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert("Data Nominatif Peserta (.csv) berhasil di-generate dan diunduh!");
+    }
+  </script>
+
+</body>
+</html>

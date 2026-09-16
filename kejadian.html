@@ -1069,7 +1069,7 @@
                   <div class="flex justify-between items-center mt-6 border-t border-slate-150 pt-4">
                     <button onclick="switchTab('tab-kejadian')" class="px-4 py-2 border border-slate-200 hover:bg-slate-100 rounded-xl text-xs font-bold text-slate-600 transition-colors">Kembali</button>
                     <div>
-                      <div id="msg-dokumen-belum-lengkap" class="hidden text-rose-500 text-[10px] font-bold text-right mb-1.5"><i class="fas fa-triangle-exclamation mr-1"></i>Dokumen mandatory wajib diverifikasi/diunggah terlebih dahulu sebelum lanjut</div>
+                      <div id="msg-dokumen-belum-lengkap" class="hidden text-rose-500 text-[10px] font-bold text-right mb-1.5"><i class="fas fa-triangle-exclamation mr-1"></i>Nomor dan Tanggal dokumen mandatory (*) wajib diisi terlebih dahulu sebelum lanjut</div>
                       <div class="flex items-center justify-end gap-2">
                         <button type="button" id="btn-pending-doc" onclick="processPendingDoc()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow transition-all disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed">
                           <i class="fas fa-circle-exclamation mr-1"></i> Pending
@@ -6285,26 +6285,10 @@
       fullList.forEach((item, idx) => {
         const isMandatory = isDocumentMandatory(currentJenis, item.nama);
         if (isMandatory) {
-          // 1. Cek nomor dan tanggal
+          // Dokumen mandatory WAJIB terisi Nomor DAN Tanggal
           const numVal = document.getElementById(`doc-num-${idx}`)?.value.trim();
           const dateVal = document.getElementById(`doc-date-${idx}`)?.value;
           if (!numVal || !dateVal) {
-            allMandatoryLengkap = false;
-          }
-          
-          // 2. Cek apakah dicentang verif ATAU file diunggah
-          const checkbox = document.querySelectorAll('.doc-verify-checkbox')[idx];
-          const isVerified = checkbox ? checkbox.checked : false;
-          
-          let fileUploaded = false;
-          const fileInput = document.getElementById(`file-main-${idx}`);
-          if (fileInput && fileInput.files && fileInput.files.length > 0) {
-            fileUploaded = true;
-          } else if (item.viewSkpp) {
-            fileUploaded = true; // Anggap SKPP sudah ada dari sistem
-          }
-          
-          if (!isVerified && !fileUploaded) {
             allMandatoryLengkap = false;
           }
         }
@@ -11376,11 +11360,24 @@
       // 1. Tab 1 (Data Peserta)
       const t1Container = document.getElementById("tab-1-action-buttons");
       if (t1Container) {
-        t1Container.innerHTML = `
+        let buttonsHtml = `
           <button type="button" onclick="showPopupTolak('${currentRole}', 'Data Peserta')" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 animate-fade-in">
             <i class="fas fa-circle-xmark"></i> Tolak
           </button>
+          <button type="button" onclick="openModalTandaTerima()" class="px-5 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 animate-fade-in">
+            <i class="fas fa-floppy-disk"></i> Simpan
+          </button>
         `;
+
+        if (isTandaTerimaSaved) {
+          buttonsHtml += `
+            <button type="button" onclick="switchTab('tab-kejadian')" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 animate-fade-in">
+              Lanjut ke Tab 2 <i class="fas fa-arrow-right"></i>
+            </button>
+          `;
+        }
+
+        t1Container.innerHTML = buttonsHtml;
       }
 
       // 2. Tab 2 (Data Kejadian)
@@ -11743,6 +11740,212 @@
       </div>
     </div>
   </div>
+  <!-- Modal Tanda Terima -->
+  <div id="modal-tanda-terima" class="fixed inset-0 z-[130] hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+    <div class="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col transform transition-all duration-300">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+          <i class="fas fa-file-invoice text-asabri-blue text-base"></i> Tanda Terima Registrasi
+        </h3>
+        <button type="button" onclick="closeModalTandaTerima()" class="w-7 h-7 rounded-full hover:bg-slate-200 flex items-center justify-center text-slate-450 hover:text-slate-700 transition-colors">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+      <!-- Body -->
+      <div class="p-6 space-y-4 text-xs">
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-2.5">
+          <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span class="text-slate-500 font-semibold">No. Registrasi</span>
+            <span id="tt-no-registrasi" class="font-mono font-bold text-slate-800">-</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span class="text-slate-500 font-semibold">Nama</span>
+            <span id="tt-nama" class="font-bold text-slate-800">-</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span class="text-slate-500 font-semibold">NIP / NRP</span>
+            <span id="tt-nip-nrp" class="font-mono font-bold text-slate-800">-</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span class="text-slate-500 font-semibold">Status Kepesertaan</span>
+            <span id="tt-status-kepesertaan" class="font-bold text-emerald-600">Aktif</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span class="text-slate-500 font-semibold">Nama Pengunjung</span>
+            <span id="tt-nama-pengunjung" class="font-bold text-slate-800">-</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span class="text-slate-500 font-semibold">Hubungan Keluarga</span>
+            <span id="tt-hubungan-keluarga" class="font-bold text-slate-800">-</span>
+          </div>
+          <div class="flex justify-between items-center border-b border-slate-200/60 pb-1.5">
+            <span class="text-slate-500 font-semibold">No. Telepon</span>
+            <input type="text" id="tt-no-telepon" placeholder="Contoh: 081234567890" class="w-1/2 text-right bg-white border border-slate-200 focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 rounded-lg px-2 py-1 font-mono font-bold text-slate-800 outline-none text-xs">
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-slate-700 block">Catatan (Opsional)</label>
+          <textarea id="tt-catatan" placeholder="Masukkan catatan tanda terima jika ada..." rows="3" class="w-full text-xs p-3 border border-slate-200 focus:ring-1 focus:ring-asabri-blue/30 focus:border-asabri-blue rounded-xl bg-slate-50/50 resize-none font-medium text-slate-700 outline-none"></textarea>
+        </div>
+      </div>
+      <!-- Footer -->
+      <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3 bg-slate-50">
+        <button type="button" onclick="closeModalTandaTerima()" class="px-4 py-2 border border-slate-200 hover:bg-slate-150 text-slate-650 font-bold rounded-xl text-xs transition-colors">
+          Batal
+        </button>
+        <button type="button" onclick="simpanDanCetakTandaTerima()" class="px-5 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
+          <i class="fas fa-print"></i> Simpan &amp; Cetak
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isTandaTerimaSaved = false;
+
+    function openModalTandaTerima() {
+      const p = currentParticipant || {};
+      const pengaju = (claimState && (claimState.tipePengunjung || claimState.pengaju)) || {};
+      const regNo = document.getElementById("t1-noreg")?.innerText || claimState?.noRegistrasi || "-";
+      const namaPeserta = p.nama || "-";
+      const nipNrp = p.nrp_nip || p.nrp || p.nip || p.nik || "-";
+      const namaPengunjung = pengaju.nama || p.nama || "-";
+      const hubunganKeluarga = pengaju.hubungan || (pengaju.jenis === "Peserta" ? "Peserta Sendiri" : "-");
+      const noTelp = claimState?.tandaTerima?.noTelepon || pengaju.telp || p.no_telepon || p.telepon || document.getElementById('side-pengaju-telp')?.innerText || "-";
+
+      document.getElementById("tt-no-registrasi").innerText = regNo;
+      document.getElementById("tt-nama").innerText = namaPeserta;
+      document.getElementById("tt-nip-nrp").innerText = nipNrp;
+      document.getElementById("tt-status-kepesertaan").innerText = "Aktif";
+      document.getElementById("tt-nama-pengunjung").innerText = namaPengunjung;
+      document.getElementById("tt-hubungan-keluarga").innerText = hubunganKeluarga;
+      document.getElementById("tt-no-telepon").value = noTelp !== "-" ? noTelp : "";
+      document.getElementById("tt-catatan").value = claimState?.catatanTandaTerima || "";
+
+      const modal = document.getElementById("modal-tanda-terima");
+      if (modal) {
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+      }
+    }
+
+    function closeModalTandaTerima() {
+      const modal = document.getElementById("modal-tanda-terima");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+    }
+
+    function simpanDanCetakTandaTerima() {
+      const catatanVal = document.getElementById("tt-catatan").value.trim();
+      const noTelpVal = document.getElementById("tt-no-telepon").value.trim() || "-";
+      
+      // Save data to claimState
+      if (!claimState) claimState = {};
+      claimState.tandaTerima = {
+        noRegistrasi: document.getElementById("tt-no-registrasi").innerText,
+        nama: document.getElementById("tt-nama").innerText,
+        nipNrp: document.getElementById("tt-nip-nrp").innerText,
+        statusKepesertaan: document.getElementById("tt-status-kepesertaan").innerText,
+        namaPengunjung: document.getElementById("tt-nama-pengunjung").innerText,
+        hubunganKeluarga: document.getElementById("tt-hubungan-keluarga").innerText,
+        noTelepon: noTelpVal,
+        catatan: catatanVal
+      };
+
+      // Also update side panel & claimState pengaju telp
+      if (claimState.pengaju) claimState.pengaju.telp = noTelpVal;
+      if (claimState.tipePengunjung) claimState.tipePengunjung.telp = noTelpVal;
+      const sideTelpEl = document.getElementById('side-pengaju-telp');
+      if (sideTelpEl) sideTelpEl.innerText = noTelpVal;
+
+      claimState.catatanTandaTerima = catatanVal;
+      isTandaTerimaSaved = true;
+
+      // Close modal
+      closeModalTandaTerima();
+
+      // Trigger Print Window Tanda Terima
+      generateAndPrintTandaTerimaDoc(claimState.tandaTerima);
+
+      // Re-render Tab 1 action buttons to show [Lanjut ke Tab 2]
+      renderTabRejectionButtons();
+
+      showToast("Berhasil Disimpan & Dicetak", "Tanda Terima berhasil disimpan. Anda tetap di Tab 1. Klik 'Lanjut ke Tab 2' jika ingin berpindah.", "success");
+    }
+
+    function generateAndPrintTandaTerimaDoc(data) {
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      if (!printWindow) return;
+
+      const html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Tanda Terima Registrasi - ${data.noRegistrasi}</title>
+          <style>
+            body { font-family: Arial, sans-serif; font-size: 12px; margin: 30px; color: #333; }
+            .header { text-align: center; border-b: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+            .header h2 { margin: 0; font-size: 16px; }
+            .header p { margin: 2px 0 0 0; font-size: 11px; color: #555; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            td { padding: 6px 4px; vertical-align: top; }
+            td.label { width: 35%; font-weight: bold; color: #444; }
+            td.colon { width: 3%; }
+            td.val { width: 62%; font-weight: bold; }
+            .catatan-box { border: 1px dashed #ccc; padding: 10px; border-radius: 4px; background: #f9f9f9; margin-top: 10px; }
+            .footer { margin-top: 40px; display: flex; justify-content: space-between; text-align: center; }
+            .signature { width: 40%; }
+            .signature-space { height: 60px; }
+            @media print {
+              body { margin: 0; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h2>PT ASABRI (PERSERO)</h2>
+            <p>TANDA TERIMA REGISTRASI PENGAJUAN KLAIM</p>
+          </div>
+          <table>
+            <tr><td class="label">No. Registrasi</td><td class="colon">:</td><td class="val">${data.noRegistrasi}</td></tr>
+            <tr><td class="label">Nama Peserta</td><td class="colon">:</td><td class="val">${data.nama}</td></tr>
+            <tr><td class="label">NIP / NRP</td><td class="colon">:</td><td class="val">${data.nipNrp}</td></tr>
+            <tr><td class="label">Status Kepesertaan</td><td class="colon">:</td><td class="val">${data.statusKepesertaan}</td></tr>
+            <tr><td class="label">Nama Pengunjung</td><td class="colon">:</td><td class="val">${data.namaPengunjung}</td></tr>
+            <tr><td class="label">Hubungan Keluarga</td><td class="colon">:</td><td class="val">${data.hubunganKeluarga}</td></tr>
+            <tr><td class="label">No. Telepon</td><td class="colon">:</td><td class="val">${data.noTelepon}</td></tr>
+            ${data.catatan ? `<tr><td class="label">Catatan</td><td class="colon">:</td><td class="val">${data.catatan}</td></tr>` : ''}
+          </table>
+
+          <div class="footer">
+            <div class="signature">
+              <p>Petugas Loket / Staf</p>
+              <div class="signature-space"></div>
+              <p>( ____________________ )</p>
+            </div>
+            <div class="signature">
+              <p>Pengunjung / Pemohon</p>
+              <div class="signature-space"></div>
+              <p>( ${data.namaPengunjung} )</p>
+            </div>
+          </div>
+
+          <script>
+            window.onload = function() { window.print(); };
+          <\/script>
+        </body>
+        </html>
+      `;
+
+      printWindow.document.write(html);
+      printWindow.document.close();
+    }
+  </script>
+
   <script>
     function closeSPPreviewModal() {
       const modal = document.getElementById('sp-preview-modal');
@@ -11760,3 +11963,4 @@
 
 
 </html>
+

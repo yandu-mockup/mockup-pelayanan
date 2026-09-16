@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI YANDU - Sejarah SP</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome for Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Sidebar & Shared Component -->
+  <script src="sidebar.js"></script>
+  <script src="data.js"></script>
+  <script src="shared.js?v=1.0.1"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asabri: { blue: '#0141A8', blueDark: '#01358C', gold: '#FFDE24', softBlue: '#F8FAFC', textDark: '#0F172A' }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'],
+            mono: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .th-sortable { cursor: pointer; user-select: none; }
+    .th-sortable:hover { background-color: #e2e8f0; }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+
+  <!-- TOPBAR / HEADER BAR -->
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center">
+          <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        </div>
+        <div class="h-8 w-px bg-white/20"></div>
+        <button id="sidebar-toggle" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors text-base">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="flex flex-col ml-1">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">REKAP & HISTORI SURAT PERINTH (SP)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right-side Topbar Controls -->
+    <div class="flex items-center gap-4">
+      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-semibold text-white tracking-wide">ROLE : KAKANCAB / ADMIN</span>
+      </div>
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">SP</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">Staf Pengelola SP</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19880512009</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN BODY CONTAINER -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- SIDEBAR: Navigation Panel -->
+    <div id="sidebar"></div>
+    <script>
+      renderSidebar('sejarah-sp');
+    </script>
+
+    <!-- CONTENT CONTAINER -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      
+      <!-- BREADCRUMB BAR -->
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+          <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
+          <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+          <span class="font-bold text-asabri-blue">13. Sejarah SP</span>
+        </div>
+      </div>
+
+      <!-- WORKSPACE PANELS -->
+      <div class="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/50">
+
+        <!-- HEADER & CARD SUMMARY -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <i class="fas fa-clock-rotate-left text-asabri-blue"></i> Histori & Laporan Surat Perintah (SP)
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">Rekapitulasi lengkap seluruh Surat Perintah Bayar yang telah terbit dari seluruh jenis kejadian klaim & manfaat.</p>
+          </div>
+
+          <!-- SUMMARY CARDS -->
+          <div class="flex items-center gap-4">
+            <div class="bg-white border border-slate-200 px-5 py-3 rounded-2xl shadow-sm flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-blue-50 text-asabri-blue flex items-center justify-center text-lg">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-bold uppercase text-slate-400">Total Peserta</span>
+                <span class="text-lg font-black text-slate-800" id="summary-total-peserta">0</span>
+              </div>
+            </div>
+
+            <div class="bg-white border border-slate-200 px-5 py-3 rounded-2xl shadow-sm flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-bold uppercase text-slate-400">Total SP Terbit</span>
+                <span class="text-lg font-black text-slate-800" id="summary-total-sp">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILTER SECTION -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-2">
+              <i class="fas fa-filter text-asabri-blue"></i> Filter Data Sejarah SP
+            </span>
+            <div class="flex items-center gap-2">
+              <button onclick="resetFilter()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
+                <i class="fas fa-undo"></i> Reset Filter
+              </button>
+              <button onclick="exportExcel()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+                <i class="fas fa-file-excel"></i> Export Akun
+              </button>
+            </div>
+          </div>
+
+          <!-- GRID FILTER FIELDS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Dari Tanggal SP</label>
+              <input type="date" id="filter-dari-tgl" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Sampai Tanggal SP</label>
+              <input type="date" id="filter-sampai-tgl" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mitra Bayar</label>
+              <select id="filter-mitra-bayar" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Mitra Bayar (13)</option>
+                <option value="BANK MANDIRI">BANK MANDIRI</option>
+                <option value="BANK BRI">BANK BRI</option>
+                <option value="BANK BNI">BANK BNI</option>
+                <option value="BANK BTN">BANK BTN</option>
+                <option value="BANK BSI">BANK BSI</option>
+                <option value="BANK BTPN">BANK BTPN</option>
+                <option value="BANK BJB">BANK BJB</option>
+                <option value="BANK JATENG">BANK JATENG</option>
+                <option value="BANK JATIM">BANK JATIM</option>
+                <option value="BANK BPD BALI">BANK BPD BALI</option>
+                <option value="BANK SUMUT">BANK SUMUT</option>
+                <option value="BANK NAGARI">BANK NAGARI</option>
+                <option value="PT POS INDONESIA">PT POS INDONESIA</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nama / KTPA / NRP</label>
+              <input type="text" id="filter-nama-ktpa-nrp" oninput="applyFilter()" placeholder="Cari Nama/KTPA/NRP..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Manfaat</label>
+              <input type="text" id="filter-manfaat" oninput="applyFilter()" placeholder="Jenis manfaat..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Kantor Cabang ASABRI</label>
+              <select id="filter-kantor-cabang" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Kantor Cabang</option>
+                <option value="KCU JAKARTA">KCU JAKARTA</option>
+                <option value="KC SURABAYA">KC SURABAYA</option>
+                <option value="KC BANDUNG">KC BANDUNG</option>
+                <option value="KC MEDAN">KC MEDAN</option>
+                <option value="KC MAKASSAR">KC MAKASSAR</option>
+                <option value="KC PALEMBANG">KC PALEMBANG</option>
+                <option value="KC BALIKPAPAN">KC BALIKPAPAN</option>
+                <option value="KC AMBON">KC AMBON</option>
+                <option value="KC JAYAPURA">KC JAYAPURA</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Status</label>
+              <select id="filter-status" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Status</option>
+                <option value="Belum bayar">Belum bayar</option>
+                <option value="Sudah bayar">Sudah bayar</option>
+                <option value="Batal">Batal</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Unor</label>
+              <select id="filter-unor" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua UNOR</option>
+                <option value="TNI AD">TNI AD</option>
+                <option value="TNI AL">TNI AL</option>
+                <option value="TNI AU">TNI AU</option>
+                <option value="POLRI">POLRI</option>
+                <option value="MABES TNI">MABES TNI</option>
+                <option value="KEMHAN">KEMHAN</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Status Personil</label>
+              <select id="filter-status-personil" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Status Personil</option>
+                <option value="Aktif">Aktif</option>
+                <option value="Pensiun">Pensiun</option>
+                <option value="Meninggal Dunia">Meninggal Dunia</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Dari Tanggal DPS</label>
+              <input type="date" id="filter-dari-tgl-dps" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Sampai Tanggal DPS</label>
+              <input type="date" id="filter-sampai-tgl-dps" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Produk</label>
+              <select id="filter-produk" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua Produk</option>
+                <option value="Pensiun Sendiri">Pensiun Sendiri</option>
+                <option value="Pensiun Warakawuri">Pensiun Warakawuri / Janda / Duda</option>
+                <option value="Tunjangan Yatim Piatu">Tunjangan Yatim Piatu</option>
+                <option value="Tunjangan Orang Tua">Tunjangan Orang Tua</option>
+                <option value="Tabungan Hari Tua (THT)">Tabungan Hari Tua (THT)</option>
+                <option value="JKK Santunan">JKK Santunan</option>
+                <option value="JKK Perawatan">JKK Perawatan</option>
+                <option value="JKM Santunan">JKM Santunan</option>
+                <option value="Beasiswa">Beasiswa</option>
+                <option value="UDW Pemakaman">UDW Pemakaman</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABEL SEJARAH SP -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Rekapitulasi Surat Perintah Bayar (SP)</span>
+            <span id="record-count" class="text-xs font-semibold text-slate-400">Total: 0 Record</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-[11px]">
+              <thead class="bg-slate-100/90 text-slate-700 font-extrabold uppercase tracking-wider border-b border-slate-200 select-none">
+                <tr>
+                  <th onclick="sortTable('kpa')" class="py-3 px-3 th-sortable whitespace-nowrap">KPA <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('nrpNip')" class="py-3 px-3 th-sortable whitespace-nowrap">NRP/NIP <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('namaPeserta')" class="py-3 px-3 th-sortable whitespace-nowrap">Nama Peserta <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('produk')" class="py-3 px-3 th-sortable whitespace-nowrap">Produk <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('noSuratPerintah')" class="py-3 px-3 th-sortable whitespace-nowrap">No Surat Perintah <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('kodeBayar')" class="py-3 px-3 th-sortable whitespace-nowrap">Kode Bayar <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('tanggalSuratPerintah')" class="py-3 px-3 th-sortable whitespace-nowrap">Tgl Surat Perintah <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('unor')" class="py-3 px-3 th-sortable whitespace-nowrap">UNOR <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('kantorCabangAsabri')" class="py-3 px-3 th-sortable whitespace-nowrap">Kantor Cabang ASABRI <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('mitraBayar')" class="py-3 px-3 th-sortable whitespace-nowrap">Mitra Bayar <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('cabangMitraBayar')" class="py-3 px-3 th-sortable whitespace-nowrap">Cabang Mitra <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('saranaBayar')" class="py-3 px-3 th-sortable whitespace-nowrap">Sarana Bayar <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('namaRekening')" class="py-3 px-3 th-sortable whitespace-nowrap">Nama Rekening <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('nomorRekening')" class="py-3 px-3 th-sortable whitespace-nowrap">No Rekening <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('jumlahHak')" class="py-3 px-3 th-sortable text-right whitespace-nowrap">Jumlah Hak <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('potonganPajak')" class="py-3 px-3 th-sortable text-right whitespace-nowrap">Pot. Pajak <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('potongan')" class="py-3 px-3 th-sortable text-right whitespace-nowrap">Potongan <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('jumlahBayar')" class="py-3 px-3 th-sortable text-right whitespace-nowrap bg-blue-50/50 text-asabri-blue">Jumlah Bayar <i class="fas fa-sort text-[9px] ml-1"></i></th>
+                  <th onclick="sortTable('noDPS')" class="py-3 px-3 th-sortable whitespace-nowrap">No DPS <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('tanggalBayar')" class="py-3 px-3 th-sortable whitespace-nowrap">Tgl Bayar <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                  <th onclick="sortTable('status')" class="py-3 px-3 th-sortable text-center whitespace-nowrap">Status <i class="fas fa-sort text-[9px] ml-1 text-slate-400"></i></th>
+                </tr>
+              </thead>
+              <tbody id="table-sejarah-sp-body" class="divide-y divide-slate-100 text-slate-600 font-medium">
+                <!-- Dynamic Rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let DATA_SEJARAH_SP = [];
+    let currentSortField = 'tanggalSuratPerintah';
+    let currentSortAsc = false;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      // Toggle sidebar functionality
+      document.getElementById("sidebar-toggle")?.addEventListener("click", () => {
+        const sidebarNav = document.getElementById("sidebar-nav");
+        if (sidebarNav) {
+          sidebarNav.classList.toggle("w-0");
+          sidebarNav.classList.toggle("overflow-hidden");
+        }
+      });
+
+      loadSejarahSPData();
+      applyFilter();
+    });
+
+    function loadSejarahSPData() {
+      // Pull claims from getClaims() shared DB
+      let claims = typeof getClaims === 'function' ? getClaims() : [];
+
+      // Mock SP records enriched across 17+ claim types
+      const dummySPList = [
+        {
+          kpa: 'KPA-0123-01',
+          nrpNip: '19750912',
+          namaPeserta: 'Sutrisno',
+          produk: 'Pensiun Sendiri',
+          noSuratPerintah: 'SP/0123/IX/2026/001',
+          kodeBayar: 'BYR-8801',
+          tanggalSuratPerintah: '2026-09-10',
+          unor: 'TNI AD',
+          kantorCabangAsabri: 'KCU JAKARTA',
+          mitraBayar: 'BANK MANDIRI',
+          cabangMitraBayar: 'KCP Matraman',
+          saranaBayar: 'Transfer Bank',
+          namaRekening: 'Sutrisno',
+          nomorRekening: '1230009876543',
+          jumlahHak: 4500000,
+          potonganPajak: 0,
+          potongan: 150000,
+          noDPS: 'DPS-2026-0901',
+          tanggalBayar: '2026-09-11',
+          status: 'Sudah bayar',
+          statusPersonil: 'Pensiun'
+        },
+        {
+          kpa: 'KPA-0123-02',
+          nrpNip: '19800315',
+          namaPeserta: 'Bambang Herman',
+          produk: 'JKK Perawatan',
+          noSuratPerintah: 'SP/0123/IX/2026/002',
+          kodeBayar: 'BYR-8802',
+          tanggalSuratPerintah: '2026-09-08',
+          unor: 'POLRI',
+          kantorCabangAsabri: 'KC SURABAYA',
+          mitraBayar: 'BANK BRI',
+          cabangMitraBayar: 'KC Surabaya Kota',
+          saranaBayar: 'Transfer Bank',
+          namaRekening: 'Bambang Herman',
+          nomorRekening: '0012010998877',
+          jumlahHak: 12500000,
+          potonganPajak: 250000,
+          potongan: 0,
+          noDPS: 'DPS-2026-0902',
+          tanggalBayar: '2026-09-09',
+          status: 'Sudah bayar',
+          statusPersonil: 'Aktif'
+        },
+        {
+          kpa: 'KPA-0123-03',
+          nrpNip: '19850520',
+          namaPeserta: 'Agus Prasetyo',
+          produk: 'Tabungan Hari Tua (THT)',
+          noSuratPerintah: 'SP/0123/IX/2026/003',
+          kodeBayar: 'BYR-8803',
+          tanggalSuratPerintah: '2026-09-12',
+          unor: 'TNI AL',
+          kantorCabangAsabri: 'KC BANDUNG',
+          mitraBayar: 'BANK BNI',
+          cabangMitraBayar: 'KC Bandung Utama',
+          saranaBayar: 'Transfer Bank',
+          namaRekening: 'Agus Prasetyo',
+          nomorRekening: '022334455667',
+          jumlahHak: 68500000,
+          potonganPajak: 1200000,
+          potongan: 500000,
+          noDPS: 'DPS-2026-0903',
+          tanggalBayar: '',
+          status: 'Belum bayar',
+          statusPersonil: 'Aktif'
+        },
+        {
+          kpa: 'KPA-0123-04',
+          nrpNip: '19700101',
+          namaPeserta: 'Dewi Lestari (Warakawuri)',
+          produk: 'Pensiun Warakawuri',
+          noSuratPerintah: 'SP/0123/IX/2026/004',
+          kodeBayar: 'BYR-8804',
+          tanggalSuratPerintah: '2026-09-13',
+          unor: 'TNI AU',
+          kantorCabangAsabri: 'KC MEDAN',
+          mitraBayar: 'BANK BSI',
+          cabangMitraBayar: 'KC Medan Katamso',
+          saranaBayar: 'Transfer Bank',
+          namaRekening: 'Dewi Lestari',
+          nomorRekening: '71122334455',
+          jumlahHak: 3200000,
+          potonganPajak: 0,
+          potongan: 0,
+          noDPS: 'DPS-2026-0904',
+          tanggalBayar: '2026-09-14',
+          status: 'Belum bayar',
+          statusPersonil: 'Meninggal Dunia'
+        },
+        {
+          kpa: 'KPA-0123-05',
+          nrpNip: '19781105',
+          namaPeserta: 'Hendra Gunawan',
+          produk: 'UDW Pemakaman',
+          noSuratPerintah: 'SP/0123/IX/2026/005',
+          kodeBayar: 'BYR-8805',
+          tanggalSuratPerintah: '2026-09-14',
+          unor: 'MABES TNI',
+          kantorCabangAsabri: 'KC MAKASSAR',
+          mitraBayar: 'BANK BTN',
+          cabangMitraBayar: 'KC Makassar',
+          saranaBayar: 'Transfer Bank',
+          namaRekening: 'Hendra Gunawan',
+          nomorRekening: '9988776655',
+          jumlahHak: 5000000,
+          potonganPajak: 0,
+          potongan: 0,
+          noDPS: '',
+          tanggalBayar: '',
+          status: 'Batal',
+          statusPersonil: 'Meninggal Dunia'
+        }
+      ];
+
+      // Convert claims from shared DB into SP format if SP has been generated
+      const generatedFromClaims = claims
+        .filter(c => c.status === 'Selesai' || c.status === 'SP Terbit' || c.status === 'Proses Pembayaran' || c.status === 'Pembayaran Selesai' || c.status === 'Sudah bayar' || c.status === 'Belum bayar')
+        .map((c, idx) => {
+          const hak = c.nominalHak || c.nominal || 15000000;
+          const pajak = c.potonganPajak || 0;
+          const pot = c.potongan || 0;
+          let statusSP = 'Belum bayar';
+          if (c.status === 'Pembayaran Selesai' || c.status === 'Sudah bayar') statusSP = 'Sudah bayar';
+          else if (c.status === 'Batal') statusSP = 'Batal';
+
+          return {
+            kpa: `KPA-${c.kodeKancab || '0123'}-${String(idx+6).padStart(2,'0')}`,
+            nrpNip: c.nik || c.nrp_nip || '19900101',
+            namaPeserta: c.namaPeserta || c.nama || 'Peserta ASABRI',
+            produk: c.manfaatKlaim || c.jenisKlaim || 'Pensiun Sendiri',
+            noSuratPerintah: c.noSP || `SP/0123/IX/2026/${String(idx+6).padStart(3,'0')}`,
+            kodeBayar: `BYR-${8806 + idx}`,
+            tanggalSuratPerintah: c.tanggalSelesai || '2026-09-14',
+            unor: c.unor || 'TNI AD',
+            kantorCabangAsabri: c.kantorCabang || 'KCU JAKARTA',
+            mitraBayar: c.mitraBayar || 'BANK MANDIRI',
+            cabangMitraBayar: 'Cabang Utama',
+            saranaBayar: 'Transfer Bank',
+            namaRekening: c.namaPeserta || c.nama || 'Peserta ASABRI',
+            nomorRekening: '1122334455667',
+            jumlahHak: hak,
+            potonganPajak: pajak,
+            potongan: pot,
+            noDPS: `DPS-2026-09${String(idx+6).padStart(2,'0')}`,
+            tanggalBayar: c.tanggalBayar || '2026-09-14',
+            status: statusSP,
+            statusPersonil: c.statusPersonil || 'Aktif'
+          };
+        });
+
+      DATA_SEJARAH_SP = [...dummySPList, ...generatedFromClaims];
+    }
+
+    function applyFilter() {
+      const dariTgl = document.getElementById('filter-dari-tgl').value;
+      const sampaiTgl = document.getElementById('filter-sampai-tgl').value;
+      const mitra = document.getElementById('filter-mitra-bayar').value;
+      const keyword = document.getElementById('filter-nama-ktpa-nrp').value.toLowerCase().trim();
+      const manfaat = document.getElementById('filter-manfaat').value.toLowerCase().trim();
+      const kancab = document.getElementById('filter-kantor-cabang').value;
+      const status = document.getElementById('filter-status').value;
+      const unor = document.getElementById('filter-unor').value;
+      const statusPersonil = document.getElementById('filter-status-personil').value;
+      const dariDps = document.getElementById('filter-dari-tgl-dps').value;
+      const sampaiDps = document.getElementById('filter-sampai-tgl-dps').value;
+      const produk = document.getElementById('filter-produk').value;
+
+      const filtered = DATA_SEJARAH_SP.filter(item => {
+        if (dariTgl && item.tanggalSuratPerintah < dariTgl) return false;
+        if (sampaiTgl && item.tanggalSuratPerintah > sampaiTgl) return false;
+        if (mitra && item.mitraBayar !== mitra) return false;
+        if (keyword && !(
+          item.namaPeserta.toLowerCase().includes(keyword) ||
+          item.nrpNip.toLowerCase().includes(keyword) ||
+          item.noSuratPerintah.toLowerCase().includes(keyword)
+        )) return false;
+        if (manfaat && !item.produk.toLowerCase().includes(manfaat)) return false;
+        if (kancab && item.kantorCabangAsabri !== kancab) return false;
+        if (status && item.status !== status) return false;
+        if (unor && item.unor !== unor) return false;
+        if (statusPersonil && item.statusPersonil !== statusPersonil) return false;
+        if (dariDps && item.tanggalBayar < dariDps) return false;
+        if (sampaiDps && item.tanggalBayar > sampaiDps) return false;
+        if (produk && !item.produk.toLowerCase().includes(produk.toLowerCase())) return false;
+        return true;
+      });
+
+      renderSortedTable(filtered);
+    }
+
+    function sortTable(field) {
+      if (currentSortField === field) {
+        currentSortAsc = !currentSortAsc;
+      } else {
+        currentSortField = field;
+        currentSortAsc = true;
+      }
+      applyFilter();
+    }
+
+    function renderSortedTable(data) {
+      data.sort((a, b) => {
+        let valA = a[currentSortField];
+        let valB = b[currentSortField];
+
+        // Auto calculate jumlahBayar for sorting if needed
+        if (currentSortField === 'jumlahBayar') {
+          valA = (a.jumlahHak || 0) - (a.potonganPajak || 0) - (a.potongan || 0);
+          valB = (b.jumlahHak || 0) - (b.potonganPajak || 0) - (b.potongan || 0);
+        }
+
+        if (typeof valA === 'string') valA = valA.toLowerCase();
+        if (typeof valB === 'string') valB = valB.toLowerCase();
+
+        if (valA < valB) return currentSortAsc ? -1 : 1;
+        if (valA > valB) return currentSortAsc ? 1 : -1;
+        return 0;
+      });
+
+      const tbody = document.getElementById('table-sejarah-sp-body');
+      tbody.innerHTML = '';
+
+      document.getElementById('record-count').textContent = `Total: ${data.length} Record`;
+      
+      // Update Summary Cards
+      const uniquePeserta = new Set(data.map(d => d.nrpNip)).size;
+      document.getElementById('summary-total-peserta').textContent = uniquePeserta;
+      document.getElementById('summary-total-sp').textContent = data.length;
+
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="21" class="text-center py-8 text-slate-400 italic">
+              Tidak ada data Surat Perintah (SP) yang sesuai filter.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      data.forEach(item => {
+        // Auto Calculate Jumlah Bayar = Hak - Potongan Pajak - Potongan Lain
+        const jumlahBayar = (item.jumlahHak || 0) - (item.potonganPajak || 0) - (item.potongan || 0);
+
+        let badgeStatus = '';
+        if (item.status === 'Sudah bayar') {
+          badgeStatus = `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-1 rounded-full font-bold text-[10px]">Sudah bayar</span>`;
+        } else if (item.status === 'Batal') {
+          badgeStatus = `<span class="bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-1 rounded-full font-bold text-[10px]">Batal</span>`;
+        } else {
+          badgeStatus = `<span class="bg-amber-50 text-amber-600 border border-amber-200 px-2.5 py-1 rounded-full font-bold text-[10px]">Belum bayar</span>`;
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/70 transition-colors';
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 font-mono whitespace-nowrap">${item.kpa}</td>
+          <td class="py-2.5 px-3 font-mono whitespace-nowrap">${item.nrpNip}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-800 whitespace-nowrap">${item.namaPeserta}</td>
+          <td class="py-2.5 px-3 whitespace-nowrap">${item.produk}</td>
+          <td class="py-2.5 px-3 font-mono font-bold text-asabri-blue whitespace-nowrap">${item.noSuratPerintah}</td>
+          <td class="py-2.5 px-3 font-mono whitespace-nowrap">${item.kodeBayar}</td>
+          <td class="py-2.5 px-3 font-mono whitespace-nowrap">${item.tanggalSuratPerintah}</td>
+          <td class="py-2.5 px-3 whitespace-nowrap"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-bold">${item.unor}</span></td>
+          <td class="py-2.5 px-3 whitespace-nowrap">${item.kantorCabangAsabri}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-700 whitespace-nowrap">${item.mitraBayar}</td>
+          <td class="py-2.5 px-3 whitespace-nowrap">${item.cabangMitraBayar}</td>
+          <td class="py-2.5 px-3 whitespace-nowrap">${item.saranaBayar}</td>
+          <td class="py-2.5 px-3 whitespace-nowrap">${item.namaRekening}</td>
+          <td class="py-2.5 px-3 font-mono whitespace-nowrap">${item.nomorRekening}</td>
+          <td class="py-2.5 px-3 text-right font-mono whitespace-nowrap">Rp ${item.jumlahHak.toLocaleString('id-ID')}</td>
+          <td class="py-2.5 px-3 text-right font-mono text-rose-600 whitespace-nowrap">Rp ${item.potonganPajak.toLocaleString('id-ID')}</td>
+          <td class="py-2.5 px-3 text-right font-mono text-rose-600 whitespace-nowrap">Rp ${item.potongan.toLocaleString('id-ID')}</td>
+          <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700 bg-emerald-50/40 whitespace-nowrap">Rp ${jumlahBayar.toLocaleString('id-ID')}</td>
+          <td class="py-2.5 px-3 font-mono whitespace-nowrap">${item.noDPS || '-'}</td>
+          <td class="py-2.5 px-3 font-mono whitespace-nowrap">${item.tanggalBayar || '-'}</td>
+          <td class="py-2.5 px-3 text-center whitespace-nowrap">${badgeStatus}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function resetFilter() {
+      document.getElementById('filter-dari-tgl').value = '';
+      document.getElementById('filter-sampai-tgl').value = '';
+      document.getElementById('filter-mitra-bayar').value = '';
+      document.getElementById('filter-nama-ktpa-nrp').value = '';
+      document.getElementById('filter-manfaat').value = '';
+      document.getElementById('filter-kantor-cabang').value = '';
+      document.getElementById('filter-status').value = '';
+      document.getElementById('filter-unor').value = '';
+      document.getElementById('filter-status-personil').value = '';
+      document.getElementById('filter-dari-tgl-dps').value = '';
+      document.getElementById('filter-sampai-tgl-dps').value = '';
+      document.getElementById('filter-produk').value = '';
+      applyFilter();
+    }
+
+    function exportExcel() {
+      alert('Memulai unduh Rekapitulasi Sejarah SP (.xlsx)... File berhasil diexport!');
+    }
+  </script>
+
+</body>
+</html>

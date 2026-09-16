@@ -284,271 +284,333 @@
                     <button id="btn-sub-dokumen" onclick="switchSubTab('sub-dokumen')" class="sub-tab-btn text-xs font-bold text-slate-400 pb-1.5 focus:outline-none transition-all hover:text-slate-650">Riwayat Dokumen</button>
                   </div>
 
-                  <!-- Sub-tab 1: Profil -->
-                  <div id="sub-profil" class="sub-tab-pane block bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-6 flex items-start gap-2">
+                  <!-- Sub-tab 1: Profil (Restrukturisasi 7 Section) -->
+                  <div id="sub-profil" class="sub-tab-pane block bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-2">
                       <i class="fas fa-info-circle text-asabri-blue mt-0.5"></i>
                       <p class="text-xs text-slate-700 font-medium">Field <b>KTPA, Nama, NRP, Tanggal Lahir, Nomor Pensiun, dan Tanggal Meninggal</b> hanya dapat diubah melalui menu <b>Request Umum</b> ke Kantor Pusat.</p>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <!-- Kolom Kiri -->
-                      <div class="space-y-3">
-                        <h4 class="text-xs font-bold text-slate-700 border-b border-slate-100 pb-2">Informasi Diri &amp; Kontak</h4>
+
+                    <!-- SECTION 1: Data Personil (Identitas Dasar) -->
+                    <div class="space-y-3 bg-slate-50/50 p-4 rounded-xl border border-slate-200/80">
+                      <h4 class="text-xs font-extrabold text-asabri-blue uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-id-card text-asabri-blue"></i> Data Personil (Identitas Dasar)
+                      </h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">KTPA</span>
-                          <input type="text" id="prof-ktpa" readonly class="col-span-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 outline-none">
+                          <input type="text" id="prof-ktpa" readonly class="col-span-2 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 font-bold outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Nama</span>
-                          <input type="text" id="prof-nama" readonly class="col-span-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 outline-none">
+                          <input type="text" id="prof-nama" readonly class="col-span-2 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 font-bold outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">NRP / NIP</span>
-                          <input type="text" id="prof-nrp" readonly class="col-span-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 outline-none">
+                          <input type="text" id="prof-nrp" readonly class="col-span-2 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 font-mono outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Identitas Diri (NIK)</span>
-                          <input type="text" id="prof-identitas" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-identitas" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">NPWP</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-npwp" class="w-full bg-white border border-slate-250 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-npwp" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tgl Awal Daftar</span>
-                          <input type="text" id="prof-tgl-daftar" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-tgl-daftar" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tempat/Tgl Lahir</span>
-                          <input type="text" id="prof-ttl" readonly class="col-span-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 outline-none">
+                          <input type="text" id="prof-ttl" readonly class="col-span-2 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 outline-none">
                         </div>
-                        <!-- KTP Fields -->
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Alamat KTP <span class="text-rose-500">*</span></span>
+                          <span class="text-slate-500 font-semibold col-span-1">Jenis Kelamin</span>
+                          <input type="text" id="prof-jk" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                          <span class="text-slate-500 font-semibold col-span-1">Nama Ibu Kandung</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-alamat" class="w-full bg-white border border-slate-250 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue" required placeholder="Alamat sesuai KTP">
+                            <input type="text" id="prof-ibu" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">RT/RW KTP</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-rt-rw" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue" placeholder="000/000">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Desa/Kelurahan KTP</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-desa" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Kecamatan KTP</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-kecamatan" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Kota KTP</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-kota" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Provinsi KTP</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-provinsi" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Kode Pos KTP</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-kodepos" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-
-                        <!-- Checkbox Sync -->
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1"></span>
-                          <label class="col-span-2 flex items-center gap-1.5 cursor-pointer font-bold text-[10px] text-slate-500">
-                            <input type="checkbox" id="prof-alamat-sama" onchange="syncAlamatDomisili()" class="rounded border-slate-300 text-asabri-blue focus:ring-asabri-blue/30 w-3.5 h-3.5">
-                            <span>Sama dengan Alamat KTP</span>
-                          </label>
-                        </div>
-
-                        <!-- Domisili Fields -->
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Alamat Domisili</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-alamat-domisili" class="w-full bg-white border border-slate-250 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue" placeholder="Alamat domisili saat ini">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">RT/RW Domisili</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-rt-rw-domisili" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue" placeholder="000/000">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Desa/Kelurahan Domisili</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-desa-domisili" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Kecamatan Domisili</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-kecamatan-domisili" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Kota Domisili</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-kota-domisili" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Provinsi Domisili</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-provinsi-domisili" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Kode Pos Domisili</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-kodepos-domisili" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Status KTPA</span>
-                          <input type="text" id="prof-status-ktpa" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none font-bold text-emerald-600">
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Status Pensiun</span>
-                          <input type="text" id="prof-status-pens" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">No. Telp/HP</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-telp" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-telp" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Email</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-email" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-email" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Nama Ibu Kandung</span>
-                          <div class="col-span-2 relative">
-                            <input type="text" id="prof-ibu" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                            <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                          <span class="text-slate-500 font-semibold col-span-1">Status Hidup</span>
+                          <input type="text" id="prof-status-hidup" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                          <span class="text-slate-500 font-semibold col-span-1">Tanggal Meninggal</span>
+                          <input type="text" id="prof-tgl-meninggal" readonly class="col-span-2 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 outline-none">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                          <span class="text-slate-500 font-semibold col-span-1">Tanggal Non Aktif</span>
+                          <input type="text" id="prof-tgl-nonaktif" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- SECTION 2: Alamat -->
+                    <div class="space-y-3 bg-slate-50/50 p-4 rounded-xl border border-slate-200/80">
+                      <h4 class="text-xs font-extrabold text-asabri-blue uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-location-dot text-asabri-blue"></i> Alamat
+                      </h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Alamat KTP -->
+                        <div class="space-y-2.5">
+                          <span class="block text-[11px] font-bold text-slate-700 uppercase tracking-wide border-b border-slate-200/60 pb-1">Alamat KTP</span>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Alamat KTP <span class="text-rose-500">*</span></span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-alamat" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue" required placeholder="Alamat sesuai KTP">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">RT/RW KTP</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-rt-rw" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue" placeholder="000/000">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Desa/Kelurahan KTP</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-desa" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Kecamatan KTP</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-kecamatan" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Kota KTP</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-kota" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Provinsi KTP</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-provinsi" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Kode Pos KTP</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-kodepos" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
                           </div>
                         </div>
+
+                        <!-- Alamat Domisili -->
+                        <div class="space-y-2.5">
+                          <div class="flex items-center justify-between border-b border-slate-200/60 pb-1">
+                            <span class="text-[11px] font-bold text-slate-700 uppercase tracking-wide">Alamat Domisili</span>
+                            <label class="flex items-center gap-1.5 cursor-pointer font-bold text-[10px] text-asabri-blue">
+                              <input type="checkbox" id="prof-alamat-sama" onchange="syncAlamatDomisili()" class="rounded border-slate-300 text-asabri-blue focus:ring-asabri-blue/30 w-3.5 h-3.5">
+                              <span>Sama dengan Alamat KTP</span>
+                            </label>
+                          </div>
+
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Alamat Domisili</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-alamat-domisili" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue" placeholder="Alamat domisili saat ini">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">RT/RW Domisili</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-rt-rw-domisili" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue" placeholder="000/000">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Desa/Kelurahan Domisili</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-desa-domisili" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Kecamatan Domisili</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-kecamatan-domisili" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Kota Domisili</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-kota-domisili" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Provinsi Domisili</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-provinsi-domisili" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                          <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                            <span class="text-slate-500 font-semibold col-span-1">Kode Pos Domisili</span>
+                            <div class="col-span-2 relative">
+                              <input type="text" id="prof-kodepos-domisili" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                              <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- SECTION 3: Status & Kepesertaan -->
+                    <div class="space-y-3 bg-slate-50/50 p-4 rounded-xl border border-slate-200/80">
+                      <h4 class="text-xs font-extrabold text-asabri-blue uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-check-double text-asabri-blue"></i> Status &amp; Kepesertaan
+                      </h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                          <span class="text-slate-500 font-semibold col-span-1">Status KTPA</span>
+                          <input type="text" id="prof-status-ktpa" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none font-bold text-emerald-600">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                          <span class="text-slate-500 font-semibold col-span-1">Status Pensiun</span>
+                          <input type="text" id="prof-status-pens" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- SECTION 4: Kedinasan (Riwayat Dinas) -->
+                    <div class="space-y-3 bg-slate-50/50 p-4 rounded-xl border border-slate-200/80">
+                      <h4 class="text-xs font-extrabold text-asabri-blue uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-building-columns text-asabri-blue"></i> Kedinasan (Riwayat Dinas)
+                      </h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Unor Akhir</span>
-                          <input type="text" id="prof-unor" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-unor" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Pangkat Awal</span>
-                          <input type="text" id="prof-pangkat-awal" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-pangkat-awal" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Pangkat Akhir</span>
-                          <input type="text" id="prof-pangkat-akhir" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-pangkat-akhir" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Kode Jiwa</span>
-                          <input type="text" id="prof-kodejiwa" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-kodejiwa" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Bintang Jasa</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-bintang" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-bintang" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
-                      </div>
-
-                      <!-- Kolom Kanan -->
-                      <div class="space-y-3">
-                        <h4 class="text-xs font-bold text-slate-700 border-b border-slate-100 pb-2">Informasi Kedinasan &amp; Hak</h4>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">PDW</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-pdw" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-pdw" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Satker Awal</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-satker-awal" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-satker-awal" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Satker Akhir</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-satker-akhir" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-satker-akhir" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">No SKEP Pengangkatan</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-skep-pengangkatan" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-skep-pengangkatan" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tanggal SKEP Pengangkatan</span>
                           <div class="col-span-2 relative">
-                            <input type="date" id="prof-tgl-skep" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="date" id="prof-tgl-skep" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">TMT SKEP Pengangkatan</span>
-                          <input type="text" id="prof-tmt-skep" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-tmt-skep" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div id="prof-tmt-cpns-container" class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">TMT Calon Pegawai (CPNS)</span>
                           <div class="col-span-2 relative">
-                            <input type="date" id="prof-tmt-cpns" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="date" id="prof-tmt-cpns" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                           </div>
                         </div>
                         <div id="prof-tmt-pns-container" class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">TMT Pegawai</span>
                           <div class="col-span-2 relative">
-                            <input type="date" id="prof-tmt-pns" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="date" id="prof-tmt-pns" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                          <span class="text-slate-500 font-semibold col-span-1">Perkiraan MKD</span>
+                          <input type="text" id="prof-mkd" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                          <span class="text-slate-500 font-semibold col-span-1">Masa Kerja Gaji</span>
+                          <input type="text" id="prof-mkg" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- SECTION 5: Iuran & Pensiun -->
+                    <div class="space-y-3 bg-slate-50/50 p-4 rounded-xl border border-slate-200/80">
+                      <h4 class="text-xs font-extrabold text-asabri-blue uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-hand-holding-dollar text-asabri-blue"></i> Iuran &amp; Pensiun
+                      </h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1 flex items-center gap-1">
                             TMT Awal Iuran
-                            <i class="fas fa-circle-info text-slate-400 cursor-help" title="Tanggal pertama kali iuran peserta diterima ASABRI. Digunakan untuk peserta P3K atau kasus selisih pengangkatan vs iuran pertama."></i>
+                            <i class="fas fa-circle-info text-slate-400 cursor-help" title="Tanggal pertama kali iuran peserta diterima ASABRI."></i>
                           </span>
                           <div class="col-span-2 relative">
-                            <input type="date" id="prof-tmt-awal-iuran" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="date" id="prof-tmt-awal-iuran" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
@@ -557,102 +619,97 @@
                             <i class="fas fa-circle-info text-slate-400 cursor-help" title="Tanggal terakhir iuran peserta diterima ASABRI."></i>
                           </span>
                           <div class="col-span-2 relative">
-                            <input type="date" id="prof-tmt-akhir-iuran" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="date" id="prof-tmt-akhir-iuran" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">TMT Pensiun</span>
-                          <input type="text" id="prof-tmt-pensiun" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-tmt-pensiun" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Tgl Skep Pensiun</span>
+                          <span class="text-slate-500 font-semibold col-span-1">Tgl SKEP Pensiun</span>
                           <div class="col-span-2 relative">
-                            <input type="date" id="prof-tgl-skep-pensiun" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="date" id="prof-tgl-skep-pensiun" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">No Skep Pensiun</span>
+                          <span class="text-slate-500 font-semibold col-span-1">No SKEP Pensiun</span>
                           <div class="col-span-2 relative">
-                            <input type="text" id="prof-no-skep-pensiun" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="text" id="prof-no-skep-pensiun" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                             <i class="fas fa-pencil text-[9px] text-slate-400 absolute right-2.5 top-1/2 -translate-y-1/2"></i>
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">TMT SKPP</span>
-                          <input type="text" id="prof-tmt-skpp" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-tmt-skpp" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Nomor Pensiun</span>
-                          <input type="text" id="prof-nopens-2" readonly class="col-span-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 outline-none">
+                          <input type="text" id="prof-nopens-2" readonly class="col-span-2 bg-slate-100 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 font-mono outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Pensiun Pokok</span>
-                          <input type="text" id="prof-penspok" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none font-mono font-bold">
+                          <input type="text" id="prof-penspok" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none font-mono font-bold">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tunjangan Cacat</span>
-                          <input type="text" id="prof-tunjangan-cacat" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none font-mono">
+                          <input type="text" id="prof-tunjangan-cacat" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none font-mono">
                         </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Status Hidup</span>
-                          <input type="text" id="prof-status-hidup" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Tanggal Meninggal</span>
-                          <input type="text" id="prof-tgl-meninggal" readonly class="col-span-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-slate-500 outline-none">
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Tanggal Non Aktif</span>
-                          <input type="text" id="prof-tgl-nonaktif" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Jenis Kelamin</span>
-                          <input type="text" id="prof-jk" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Perkiraan MKD</span>
-                          <input type="text" id="prof-mkd" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Masa Kerja Gaji</span>
-                          <input type="text" id="prof-mkg" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
-                        </div>
+                      </div>
+                    </div>
+
+                    <!-- SECTION 6: Dapem & Monitoring -->
+                    <div class="space-y-3 bg-slate-50/50 p-4 rounded-xl border border-slate-200/80">
+                      <h4 class="text-xs font-extrabold text-asabri-blue uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-clock-rotate-left text-asabri-blue"></i> Dapem &amp; Monitoring
+                      </h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tanggal Dapem Terakhir</span>
-                          <input type="text" id="prof-tgl-dapem" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-tgl-dapem" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Batas Hak</span>
-                          <input type="text" id="prof-batas-hak" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-batas-hak" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tanggal SPTB Terakhir</span>
-                          <input type="text" id="prof-tgl-sptb" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-tgl-sptb" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tanggal Pengambilan Uang Terakhir</span>
-                          <input type="text" id="prof-tgl-ambil" class="col-span-2 bg-white border border-slate-255 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
+                          <input type="text" id="prof-tgl-ambil" class="col-span-2 bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-slate-700 outline-none">
                         </div>
+                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
+                          <span class="text-slate-500 font-semibold col-span-1">Tanggal Berhenti di Tunjang</span>
+                          <div class="col-span-2 relative">
+                            <input type="date" id="prof-tgl-stop-tunjang" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- SECTION 7: Status Khusus (Hilang/Ditemukan) -->
+                    <div class="space-y-3 bg-slate-50/50 p-4 rounded-xl border border-slate-200/80">
+                      <h4 class="text-xs font-extrabold text-asabri-blue uppercase tracking-wider flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <i class="fas fa-triangle-exclamation text-asabri-blue"></i> Status Khusus (Hilang/Ditemukan)
+                      </h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tanggal Hilang TMT</span>
                           <div class="col-span-2 relative">
-                            <input type="date" id="prof-tgl-hilang" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="date" id="prof-tgl-hilang" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                           </div>
                         </div>
                         <div class="grid grid-cols-3 gap-2 items-center text-xs">
                           <span class="text-slate-500 font-semibold col-span-1">Tanggal Di Ketemukan</span>
                           <div class="col-span-2 relative">
-                            <input type="date" id="prof-tgl-temu" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 items-center text-xs">
-                          <span class="text-slate-500 font-semibold col-span-1">Tanggal Berhenti di Tunjang</span>
-                          <div class="col-span-2 relative">
-                            <input type="date" id="prof-tgl-stop-tunjang" class="w-full bg-white border border-slate-255 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
+                            <input type="date" id="prof-tgl-temu" class="w-full bg-white border border-slate-200 rounded-lg pl-2.5 pr-7 py-1 text-slate-700 outline-none focus:border-asabri-blue">
                           </div>
                         </div>
                       </div>
                     </div>
+
                   </div>
 
                   <!-- Sub-tab 2: Keluarga -->
