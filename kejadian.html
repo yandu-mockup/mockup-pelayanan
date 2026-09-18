@@ -66,6 +66,29 @@
     .tab-pane.active {
       display: block;
     }
+    .tab-btn.tab-locked {
+      opacity: 0.45;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .tab-btn.tab-locked:hover {
+      color: #94a3b8 !important;
+      border-color: transparent !important;
+    }
+    .tab-btn .tab-lock-icon {
+      font-size: 9px;
+      color: #94a3b8;
+    }
+    .tab-btn.tab-unlocked .tab-lock-icon {
+      display: none;
+    }
+    @keyframes tabUnlock {
+      0% { opacity: 0; transform: scale(0.92) translateY(4px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .tab-btn.tab-just-unlocked {
+      animation: tabUnlock 0.25s ease-out;
+    }
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
@@ -267,20 +290,20 @@
             <!-- TABS NAV BAR -->
             <div class="bg-white border-b border-slate-200 px-8 flex-shrink-0 overflow-x-auto">
               <div class="flex gap-6 whitespace-nowrap">
-                <button id="btn-tab-peserta" onclick="switchTab('tab-peserta')" class="tab-btn py-3 px-1 border-b-2 border-asabri-blue text-xs font-bold text-asabri-blue focus:outline-none transition-all flex items-center gap-1.5 active">
+                <button id="btn-tab-peserta" onclick="switchTab('tab-peserta')" class="tab-btn tab-unlocked py-3 px-1 border-b-2 border-asabri-blue text-xs font-bold text-asabri-blue focus:outline-none transition-all flex items-center gap-1.5 active">
                   <i class="fas fa-user-shield text-xs"></i> 1. Data Peserta
                 </button>
-                <button id="btn-tab-kejadian" onclick="switchTab('tab-kejadian')" class="tab-btn py-3 px-1 border-b-2 border-transparent text-xs font-bold text-slate-400 hover:text-slate-600 focus:outline-none transition-all flex items-center gap-1.5">
-                  <i class="fas fa-calendar-alt text-xs"></i> 2. Data Kejadian
+                <button id="btn-tab-kejadian" onclick="switchTab('tab-kejadian')" class="tab-btn tab-locked py-3 px-1 border-b-2 border-transparent text-xs font-bold text-slate-400 focus:outline-none transition-all flex items-center gap-1.5">
+                  <i class="fas fa-calendar-alt text-xs"></i> 2. Data Kejadian <i class="fas fa-lock tab-lock-icon"></i>
                 </button>
-                <button id="btn-tab-persyaratan" onclick="switchTab('tab-persyaratan')" class="tab-btn py-3 px-1 border-b-2 border-transparent text-xs font-bold text-slate-400 hover:text-slate-600 focus:outline-none transition-all flex items-center gap-1.5">
-                  <i class="fas fa-list-check text-xs"></i> 3. Persyaratan
+                <button id="btn-tab-persyaratan" onclick="switchTab('tab-persyaratan')" class="tab-btn tab-locked py-3 px-1 border-b-2 border-transparent text-xs font-bold text-slate-400 focus:outline-none transition-all flex items-center gap-1.5">
+                  <i class="fas fa-list-check text-xs"></i> 3. Persyaratan <i class="fas fa-lock tab-lock-icon"></i>
                 </button>
-                <button id="btn-tab-hak-produk" onclick="switchTab('tab-hak-produk')" class="tab-btn py-3 px-1 border-b-2 border-transparent text-xs font-bold text-slate-400 hover:text-slate-600 focus:outline-none transition-all flex items-center gap-1.5">
-                  <i class="fas fa-award text-xs"></i> 4. Hak / Produk
+                <button id="btn-tab-hak-produk" onclick="switchTab('tab-hak-produk')" class="tab-btn tab-locked py-3 px-1 border-b-2 border-transparent text-xs font-bold text-slate-400 focus:outline-none transition-all flex items-center gap-1.5">
+                  <i class="fas fa-award text-xs"></i> 4. Hak / Produk <i class="fas fa-lock tab-lock-icon"></i>
                 </button>
-                <button id="btn-tab-riwayat" onclick="switchTab('tab-riwayat')" class="tab-btn py-3 px-1 border-b-2 border-transparent text-xs font-bold text-slate-400 hover:text-slate-600 focus:outline-none transition-all flex items-center gap-1.5">
-                  <i class="fas fa-clock-rotate-left text-xs"></i> 5. Status &amp; Riwayat
+                <button id="btn-tab-riwayat" onclick="switchTab('tab-riwayat')" class="tab-btn tab-locked py-3 px-1 border-b-2 border-transparent text-xs font-bold text-slate-400 focus:outline-none transition-all flex items-center gap-1.5">
+                  <i class="fas fa-clock-rotate-left text-xs"></i> 5. Status &amp; Riwayat <i class="fas fa-lock tab-lock-icon"></i>
                 </button>
               </div>
             </div>
@@ -482,15 +505,7 @@
                         <div id="regulasi-badge-container"></div>
                       </div>
 
-                      <!-- Dropdown Kejadian Awal Dasar Beasiswa (Beasiswa JKK/JKM) -->
-                      <div id="beasiswa-kejadian-awal-container" class="hidden flex-col gap-1.5 animate-fade-in mb-3">
-                        <label class="font-bold text-slate-650">Kejadian Awal Dasar Beasiswa <span class="text-rose-500">*</span></label>
-                        <select id="beasiswa-kejadian-awal" onchange="onBeasiswaKejadianAwalChange(this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
-                          <option value="Meninggal Dunia dalam Dinas Aktif (JKm)">Meninggal Dunia dalam Dinas Aktif (JKm)</option>
-                          <option value="Kecelakaan Kerja — Meninggal (Gugur/Tewas)">Kecelakaan Kerja — Meninggal (Gugur/Tewas / JKK)</option>
-                        </select>
-                        <span class="text-[10px] text-slate-400 italic">Digunakan untuk menentukan regulasi & referensi data peserta/kejadian awal.</span>
-                      </div>
+
 
                       <div id="ahli-waris-dropdown-container" class="hidden flex flex-col gap-1.5 animate-fade-in">
                         <label class="font-bold text-slate-650">👤 Jenis Ahli Waris</label>
@@ -501,15 +516,6 @@
                         <input type="hidden" id="ahli-waris-jenis" value="">
                       </div>
                       <input type="hidden" id="ptdh-tmt-pemberhentian">
-
-                      <!-- Dropdown Jenis Kematian KK (Gugur / Tewas) -->
-                      <div id="jenis-kematian-kk-container" class="hidden flex-col gap-1.5 animate-fade-in">
-                        <label class="font-bold text-slate-650">Jenis Kematian (KK) <span class="text-rose-500">*</span></label>
-                        <select id="jenis-kematian-kk" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
-                          <option value="Gugur" selected>Gugur</option>
-                          <option value="Tewas">Tewas</option>
-                        </select>
-                      </div>
 
                       <div class="flex flex-col gap-1.5">
                         <label class="font-bold text-slate-650">Tanggal Proses</label>
@@ -965,12 +971,12 @@
                   <div class="border-t border-slate-250 pt-5 flex items-center justify-between mt-6">
                     <span class="text-[10px] font-mono text-slate-400"><span class="text-rose-500">*</span> Wajib diisi staf KANCAB</span>
                     <div class="flex gap-3">
-                      <div id="tab-2-reject-button" class="inline-flex gap-3"></div>
-                      <button type="button" onclick="cancelKejadianForm()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-all border border-slate-200 flex items-center gap-1.5">
-                        <i class="fas fa-xmark"></i> Batal
+                      <button type="button" onclick="simpanTab2()" class="px-5 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                        <i class="fas fa-floppy-disk"></i> Simpan
                       </button>
-                      <button type="button" onclick="submitKejadianForm()" class="px-5 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
-                        <i class="fas fa-check"></i> Buat Pelayanan
+                      <div id="tab-2-reject-button" class="inline-flex gap-3"></div>
+                      <button type="button" onclick="lanjutKeTab3()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                        Lanjut ke Tab 3 <i class="fas fa-arrow-right"></i>
                       </button>
                     </div>
                   </div>
@@ -1071,14 +1077,17 @@
                     <div>
                       <div id="msg-dokumen-belum-lengkap" class="hidden text-rose-500 text-[10px] font-bold text-right mb-1.5"><i class="fas fa-triangle-exclamation mr-1"></i>Nomor dan Tanggal dokumen mandatory (*) wajib diisi terlebih dahulu sebelum lanjut</div>
                       <div class="flex items-center justify-end gap-2">
+                        <button type="button" onclick="simpanTab3()" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow transition-all flex items-center gap-1.5">
+                          <i class="fas fa-floppy-disk"></i> Simpan
+                        </button>
                         <button type="button" id="btn-pending-doc" onclick="processPendingDoc()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow transition-all disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed">
                           <i class="fas fa-circle-exclamation mr-1"></i> Pending
                         </button>
                         <button type="button" id="btn-tolak-doc" onclick="showPopupTolak('Staf KANCAB', 'Dokumen Persyaratan')" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow transition-all">
                           <i class="fas fa-circle-xmark mr-1"></i> Tolak
                         </button>
-                        <button type="button" id="btn-teruskan-doc" onclick="processForwardDoc()" class="px-6 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow transition-all disabled:opacity-50 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed">
-                          <i class="fas fa-arrow-right mr-1"></i> Teruskan
+                        <button type="button" id="btn-lanjut-tab4" onclick="lanjutKeTab4()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed">
+                          Lanjut ke Tab 4 <i class="fas fa-arrow-right"></i>
                         </button>
                       </div>
                     </div>
@@ -1130,9 +1139,12 @@
                       Lewati
                     </button>
                     <div class="flex gap-3">
-                      <div id="tab-4-reject-button" class="inline-flex gap-3"></div>
-                      <button type="button" onclick="saveProductCalculation()" class="px-6 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                      <button type="button" onclick="simpanTab4()" class="px-6 py-2.5 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
                         <i class="fas fa-floppy-disk"></i> Simpan
+                      </button>
+                      <div id="tab-4-reject-button" class="inline-flex gap-3"></div>
+                      <button type="button" onclick="lanjutKeTab5()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+                        Lanjut ke Tab 5 <i class="fas fa-arrow-right"></i>
                       </button>
                     </div>
                   </div>
@@ -1153,6 +1165,20 @@
                     <!-- Horizontal Stepper -->
                     <div id="claim-stepper-container" class="relative flex items-center justify-between w-full text-xs font-semibold select-none pt-4 pb-8 overflow-x-auto">
                       <!-- Stepper will be rendered dynamically -->
+                    </div>
+                  </div>
+
+                  <!-- Kartu SLA & Durasi Pemrosesan -->
+                  <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+                    <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+                      <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-stopwatch text-asabri-blue"></i> SLA & Durasi Pemrosesan Real-Time
+                      </h3>
+                      <span class="text-[10px] bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-full font-bold">Standard SLA: Max 48 Jam (2 Hari Work)</span>
+                    </div>
+
+                    <div id="t5-sla-summary-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <!-- Rendered dynamically via JS -->
                     </div>
                   </div>
 
@@ -1590,6 +1616,7 @@
       let totalSemuaManfaat = 0;
       let totalSemuaPotongan = 0;
       let sectionHtmlAll = '';
+      window.calculatedProductsDetail = [];
 
       filteredProducts.forEach((prod, idx) => {
         const { val } = productValues[prod.type] || { val: 0 };
@@ -1598,6 +1625,14 @@
         const potonganSkors = idx === 0 ? totalPotonganSkorsing : 0;
         const totalPotProd = potonganProd + potonganSkors;
         const nettoProd = Math.max(0, val - totalPotProd);
+
+        if (!window.calculatedProductsDetail) window.calculatedProductsDetail = [];
+        window.calculatedProductsDetail.push({
+          nama: prod.type,
+          nominalKotor: val,
+          potongan: totalPotProd,
+          nominalBersih: nettoProd
+        });
 
         totalSemuaManfaat += val;
         totalSemuaPotongan += totalPotProd;
@@ -1738,188 +1773,18 @@
       `;
       
       ringkasanContainer.classList.remove("hidden");
+      
+      if (claimState) {
+        claimState.productsDetail = window.calculatedProductsDetail || [];
+        window.claimState = claimState;
+        localStorage.setItem("registrasiKlaim", JSON.stringify(claimState));
+        console.log('claimState.productsDetail:', claimState.productsDetail);
+      }
     }
 
 
     function getPotonganHutangHtml(cardId, prodType = '') {
-      if (!currentParticipant || !currentParticipant.nik) {
-        return `
-          <div class="sm:col-span-3 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-500 italic text-center font-semibold">
-            Tidak ada hutang tercatat
-          </div>
-        `;
-      }
-      
-      const localHutang = localStorage.getItem("hutangData_" + currentParticipant.nik);
-      if (!localHutang) {
-        return `
-          <div class="sm:col-span-3 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-500 italic text-center font-semibold">
-            Tidak ada hutang tercatat
-          </div>
-        `;
-      }
-      
-      const debts = JSON.parse(localHutang);
-      const activeDebts = debts.filter(h => h.status !== 'Lunas' && h.status !== 'lunas');
-      if (activeDebts.length === 0) {
-        return `
-          <div class="sm:col-span-3 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-500 italic text-center font-semibold">
-            Tidak ada hutang tercatat
-          </div>
-        `;
-      }
-      
-      const grouped = {};
-      let total = 0;
-      activeDebts.forEach(h => {
-        const jenis = h.jenis || 'Lainnya';
-        const outstanding = (parseFloat(h.jumlah) || parseFloat(h.nominal) || 0) - (parseFloat(h.dibayar) || 0);
-        if (outstanding > 0) {
-          grouped[jenis] = (grouped[jenis] || 0) + outstanding;
-          total += outstanding;
-        }
-      });
-      
-      if (total === 0) {
-        return `
-          <div class="sm:col-span-3 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-slate-500 italic text-center font-semibold">
-            Tidak ada hutang tercatat
-          </div>
-        `;
-      }
-      
-      const jenisKejadianRaw = document.getElementById("kejadian-jenis")?.value || claimState?.jenisKejadian || "";
-      const jkMapped = mapJenisKejadian(jenisKejadianRaw);
-      const isWariYpMinSalaryEvent = (
-        jkMapped.startsWith('Meninggal Dunia dalam Dinas Aktif') ||
-        jkMapped.startsWith('Pensiun Sendiri — Meninggal Dunia') ||
-        jkMapped.startsWith('Pensiun Warakawuri — Meninggal Dunia')
-      );
-      const isWariOrYpCard = (prodType === 'Pensiun Warakawuri' || prodType === 'Tunjangan Yatim/Piatu');
-
-      if (isWariYpMinSalaryEvent && isWariOrYpCard) {
-        // Fetch nominal pensiun pokok from card input
-        const penspokValStr = document.getElementById(`${cardId}-besar`)?.value || 'Rp 0';
-        const penspokVal = parseRupiah(penspokValStr);
-        const validated = validasiMinimalGajiWariYP(penspokVal, total);
-
-        let rowsHtml = "";
-        for (const [jenis, val] of Object.entries(grouped)) {
-          rowsHtml += `
-            <div class="flex justify-between py-1 border-b border-amber-100 last:border-0">
-              <span class="font-bold text-amber-900">${jenis}</span>
-              <span class="font-mono font-semibold text-amber-800">${formatRupiah(val)}</span>
-            </div>
-          `;
-        }
-
-        return `
-          <div class="sm:col-span-3 bg-amber-50/90 border border-amber-300 rounded-2xl p-4 space-y-3 shadow-xs">
-            <div class="flex items-start gap-2.5">
-              <i class="fas fa-exclamation-triangle text-amber-600 text-lg mt-0.5 shrink-0"></i>
-              <div class="text-xs text-amber-900 leading-relaxed font-medium">
-                ⚠️ Peserta memiliki sisa hutang <strong>${formatRupiah(total)}</strong> (dari Manajemen Hutang/Piutang). Sesuai ketentuan, Pensiun Pertama Wari/YP <strong>TETAP dibayarkan penuh (${formatRupiah(validated.pensiunPokokWariYP)})</strong> tanpa potongan pada pembayaran pertama ini. Potongan hutang akan berjalan mulai bulan berikutnya melalui Dapem rutin.
-              </div>
-            </div>
-
-            <div class="bg-white/80 border border-amber-200 rounded-xl p-3 text-xs space-y-1.5 font-mono">
-              <div class="font-bold font-sans text-amber-950 border-b border-amber-200 pb-1 flex items-center justify-between">
-                <span>📋 Ringkasan Klaim Pembayaran Pertama (Pengendalian Minimal 1 Bulan Gaji)</span>
-              </div>
-              <div class="flex justify-between text-slate-700">
-                <span>• Pensiun Pokok Wari/YP:</span>
-                <span class="font-bold text-slate-900">${formatRupiah(validated.pensiunPokokWariYP)} (utuh)</span>
-              </div>
-              <div class="flex justify-between text-slate-700">
-                <span>• Potongan Hutang (bulan ini):</span>
-                <span class="font-bold text-emerald-600">Rp 0</span>
-              </div>
-              <div class="flex justify-between text-slate-900 font-bold border-t border-amber-200 pt-1">
-                <span>• Total Diterima:</span>
-                <span class="text-asabri-blue">${formatRupiah(validated.diterimaBersihBulanPertama)} (= Pensiun Pokok)</span>
-              </div>
-              <div class="flex justify-between text-rose-700 pt-0.5">
-                <span>• Sisa Hutang (tercatat, dipotong bulan depan):</span>
-                <span class="font-bold">${formatRupiah(validated.sisaHutangDicatat)}</span>
-              </div>
-            </div>
-
-            <div class="space-y-1 text-xs border-t border-amber-200 pt-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-amber-700 block mb-1">Rincian Record Hutang Tercatat:</span>
-              ${rowsHtml}
-            </div>
-          </div>
-        `;
-      }
-      
-      const isSpouseDeathEvent = (
-        jkMapped.startsWith('Pensiun Sendiri — Istri/Suami Meninggal Dunia') ||
-        jkMapped.startsWith('Istri/Suami Meninggal Dunia')
-      );
-      const isKeterlanjuranDebt = grouped['Keterlanjuran Bayar'] || grouped['Keterlanjuran'] || 0;
-
-      if (isSpouseDeathEvent && isKeterlanjuranDebt > 0) {
-        let rowsHtml = "";
-        for (const [jenis, val] of Object.entries(grouped)) {
-          rowsHtml += `
-            <div class="flex justify-between py-1 border-b border-blue-100 last:border-0">
-              <span class="font-bold text-blue-900">${jenis}</span>
-              <span class="font-mono font-semibold text-blue-800">${formatRupiah(val)}</span>
-            </div>
-          `;
-        }
-
-        const simHtml = renderSimulasiDapemPoinA(4500000, isKeterlanjuranDebt, 'Gaji Pokok Bulanan');
-
-        return `
-          <div class="sm:col-span-3 bg-blue-50/90 border border-blue-300 rounded-2xl p-4 space-y-3 shadow-xs">
-            <div class="flex items-start gap-2.5">
-              <i class="fas fa-info-circle text-blue-600 text-lg mt-0.5 shrink-0"></i>
-              <div class="text-xs text-blue-950 leading-relaxed font-medium">
-                ℹ️ Peserta memiliki hutang <strong>Keterlanjuran Bayar</strong> sebesar <strong>${formatRupiah(isKeterlanjuranDebt)}</strong>. Mulai bulan depan, akan dipotong otomatis <strong>30% dari Dapem bulanan</strong> (KECUALI Dapem Gaji THR dan Gaji ke-13) sampai lunas.
-              </div>
-            </div>
-
-            <div id="poina-simulasi-container">
-              ${simHtml}
-            </div>
-
-            <div class="space-y-1 text-xs border-t border-blue-200 pt-2">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800 block mb-1">Rincian Record Hutang Tercatat:</span>
-              ${rowsHtml}
-              <div class="flex justify-between pt-1 border-t border-blue-200 font-bold text-blue-950">
-                <span>Total Hutang Keterlanjuran / Total Hutang</span>
-                <span class="text-blue-700 font-mono">${formatRupiah(total)}</span>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-
-      let rowsHtml = "";
-      for (const [jenis, val] of Object.entries(grouped)) {
-        rowsHtml += `
-          <div class="flex justify-between py-1 border-b border-slate-100 last:border-0">
-            <span class="font-bold text-slate-650">${jenis}</span>
-            <span class="font-mono font-semibold text-slate-800">${formatRupiah(val)}</span>
-          </div>
-        `;
-      }
-      
-      return `
-        <div class="sm:col-span-3 bg-rose-50/50 border border-rose-100 rounded-2xl p-4 space-y-2">
-          <h5 class="font-bold text-slate-700 flex items-center gap-1.5 border-b border-rose-100 pb-1.5 mb-2">
-            <i class="fas fa-clipboard-list text-rose-600"></i> Potongan Hutang (dari Data Peserta)
-          </h5>
-          <div class="space-y-1 text-xs">
-            ${rowsHtml}
-            <div class="flex justify-between pt-2 border-t border-rose-200 font-bold text-slate-800">
-              <span>Total Hutang</span>
-              <span class="text-rose-600 font-mono" id="${cardId}-total-hutang-val" data-val="${total}">${formatRupiah(total)}</span>
-            </div>
-          </div>
-        </div>
-      `;
+      return '';
     }
 
     let verifikatorCorrected = false;
@@ -1928,12 +1793,23 @@
       const key = "claimLogs_" + (claimState?.noAgenda || "default");
       const saved = localStorage.getItem(key);
       if (saved) return JSON.parse(saved);
-      
-      const todayStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+
+      // === TIDAK ADA ENTRI DUMMY ===
+      // Untuk klaim yang baru pertama kali dibuka, buat SATU entri real-time
+      // yang mencerminkan kapan halaman ini sesungguhnya dibuka oleh user.
+      const now = new Date();
+      const waktuBuka = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+        + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+      const currentRole = localStorage.getItem('currentRole') || 'Staf KANCAB';
+      const noAgendaLabel = claimState?.noAgenda || '-';
       const defaultLogs = [
-        { waktu: `${todayStr} 09:00 WIB`, user: "Staf Kancab", kegiatan: "Register Klaim Baru", status: "Registrasi", ket: "Registrasi agenda awal sukses dibuat." },
-        { waktu: `${todayStr} 09:15 WIB`, user: "Staf Kancab", kegiatan: "Upload Dokumen Persyaratan", status: "Dokumen Diterima", ket: "Seluruh dokumen utama berhasil diunggah staf." },
-        { waktu: `${todayStr} 09:30 WIB`, user: "Sistem Otomatis", kegiatan: "Verifikasi Berkas", status: "Kalkulasi Manfaat", ket: "Pengecekan e-SKPP dan integritas data profil lolos validasi." }
+        {
+          waktu: waktuBuka,
+          user: currentRole,
+          kegiatan: 'Halaman Kejadian Dibuka',
+          status: 'Tab 1 Aktif',
+          ket: `Berkas klaim ${noAgendaLabel} dibuka untuk diproses. SLA mulai dihitung.`
+        }
       ];
       localStorage.setItem(key, JSON.stringify(defaultLogs));
       return defaultLogs;
@@ -1943,9 +1819,32 @@
       const key = "claimLogs_" + (claimState?.noAgenda || "default");
       const logs = getClaimLogs();
       const now = new Date();
-      const waktuStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-      logs.push({ waktu: waktuStr, user: user, kegiatan: kegiatan, status: status, ket: ket });
+      const waktuStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
+        + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+      const newEntry = { waktu: waktuStr, user, kegiatan, status, ket };
+      logs.push(newEntry);
       localStorage.setItem(key, JSON.stringify(logs));
+
+      // === LIVE UPDATE: langsung sisipkan baris baru ke tabel logs ===
+      // Dilakukan tanpa perlu re-render seluruh Tab 5, update SEKETIKA.
+      const logsTbody = document.getElementById("t5-logs-tbody");
+      if (logsTbody) {
+        const newRow = document.createElement('tr');
+        newRow.className = 'border-b border-slate-100 hover:bg-slate-50 bg-emerald-50/60 transition-colors';
+        newRow.innerHTML = `
+          <td class="py-3 px-4 font-mono text-slate-500">${newEntry.waktu}</td>
+          <td class="py-3 px-4 font-bold text-slate-700">${newEntry.user}</td>
+          <td class="py-3 px-4">${newEntry.kegiatan}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-blue-50 text-blue-700 border border-blue-150">${newEntry.status}</span>
+          </td>
+          <td class="py-3 px-4 text-slate-500">${newEntry.ket}</td>
+        `;
+        // Sisipkan di atas (newest first) lalu fade-in
+        logsTbody.insertBefore(newRow, logsTbody.firstChild);
+        // Hapus highlight setelah 2.5 detik
+        setTimeout(() => newRow.classList.remove('bg-emerald-50/60'), 2500);
+      }
     }
 
     function getNumericValue(id) {
@@ -2343,16 +2242,18 @@
       if (breakdownEl) {
         const gpFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(gp);
         const totalFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(computedVal);
+        const regLabel = detectRegulasiCacat(claimState?.tanggalKejadian || '');
         breakdownEl.innerHTML = `
-          <strong>Rincian Kalkulasi Santunan Cacat</strong><br>
-          ------------------------------------------<br>
-          Regulasi       : ${reg}<br>
-          Golongan Cacat : Golongan ${selectedGol}<br>
-          Kondisi        : [${item.tingkat}] ${item.kondisi || item.jenis}<br>
-          Gaji Pokok (GP): ${gpFormatted}<br>
-          Max Kali (×GP) : ${maxKali}× (Cap: ${capMultiplier}×)<br>
-          ------------------------------------------<br>
-          <strong>Santunan = ${maxKali}× × ${gpFormatted} = ${totalFormatted}</strong>
+          <strong>Rincian Perhitungan Santunan Cacat (Lump Sum)</strong><br>
+          -------------------------------------<br>
+          Regulasi              : ${regLabel}<br>
+          Tingkat / Golongan    : ${item.tingkat || '-'} / Golongan ${selectedGol}<br>
+          Gaji Pokok (SK Cacat) : ${gpFormatted}<br>
+          -------------------------------------<br>
+          Faktor Kali (Max)     : ${maxKali}&times; Gaji Pokok<br>
+          Rumus Final           : ${maxKali} &times; ${gpFormatted}<br>
+          -------------------------------------<br>
+          <strong>TOTAL MANFAAT SANTUNAN CACAT: ${totalFormatted}</strong>
         `;
         breakdownEl.classList.remove('hidden');
       }
@@ -2406,18 +2307,20 @@
           }
 
           if (breakdownEl) {
+            const finalFormatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(finalNominal);
+            const gpFormatted2 = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(gp);
             breakdownEl.innerHTML = `
-              <strong>Rincian Kalkulasi Santunan Cacat (${regLabel})</strong><br>
-              ------------------------------------------<br>
-              Tingkat Cacat    : ${tingkat}<br>
-              Kriteria Cacat   : ${kriteria}<br>
-              Golongan Cacat   : ${matchGol}<br>
-              Persentase Tabel : ${val}%<br>
-              Cap Maksimal     : ${maxCapKali}× GP (${maxCapKali*100}%)<br>
-              Persentase Akhir : ${(cappedPersen * 100).toFixed(2)}%<br>
-              Gaji Pokok (GP)  : ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(gp)}<br>
-              ------------------------------------------<br>
-              <strong>Santunan = ${(cappedPersen * 100).toFixed(2)}% × ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(gp)} = ${new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(finalNominal)}</strong>
+              <strong>Rincian Perhitungan Santunan Cacat (Manual)</strong><br>
+              -------------------------------------<br>
+              Regulasi              : ${regLabel}<br>
+              Tingkat / Golongan    : ${tingkat} / ${matchGol}<br>
+              Kriteria Cacat        : ${kriteria}<br>
+              Gapok SK Cacat        : ${gpFormatted2}<br>
+              -------------------------------------<br>
+              Persentase Santunan   : ${val}%<br>
+              Rumus Final           : ${cappedPersen.toFixed(4)} &times; ${gpFormatted2}<br>
+              -------------------------------------<br>
+              <strong>TOTAL MANFAAT SANTUNAN CACAT: ${finalFormatted}</strong>
             `;
             breakdownEl.classList.remove("hidden");
           }
@@ -2619,6 +2522,37 @@
       }
     }
 
+    function onBeasiswaChildCheckboxChange(cardId, produk) {
+      const chks = document.querySelectorAll(`[id^="${cardId}-child-chk-"]`);
+      let countChecked = 0;
+      chks.forEach(chk => {
+        if (chk.checked) countChecked++;
+      });
+      const countInput = document.getElementById(`${cardId}-jml-anak`);
+      if (countInput) countInput.value = countChecked;
+      calculateProduct(cardId, produk);
+    }
+
+    function toggleAnakBeasiswa(childKeyOrId) {
+      const beasiswaCards = document.querySelectorAll('[id^="card-prod-"]');
+      beasiswaCards.forEach(card => {
+        const jenis = document.getElementById(`${card.id}-jenis`)?.value || '';
+        if (jenis.includes('Beasiswa')) {
+          onBeasiswaChildCheckboxChange(card.id, jenis);
+        }
+      });
+    }
+
+    function hitungBeasiswa() {
+      const beasiswaCards = document.querySelectorAll('[id^="card-prod-"]');
+      beasiswaCards.forEach(card => {
+        const jenis = document.getElementById(`${card.id}-jenis`)?.value || '';
+        if (jenis.includes('Beasiswa')) {
+          calculateProduct(card.id, jenis);
+        }
+      });
+    }
+
     // Live preview: update jenjang display (info only)
     function onBeasiswaJenjangChange(cardId, produk) {
       const reg = claimState?.regulasi || 'PP 54/2020';
@@ -2758,13 +2692,15 @@
         }
         
         breakdownEl.innerHTML = `
-          <strong>Card Tunjangan Cacat Bulanan</strong><br>
-          ------------------------------------------<br>
-          Tingkat/Golongan  : ${tingkat} / ${golongan}<br>
-          Persentase        : ${pct}%<br>
-          Gapok SK Cacat    : ${formatRupiah(gapok)}<br>
-          Besar Manfaat     : ${formatRupiah(computedVal)}<br>
-          ${keteranganTingkatI}------------------------------------------<br>
+          <strong>Rincian Perhitungan Tunjangan Cacat Bulanan (PP 56/2007)</strong><br>
+          -------------------------------------<br>
+          Tingkat / Golongan    : ${tingkat} / ${golongan}<br>
+          Gaji Pokok SK Cacat   : ${formatRupiah(gapok)}<br>
+          -------------------------------------<br>
+          ${keteranganTingkatI}
+          Persentase Hak        : ${pct}%<br>
+          Rumus Final           : ${pct}% &times; ${formatRupiah(gapok)}<br>
+          -------------------------------------<br>
           <strong>TOTAL TUNJANGAN CACAT: ${formatRupiah(computedVal)} / bulan</strong>
         `;
         breakdownEl.classList.remove('hidden');
@@ -2818,6 +2754,21 @@
       showToast('Kejadian Dialihkan', 'Kejadian diubah ke KK — Cacat. Tunjangan Cacat ditambahkan di Tab 4.', 'success');
     }
 
+    function getSRKKByJenisKejadian(jenisKejadian, regulasi) {
+      const isGugur = (jenisKejadian || '').includes('Gugur');
+      const isTewas = (jenisKejadian || '').includes('Tewas');
+      
+      const SRKK_NOMINAL = {
+        'PP 102/2015': { gugur: 400000000, tewas: 275000000 },
+        'PP 54/2020': { gugur: 450000000, tewas: 350000000 },
+      };
+      
+      const reg = (regulasi && SRKK_NOMINAL[regulasi]) ? regulasi : 'PP 54/2020';
+      if (isGugur) return SRKK_NOMINAL[reg].gugur;
+      if (isTewas) return SRKK_NOMINAL[reg].tewas;
+      return SRKK_NOMINAL[reg].gugur;
+    }
+
     function getSRKK(typeOrReg, regOrType) {
       const SRKK_NOMINAL = {
         'PP 102/2015': { 'Gugur': 400000000, 'Tewas': 275000000, 'Meninggal Biasa': 225000000 },
@@ -2836,19 +2787,13 @@
 
     function updateSrkkNominal(cardId) {
       const reg = claimState?.regulasi || detectRegulasiCacat(claimState?.kejadianDetails?.tanggalKejadian || "") || 'PP 54/2020';
-      const tab2Kematian = document.getElementById('jenis-kematian-kk')?.value || claimState?.jenisKematianKk;
-      const typeEl = document.getElementById(`${cardId}-srkk-type`);
-      if (typeEl && tab2Kematian && (typeEl.value !== tab2Kematian) && (tab2Kematian === 'Gugur' || tab2Kematian === 'Tewas')) {
-        typeEl.value = tab2Kematian;
-      }
-      const type = typeEl ? typeEl.value : (tab2Kematian || 'Gugur');
+      const currentKej = claimState?.jenisKejadian || document.getElementById("kejadian-jenis")?.value || "";
+      const nominalSRKK = getSRKKByJenisKejadian(currentKej, reg);
+      const isTewas = currentKej.includes('Tewas');
+      const jenisSRKKLabel = isTewas ? 'Tewas' : 'Gugur';
 
-      let nominalSRKK = 0;
-      if (type === 'Meninggal Biasa') {
-        nominalSRKK = 225000000;
-      } else {
-        nominalSRKK = getSRKK(type, reg);
-      }
+      const typeEl = document.getElementById(`${cardId}-srkk-type`);
+      if (typeEl) typeEl.value = jenisSRKKLabel;
 
       // Read bintangJasa from per-peserta localStorage
       const nik = currentParticipant?.nik || currentParticipant?.nrp_nip || '';
@@ -3154,6 +3099,47 @@
         });
       }
     }
+
+    // Sinkronisasi TMT Pensiun, Tgl Skep Pensiun & Nomor Skep Pensiun
+    // dari card yang sedang diisi ke SEMUA card lain yang memiliki field tersebut
+    function syncSkepAcrossAllCards(sourceCardId) {
+      const srcTmt   = document.getElementById(`${sourceCardId}-tmt-pensiun`);
+      const srcTgl   = document.getElementById(`${sourceCardId}-tgl-skep-pensiun`);
+      const srcNo    = document.getElementById(`${sourceCardId}-no-skep-pensiun`);
+
+      const allTmt = document.querySelectorAll('input[id$="-tmt-pensiun"]');
+      const allTgl = document.querySelectorAll('input[id$="-tgl-skep-pensiun"]');
+      const allNo  = document.querySelectorAll('input[id$="-no-skep-pensiun"]');
+
+      // Selalu sync nilai LENGKAP (bukan hanya karakter pertama)
+      // Hanya skip field sumber itu sendiri
+      if (srcTmt) {
+        allTmt.forEach(el => {
+          if (el.id !== srcTmt.id) {
+            el.value = srcTmt.value;
+            el.classList.remove('border-rose-500');
+          }
+        });
+      }
+      if (srcTgl) {
+        allTgl.forEach(el => {
+          if (el.id !== srcTgl.id) {
+            el.value = srcTgl.value;
+            el.classList.remove('border-rose-500');
+          }
+        });
+      }
+      if (srcNo) {
+        allNo.forEach(el => {
+          if (el.id !== srcNo.id) {
+            el.value = srcNo.value;
+            el.classList.remove('border-rose-500');
+          }
+        });
+      }
+    }
+
+
 
     function syncUdwWithNtta() {
       // Find select element for NTTA
@@ -3463,23 +3449,43 @@
       
       const breakdownEl = document.getElementById(`${cardId}-breakdown`);
       if (breakdownEl) {
-        breakdownEl.innerHTML = `
-          <strong>Rincian Perhitungan Aktuaria ${type} (${type === 'TA' ? 'Tabungan Asuransi' : 'Nilai Tunai Tabungan Asuransi'})</strong><br>
-          -------------------------------------<br>
-          TMT Pengangkatan  : ${formatIndoDate(tmtAngkat)}<br>
-          TMT Pensiun/Klaim : ${formatIndoDate(tmtPensiun)}<br>
-          Gaji Pokok        : ${formatRupiah(gp)} (MKG: ${mkgYrs} Thn)<br>
-          -------------------------------------<br>
-          Manfaat Pasti (MP &lt; 2013)  : ${formatRupiah(calcResult.mp)}<br>
-          Iuran Pasti (IP &ge; 2013)    : ${formatRupiah(calcResult.ip)}<br>
-          -------------------------------------<br>
-          Total Akumulasi Iuran s.d Klaim<br>
-          (informasi pendukung)       : ${formatRupiah(calcResult.akumulasi)}<br>
-          <br>
-          Rumus Final: ${calcResult.isUnder10Years ? 'Akumulasi Iuran (Masa Dinas < 10 Thn)' : 'MP + IP (ROUNDUP ke ratusan)'}<br>
-          -------------------------------------<br>
-          <strong>TOTAL MANFAAT ${type}: ${formatRupiah(totalTARounded)}</strong>
-        `;
+        const md = monthDiff(tmtAngkat, tmtPensiun);
+        const mdStr = (md / 12).toFixed(1);
+        if (calcResult.isUnder10Years) {
+          breakdownEl.innerHTML = `
+            <strong>Rincian Perhitungan Aktuaria ${type} (${type === 'TA' ? 'Tabungan Asuransi' : 'Nilai Tunai TA'})</strong><br>
+            -------------------------------------<br>
+            TMT Pengangkatan   : ${formatIndoDate(tmtAngkat)}<br>
+            TMT Pensiun/Klaim  : ${formatIndoDate(tmtPensiun)}<br>
+            Masa Dinas         : ${mdStr} Tahun (${md} bulan)<br>
+            Gaji Pokok         : ${formatRupiah(gp)} (MKG: ${mkgYrs} Thn)<br>
+            -------------------------------------<br>
+            <em>Masa dinas &lt; 10 tahun — digunakan nilai Akumulasi Iuran.</em><br>
+            Akumulasi Total Iuran s.d Klaim : ${formatRupiah(calcResult.akumulasi)}<br>
+            -------------------------------------<br>
+            Rumus Final: ROUNDUP(Akumulasi) ke ratusan<br>
+            -------------------------------------<br>
+            <strong>TOTAL MANFAAT ${type}: ${formatRupiah(totalTARounded)}</strong>
+          `;
+        } else {
+          breakdownEl.innerHTML = `
+            <strong>Rincian Perhitungan Aktuaria ${type} (${type === 'TA' ? 'Tabungan Asuransi' : 'Nilai Tunai TA'})</strong><br>
+            -------------------------------------<br>
+            TMT Pengangkatan   : ${formatIndoDate(tmtAngkat)}<br>
+            TMT Pensiun/Klaim  : ${formatIndoDate(tmtPensiun)}<br>
+            Gaji Pokok         : ${formatRupiah(gp)} (MKG: ${mkgYrs} Thn)<br>
+            -------------------------------------<br>
+            Manfaat Pasti (MP &lt; 2013) : ${formatRupiah(calcResult.mp)}<br>
+            Iuran Pasti (IP &ge; 2013)  : ${formatRupiah(calcResult.ip)}<br>
+            -------------------------------------<br>
+            Total Akumulasi Iuran s.d Klaim<br>
+            (informasi pendukung)         : ${formatRupiah(calcResult.akumulasi)}<br>
+            <br>
+            Rumus Final: MP + IP (ROUNDUP ke ratusan)<br>
+            -------------------------------------<br>
+            <strong>TOTAL MANFAAT ${type}: ${formatRupiah(totalTARounded)}</strong>
+          `;
+        }
         breakdownEl.classList.remove('hidden');
       }
       if (type === "NTTA") {
@@ -3578,9 +3584,12 @@
     }
 
     function hitungF1(jenisKejadian, masaDinas) {
-      if (jenisKejadian === 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)' ||
+      if (jenisKejadian === 'Kecelakaan Kerja - Meninggal Dunia - Tewas' ||
+          jenisKejadian === 'Kecelakaan Kerja - Meninggal Dunia - Gugur' ||
+          jenisKejadian === 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)' ||
           jenisKejadian === 'Meninggal Dunia dalam Dinas Aktif (JKm)' ||
-          jenisKejadian === 'Meninggal dalam Tugas') {
+          jenisKejadian === 'Meninggal dalam Tugas' ||
+          (jenisKejadian && (jenisKejadian.includes('Gugur') || jenisKejadian.includes('Tewas')))) {
         return 80.0;
       }
       // Pensiun Normal
@@ -3588,6 +3597,26 @@
       return Math.min(Math.max(f1, 20.0), 80.0);
       // Min 20%, Maks 80%
     }
+
+    function getKondisiKematian(jenisKejadian) {
+      const jk = (jenisKejadian || '').toLowerCase();
+      if (jk.includes('gugur') || jk.includes('tewas')) {
+        return 'Gugur/Tewas';
+      }
+      return 'Meninggal Biasa';
+    }
+
+    const TUNJANGAN_YATIM_CONFIG = {
+      'Meninggal Biasa': { '2 Anak': 0.30, '1 Anak': 0.225, '0 Anak': 0 },
+      'Gugur/Tewas': { '2 Anak': 0.45, '1 Anak': 0.30, '0 Anak': 0 },
+      'Gugur/Tewas/Dinas Lainnya': { '2 Anak': 0.45, '1 Anak': 0.30, '0 Anak': 0 },
+      'Pahlawan': { '2 Anak': 0.45, '1 Anak': 0.3375, '0 Anak': 0 }
+    };
+
+    const TUNJANGAN_ORANG_TUA_CONFIG = {
+      berlakuUntuk: ['Gugur/Tewas', 'Gugur/Tewas/Dinas Lainnya', 'Pahlawan'],
+      persentase: 0.25
+    };
 
     const PENSPOK_WARI_DASAR = {
       'Meninggal Biasa': 0.35,
@@ -3711,19 +3740,21 @@
       if (cardBesar) cardBesar.value = formatRupiah(calcNTIP.finalTotal);
 
       if (breakdownEl) {
-        const reg = claimState?.regulasi || 'PP 54/2020';
         breakdownEl.innerHTML = `
-          <strong>Rincian Perhitungan Aktuaria NTIP</strong><br>
+          <strong>Rincian Perhitungan NTIP (Nilai Tunai Iuran Pensiun)</strong><br>
           -------------------------------------<br>
-          Regulasi              : ${reg}<br>
-          F1 (s.d 31 Des 2000)  : ${f1.toFixed(3)} Tahun<br>
-          F2 (1 Jan 2001 - TMT) : ${f2.toFixed(3)} Tahun<br>
-          P1 (Gapok lama)       : ${formatRupiah(p1)}<br>
-          P2 (Gapok terakhir)   : ${formatRupiah(p2)}<br>
+          TMT Pengangkatan  : ${formatIndoDate(tmtAngkat)}<br>
+          TMT Berhenti      : ${formatIndoDate(tmtBerhentiVal)}<br>
+          Jenis Kejadian    : ${jenisKejadian}<br>
           -------------------------------------<br>
-          Base NTIP             : ${formatRupiah(calcNTIP.baseNTIP)}<br>
-          ${calcNTIP.bungaExtra > 0 ? `Bunga Tambahan (9%)    : ${formatRupiah(calcNTIP.bungaExtra)}<br>` : ''}
-          Rumus Final: Base NTIP + Bunga (ROUNDUP ke ratusan)<br>
+          F1 (s.d 2000)     : ${f1Text}<br>
+          F2 (&ge; 2001)    : ${f2Text}<br>
+          P1 (Gapok Lama)   : ${formatRupiah(p1)}<br>
+          P2 (Gapok Baru)   : ${formatRupiah(p2)}<br>
+          -------------------------------------<br>
+          Base NTIP         : ${formatRupiah(calcNTIP.baseNTIP)}<br>
+          ${calcNTIP.bungaExtra > 0 ? `Bunga Tambahan    : ${formatRupiah(calcNTIP.bungaExtra)}<br>` : ''}
+          Rumus Final: (F1×P1) + (F2×(P2−P1))<br>
           -------------------------------------<br>
           <strong>TOTAL MANFAAT NTIP: ${formatRupiah(calcNTIP.finalTotal)}</strong>
         `;
@@ -3739,9 +3770,35 @@
       if (produk === "BPPP") {
         const val = 7500000;
         document.getElementById(`${cardId}-besar`).value = formatRupiah(val);
+        if (breakdownEl) {
+          breakdownEl.innerHTML = `
+            <strong>Rincian Biaya Pemakaman Pensiun Penerima (BPPP)</strong><br>
+            -------------------------------------<br>
+            Regulasi              : PP 102/2015 Jo. PP 54/2020<br>
+            Ketentuan             : Nominal tetap sesuai regulasi<br>
+            -------------------------------------<br>
+            Nominal Ketentuan     : ${formatRupiah(val)}<br>
+            -------------------------------------<br>
+            <strong>TOTAL MANFAAT BPPP: ${formatRupiah(val)}</strong>
+          `;
+          breakdownEl.classList.remove('hidden');
+        }
       } else if (produk === "BPI/S") {
         const val = 6000000;
         document.getElementById(`${cardId}-besar`).value = formatRupiah(val);
+        if (breakdownEl) {
+          breakdownEl.innerHTML = `
+            <strong>Rincian Biaya Pemakaman Istri/Suami (BPI/S)</strong><br>
+            -------------------------------------<br>
+            Regulasi              : PP 102/2015 Jo. PP 54/2020<br>
+            Ketentuan             : Nominal tetap sesuai regulasi<br>
+            -------------------------------------<br>
+            Nominal Ketentuan     : ${formatRupiah(val)}<br>
+            -------------------------------------<br>
+            <strong>TOTAL MANFAAT BPI/S: ${formatRupiah(val)}</strong>
+          `;
+          breakdownEl.classList.remove('hidden');
+        }
       }
       showToast("Kalkulasi Pemakaman Selesai", "Nominal biaya pemakaman berhasil dihitung.", "success");
       updateRingkasanKlaim();
@@ -4184,7 +4241,8 @@
       'Istri/Suami Meninggal Dunia',
       'Anak Meninggal Dunia',
       'Meninggal Dunia Dalam Dinas Aktif',
-      'Kecelakaan Kerja - Meninggal Dunia (Gugur/Tewas)',
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas',
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur',
       'Kecelakaan Kerja - Cacat',
       'Pensiun Sendiri - Meninggal Dunia',
       'Pensiun Sendiri - Istri/Suami Meninggal Dunia',
@@ -4192,7 +4250,8 @@
       'Pensiun Warakawuri - Meninggal Dunia',
       'Tunjangan Yatim/Piatu/YatimPiatu',
       'Tunjangan Orang Tua',
-      'Beasiswa JKK/JKM',
+      'Beasiswa JKK',
+      'Beasiswa JKM',
       'Uang Kekurangan Pensiun (UKP)',
     ];
 
@@ -4256,7 +4315,6 @@
           toggleTmtGajiTerakhir(e.target.value);
           toggleSpouseDeathTMTField(e.target.value);
           toggleAhliWarisMeninggal(e.target.value);
-          toggleBeasiswaKejadianAwal(e.target.value);
           toggleUkpForm(e.target.value);
           toggleYatimForm(e.target.value);
           toggleOrtuForm(e.target.value);
@@ -4603,38 +4661,15 @@
     }
 
     function toggleJenisKematianKkDropdown(jenisKejadian) {
-      const container = document.getElementById('jenis-kematian-kk-container');
-      if (!container) return;
-
-      const isMeninggalKK = (jenisKejadian === 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)' || jenisKejadian === 'Kecelakaan Kerja — Meninggal Dunia');
-      if (isMeninggalKK) {
-        container.classList.remove('hidden');
-        container.classList.add('flex');
-      } else {
-        container.classList.add('hidden');
-        container.classList.remove('flex');
-      }
+      // Deprecated: Kondisi kematian (Tewas/Gugur) kini otomatis dari jenisKejadian
     }
 
     function toggleBeasiswaKejadianAwal(val) {
-      const container = document.getElementById("beasiswa-kejadian-awal-container");
-      if (!container) return;
-      const isBeasiswa = (val === 'Beasiswa JKK/JKM' || val === 'Beasiswa JKm' || val === 'Beasiswa JKK');
-      if (isBeasiswa) {
-        container.classList.remove("hidden");
-        container.classList.add("flex");
-      } else {
-        container.classList.add("hidden");
-        container.classList.remove("flex");
-      }
+      // Deprecated: Kejadian awal beasiswa otomatis dari Jenis Kejadian (Beasiswa JKK / Beasiswa JKM)
     }
 
     function onBeasiswaKejadianAwalChange(val) {
-      if (claimState) {
-        claimState.beasiswaKejadianAwal = val;
-        localStorage.setItem("registrasiKlaim", JSON.stringify(claimState));
-      }
-      autoRenderProducts();
+      // Deprecated
     }
 
     function toggleAhliWarisMeninggal(val) {
@@ -4746,12 +4781,16 @@
       }
     }
 
-    // Show/hide Bintang Jasa info box for KK — Meninggal Dunia
+    // Show/hide Bintang Jasa info box for KK — Meninggal Dunia (Tewas / Gugur)
     function toggleBintangJasaInfo(jenisKejadian) {
       const container = document.getElementById('bintang-jasa-container');
       if (!container) return;
 
-      if (jenisKejadian !== 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)') {
+      const isMeninggalKK = (jenisKejadian && (
+        jenisKejadian.includes('Kecelakaan Kerja') && (jenisKejadian.includes('Gugur') || jenisKejadian.includes('Tewas') || jenisKejadian.includes('Meninggal'))
+      ));
+
+      if (!isMeninggalKK) {
         container.classList.add('hidden');
         return;
       }
@@ -4772,20 +4811,23 @@
     }
 
     function toggleAhliWarisDropdown(val) {
-      // Also update Bintang Jasa info box and Jenis Kematian KK dropdown
       toggleBintangJasaInfo(val);
-      toggleJenisKematianKkDropdown(val);
 
       const container = document.getElementById("ahli-waris-dropdown-container");
       if (!container) return;
       const kejadianAhliWaris = [
         'Meninggal Dunia dalam Dinas Aktif (JKm)',
+        'Meninggal Dunia Dalam Dinas Aktif',
+        'Kecelakaan Kerja - Meninggal Dunia - Tewas',
+        'Kecelakaan Kerja - Meninggal Dunia - Gugur',
         'Kecelakaan Kerja — Meninggal (Gugur/Tewas)',
         'Pensiun Sendiri — Meninggal Dunia',
-        'Pensiun Warakawuri — Meninggal Dunia'
+        'Pensiun Sendiri - Meninggal Dunia',
+        'Pensiun Warakawuri — Meninggal Dunia',
+        'Pensiun Warakawuri - Meninggal Dunia'
       ];
 
-      if (!kejadianAhliWaris.includes(val)) {
+      if (!kejadianAhliWaris.includes(val) && !(val && (val.includes('Meninggal') || val.includes('Gugur') || val.includes('Tewas')))) {
         container.classList.add("hidden");
         document.getElementById("ahli-waris-jenis").value = "";
         if (claimState) claimState.ahliWaris = "";
@@ -4966,6 +5008,7 @@
       try {
         if (data) {
           claimState = data;
+          window.claimState = data;
           currentParticipant = data.peserta;
             
             // Populate sticky summary bar
@@ -4975,8 +5018,10 @@
             
             // Initialize SLA Timer
             if (!data.slaStartTime) {
-              const elapsedMinutes = (data.sla && data.sla.waktu) ? parseInt(data.sla.waktu) : 10;
-              data.slaStartTime = Date.now() - (elapsedMinutes * 60 * 1000);
+              // SLA mulai dihitung dari SEKARANG — saat user membuka halaman kejadian ini.
+              // Tidak menggunakan offset elapsedMinutes dari data registrasi,
+              // agar SLA benar-benar mencerminkan waktu proses di halaman ini secara real.
+              data.slaStartTime = Date.now();
               localStorage.setItem('registrasiKlaim', JSON.stringify(data));
             }
 
@@ -5061,6 +5106,10 @@
 
             // Populate Tab 1: Data Peserta Content Cards Immediately
             populateTab1Data(data);
+
+            // Restore sequential tab state from localStorage
+            // updateTabNavUI dipanggil segera agar visual lock/unlock langsung berlaku
+            setTimeout(() => updateTabNavUI(null), 50);
 
             // Populate Tab 2: Form Data Kejadian
             // 1. Populate Jenis Kejadian select options
@@ -5170,8 +5219,6 @@
             toggleTmtGajiTerakhir(data.jenisKejadian);
             toggleSpouseDeathTMTField(data.jenisKejadian);
             toggleAhliWarisMeninggal(data.jenisKejadian);
-            toggleJenisKematianKkDropdown(data.jenisKejadian);
-            toggleBeasiswaKejadianAwal(data.jenisKejadian);
             toggleUkpForm(data.jenisKejadian);
             toggleYatimForm(data.jenisKejadian);
             toggleOrtuForm(data.jenisKejadian);
@@ -5186,12 +5233,6 @@
             if (data.jenisUkp && document.getElementById("ukp-jenis-select")) {
               document.getElementById("ukp-jenis-select").value = data.jenisUkp;
               onJenisUkpChange(data.jenisUkp);
-            }
-            if (data.beasiswaKejadianAwal && document.getElementById("beasiswa-kejadian-awal")) {
-              document.getElementById("beasiswa-kejadian-awal").value = data.beasiswaKejadianAwal;
-            }
-            if (data.jenisKematianKk && document.getElementById("jenis-kematian-kk")) {
-              document.getElementById("jenis-kematian-kk").value = data.jenisKematianKk;
             }
             checkPTDHTMTComparison();
 
@@ -5226,14 +5267,18 @@
       if (cleaned === "Pensiun" || cleaned === "Pensiun Utama") return "Pensiun Pertama";
       if (cleaned === "Berhenti tanpa Hak Pensiun" || cleaned === "Berhenti Tanpa Hak Pensiun") return "Berhenti tanpa Hak Pensiun (PTDH)";
       if (cleaned === "Meninggal Dunia dalam Dinas Aktif" || cleaned === "Meninggal Dunia Dalam Dinas Aktif") return "Meninggal Dunia dalam Dinas Aktif (JKm)";
-      if (cleaned === "Kecelakaan Kerja - Meninggal Dunia (Gugur/Tewas)" || cleaned === "Kecelakaan Kerja — Meninggal Dunia" || cleaned === "Kecelakaan Kerja - Gugur/Tewas" || cleaned.includes("Gugur/Tewas")) return "Kecelakaan Kerja — Meninggal (Gugur/Tewas)";
+      if (cleaned.includes("Kecelakaan Kerja") && cleaned.includes("Gugur")) return "Kecelakaan Kerja - Meninggal Dunia - Gugur";
+      if (cleaned.includes("Kecelakaan Kerja") && cleaned.includes("Tewas")) return "Kecelakaan Kerja - Meninggal Dunia - Tewas";
+      if (cleaned === "Kecelakaan Kerja - Meninggal Dunia (Gugur/Tewas)" || cleaned === "Kecelakaan Kerja — Meninggal Dunia" || cleaned === "Kecelakaan Kerja - Gugur/Tewas" || cleaned.includes("Gugur/Tewas")) return "Kecelakaan Kerja - Meninggal Dunia - Tewas";
       if (cleaned.startsWith("Tunjangan Yatim/Piatu") || cleaned.includes("Yatim-Piatu") || cleaned.includes("YatimPiatu")) return "Tunjangan Yatim/Piatu/Yatim-Piatu";
       if (cleaned.startsWith("Pensiun Sendiri - Meninggal Dunia") || cleaned.startsWith("Pensiun Sendiri — Meninggal Dunia")) return "Pensiun Sendiri — Meninggal Dunia";
       if (cleaned.startsWith("Pensiun Sendiri - Istri/Suami") || cleaned.startsWith("Pensiun Sendiri — Istri/Suami")) return "Pensiun Sendiri — Istri/Suami Meninggal Dunia";
       if (cleaned.startsWith("Pensiun Sendiri - Anak") || cleaned.startsWith("Pensiun Sendiri — Anak")) return "Pensiun Sendiri — Anak Meninggal Dunia";
       if (cleaned.startsWith("Pensiun Warakawuri - Meninggal") || cleaned.startsWith("Pensiun Warakawuri — Meninggal")) return "Pensiun Warakawuri — Meninggal Dunia";
       if (cleaned.startsWith("Tunjangan Orang Tua")) return "Tunjangan Orang Tua — Meninggal Dunia";
-      if (cleaned === "Beasiswa JKm" || cleaned === "Beasiswa JKK") return "Beasiswa JKK/JKM";
+      if (cleaned === "Beasiswa JKK") return "Beasiswa JKK";
+      if (cleaned === "Beasiswa JKM" || cleaned === "Beasiswa JKm") return "Beasiswa JKM";
+      if (cleaned === "Beasiswa JKK/JKM") return "Beasiswa JKK";
       if (cleaned.startsWith("UKP") || cleaned.includes("Kekurangan Pensiun")) return "Uang Kekurangan Pensiun (UKP)";
       return cleaned;
     }
@@ -5571,9 +5616,7 @@
           // Save to state klaim
           data.regulasi = detectRegulasi(tglKejadianEl.value);
           data.tanggalKejadian = tglKejadianEl.value;
-          
-          const jenisKkEl = document.getElementById("jenis-kematian-kk");
-          data.jenisKematianKk = (jenisEl.value === 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)' || jenisEl.value === 'Kecelakaan Kerja — Meninggal Dunia') && jenisKkEl ? jenisKkEl.value : "";
+          data.jenisKematianKk = (jenisEl.value.includes('Gugur')) ? 'Gugur' : ((jenisEl.value.includes('Tewas')) ? 'Tewas' : '');
           
           const jenisUkpEl = document.getElementById("ukp-jenis-select");
           if (jenisEl.value === 'Kecelakaan Kerja — Cacat') {
@@ -5626,9 +5669,13 @@
       }
       
       if (jenisEl.value === 'Uang Kekurangan Pensiun (UKP)' || jenisEl.value.startsWith('UKP')) {
+        unlockTabUpTo(3); // UKP: langsung ke Tab 4 (skip Persyaratan)
+        catatHistoryProses('Tab 2 — Data Kejadian', 'Lanjut ke Tab 4 (UKP)', `UKP: ${jenisEl.value}. Skip Tab Persyaratan.`);
         showToast("Data Berhasil Disimpan", "Langsung ke tab Hak / Produk (Tanpa Tab Persyaratan).", "success");
         switchTab("tab-hak-produk");
       } else {
+        unlockTabUpTo(2); // Buka Tab 3
+        catatHistoryProses('Tab 2 — Data Kejadian', 'Lanjut ke Tab 3', `Jenis kejadian: ${jenisEl.value}.`);
         showToast("Data Berhasil Disimpan", "Melanjutkan ke tab Persyaratan.", "success");
         switchTab("tab-persyaratan");
       }
@@ -5642,15 +5689,29 @@
     }
 
     function switchTab(tabId) {
+      // === SEQUENTIAL LOCK CHECK ===
+      const TAB_ORDER = ['tab-peserta', 'tab-kejadian', 'tab-persyaratan', 'tab-hak-produk', 'tab-riwayat'];
+      const targetIndex = TAB_ORDER.indexOf(tabId); // 0-based
+      const unlockedMax = parseInt(localStorage.getItem('unlockedTabMax_' + (claimState?.noAgenda || 'default')) || '0');
+
+      if (targetIndex > unlockedMax) {
+        const tabLabel = ['Tab 1', 'Tab 2', 'Tab 3', 'Tab 4', 'Tab 5'][targetIndex];
+        showToast('Tab Terkunci', `${tabLabel} belum dapat diakses. Selesaikan tab sebelumnya terlebih dahulu.`, 'warning');
+        return; // Cegah perpindahan
+      }
+      // === END LOCK CHECK ===
+
       // Deactivate all tabs
       const tabs = document.querySelectorAll('.tab-pane');
       tabs.forEach(t => t.classList.remove('active'));
 
-      // Remove active tab button style
+      // Remove active tab button style (for unlocked tabs only, locked handled by updateTabNavUI)
       const tabBtns = document.querySelectorAll('.tab-btn');
       tabBtns.forEach(btn => {
         btn.classList.remove('border-asabri-blue', 'text-asabri-blue');
-        btn.classList.add('border-transparent', 'text-slate-400');
+        if (!btn.classList.contains('tab-locked')) {
+          btn.classList.add('border-transparent', 'text-slate-400');
+        }
       });
 
       // Activate selected tab pane
@@ -5687,6 +5748,231 @@
       }
       renderTabRejectionButtons();
     }
+
+    // =============================================
+    // SEQUENTIAL TAB SYSTEM — fungsi inti
+    // =============================================
+
+    /**
+     * Mendapatkan index tab terbuka maksimum (0=Tab1, 1=Tab2, ... 4=Tab5)
+     */
+    function getUnlockedTabMax() {
+      return parseInt(localStorage.getItem('unlockedTabMax_' + (claimState?.noAgenda || 'default')) || '0');
+    }
+
+    /**
+     * Membuka kunci tab sampai level tertentu (0-based index)
+     * Tab yang sudah terbuka tidak akan dikunci kembali.
+     */
+    function unlockTabUpTo(tabIndex) {
+      const key = 'unlockedTabMax_' + (claimState?.noAgenda || 'default');
+      const current = getUnlockedTabMax();
+      if (tabIndex > current) {
+        localStorage.setItem(key, String(tabIndex));
+      }
+      updateTabNavUI(tabIndex > current ? tabIndex : null); // pass newly-unlocked index for animation
+    }
+
+    /**
+     * Memperbarui tampilan visual nav tab berdasarkan unlockedTabMax.
+     * Tab terkunci: abu-abu + gembok. Tab terbuka: normal + hover.
+     * @param {number|null} newlyUnlocked - index tab yang baru dibuka (untuk animasi)
+     */
+    function updateTabNavUI(newlyUnlocked) {
+      const TAB_IDS = ['btn-tab-peserta', 'btn-tab-kejadian', 'btn-tab-persyaratan', 'btn-tab-hak-produk', 'btn-tab-riwayat'];
+      const unlockedMax = getUnlockedTabMax();
+
+      TAB_IDS.forEach((btnId, i) => {
+        const btn = document.getElementById(btnId);
+        if (!btn) return;
+
+        if (i <= unlockedMax) {
+          // Tab terbuka
+          const wasLocked = btn.classList.contains('tab-locked');
+          btn.classList.remove('tab-locked');
+          btn.classList.add('tab-unlocked');
+          // Sembunyikan ikon gembok
+          const lockIcon = btn.querySelector('.tab-lock-icon');
+          if (lockIcon) lockIcon.style.display = 'none';
+          // Animasi saat baru dibuka
+          if (wasLocked || i === newlyUnlocked) {
+            btn.classList.add('tab-just-unlocked');
+            setTimeout(() => btn.classList.remove('tab-just-unlocked'), 400);
+          }
+        } else {
+          // Tab terkunci
+          btn.classList.add('tab-locked');
+          btn.classList.remove('tab-unlocked', 'border-asabri-blue', 'text-asabri-blue');
+          btn.classList.add('border-transparent', 'text-slate-400');
+          // Tampilkan ikon gembok
+          const lockIcon = btn.querySelector('.tab-lock-icon');
+          if (lockIcon) lockIcon.style.display = '';
+        }
+      });
+    }
+
+    /**
+     * Mencatat histori proses ke claimLogs untuk ditampilkan di Tab 5.
+     * @param {string} namaTab - Label tab yang diselesaikan
+     * @param {string} aksi - Jenis aksi ('Simpan Draft' | 'Lanjut ke Tab X')
+     * @param {string} catatan - Catatan tambahan (opsional)
+     */
+    function catatHistoryProses(namaTab, aksi, catatan) {
+      const currentRole = localStorage.getItem('currentRole') || 'Staf KANCAB';
+      const user = currentRole;
+      const kegiatan = `[${namaTab}] ${aksi}`;
+      const status = aksi.startsWith('Lanjut') ? 'Lanjut' : 'Draft Tersimpan';
+      const ket = catatan || `${aksi} dari ${namaTab} berhasil.`;
+      addClaimLog(user, kegiatan, status, ket);
+      // Jika Tab 5 terbuka, refresh tampilannya
+      const tab5 = document.getElementById('tab-riwayat');
+      if (tab5 && tab5.classList.contains('active')) {
+        renderTab5Data();
+      }
+    }
+
+    // =============================================
+    // HANDLER TOMBOL AKSI PER TAB
+    // =============================================
+
+    /** TAB 1 — Simpan (tetap di Tab 1, buka Tab 2) */
+    function simpanTab1() {
+      if (!claimState) claimState = {};
+      localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      unlockTabUpTo(1); // Buka Tab 2 (index 1)
+      catatHistoryProses('Tab 1 — Data Peserta', 'Simpan Draft', 'Data peserta tersimpan sebagai draft.');
+      showToast('Data Tersimpan', 'Tab 2 (Data Kejadian) kini terbuka. Klik Lanjut ke Tab 2 atau pindah sendiri.', 'success');
+      renderTabRejectionButtons();
+    }
+
+    /** TAB 1 — Lanjut ke Tab 2 (simpan + pindah) */
+    function lanjutKeTab2() {
+      if (!claimState) claimState = {};
+      // Catat waktu masuk Tab 2 sebagai SLA-2 start (Tab 2 → SP terbit, maks 1 jam)
+      if (!claimState.slaTab2StartTime) {
+        claimState.slaTab2StartTime = Date.now();
+      }
+      if (!claimState.status || claimState.status === '' || claimState.status === 'Registrasi') {
+        claimState.status = "Registrasi"; // Tab 1 selesai → masih Registrasi
+      }
+      localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      unlockTabUpTo(1);
+      catatHistoryProses('Tab 1 — Data Peserta', 'Lanjut ke Tab 2', 'Data peserta tersimpan, lanjut ke Tab 2. SLA proses mulai dihitung.');
+      showToast('Berhasil', 'Berpindah ke Tab 2 — Data Kejadian.', 'success');
+      setTimeout(() => switchTab('tab-kejadian'), 300);
+    }
+
+    /** TAB 2 — Simpan (tetap di Tab 2, buka Tab 3) */
+    function simpanTab2() {
+      // Jalankan validasi form kejadian (tanpa navigasi)
+      const jenisEl = document.getElementById("kejadian-jenis");
+      if (!jenisEl || !jenisEl.value) {
+        showToast('Validasi Gagal', 'Silakan pilih Jenis Kejadian terlebih dahulu.', 'warning');
+        if (jenisEl) jenisEl.focus();
+        return;
+      }
+      // Simpan data kejadian ke claimState
+      if (!claimState) claimState = {};
+      claimState.jenisKejadian = jenisEl.value;
+      const tglEl = document.getElementById("kejadian-tgl-kejadian");
+      if (tglEl && tglEl.value) claimState.tanggalKejadian = tglEl.value;
+      localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      unlockTabUpTo(2); // Buka Tab 3 (index 2)
+      catatHistoryProses('Tab 2 — Data Kejadian', 'Simpan Draft', `Jenis kejadian: ${jenisEl.value}.`);
+      showToast('Data Tersimpan', 'Tab 3 (Persyaratan) kini terbuka. Klik Lanjut ke Tab 3 atau pindah sendiri.', 'success');
+      renderTabRejectionButtons();
+    }
+
+    /** TAB 2 — Lanjut ke Tab 3 (validasi + simpan + pindah) */
+    function lanjutKeTab3() {
+      const jenisEl = document.getElementById("kejadian-jenis");
+      if (!jenisEl || !jenisEl.value) {
+        showToast('Validasi Gagal', 'Silakan pilih Jenis Kejadian terlebih dahulu.', 'warning');
+        if (jenisEl) jenisEl.focus();
+        return;
+      }
+      if (!claimState) claimState = {};
+      claimState.jenisKejadian = jenisEl.value;
+      const tglEl = document.getElementById("kejadian-tgl-kejadian");
+      if (tglEl && tglEl.value) claimState.tanggalKejadian = tglEl.value;
+      // Update status stepper → masih Registrasi, karena dokumen belum diterima
+      if (!claimState.status || claimState.status === 'Registrasi') {
+        claimState.status = "Registrasi";
+      }
+      localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      unlockTabUpTo(2);
+      catatHistoryProses('Tab 2 — Data Kejadian', 'Lanjut ke Tab 3', `Jenis kejadian: ${jenisEl.value}. Lanjut ke Persyaratan.`);
+      showToast('Berhasil', 'Berpindah ke Tab 3 — Persyaratan.', 'success');
+      setTimeout(() => switchTab('tab-persyaratan'), 300);
+    }
+
+    /** TAB 3 — Simpan (tetap di Tab 3, buka Tab 4) */
+    function simpanTab3() {
+      if (!claimState) claimState = {};
+      // Tab 3 selesai → Dokumen Diterima
+      claimState.status = "Dokumen Diterima";
+      localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      unlockTabUpTo(3); // Buka Tab 4 (index 3)
+      catatHistoryProses('Tab 3 — Persyaratan', 'Simpan Draft', 'Kelengkapan berkas persyaratan tersimpan.');
+      showToast('Data Tersimpan', 'Tab 4 (Hak / Produk) kini terbuka. Klik Lanjut ke Tab 4 atau pindah sendiri.', 'success');
+      renderTabRejectionButtons();
+    }
+
+    /** TAB 3 — Lanjut ke Tab 4 (simpan + pindah) */
+    function lanjutKeTab4() {
+      if (typeof runDocVerificationCheck === 'function' && !runDocVerificationCheck()) {
+        showToast('Dokumen Belum Lengkap', 'Nomor dan Tanggal dokumen mandatory (*) wajib diisi terlebih dahulu.', 'warning');
+        const msgBelumLengkap = document.getElementById('msg-dokumen-belum-lengkap');
+        if (msgBelumLengkap) msgBelumLengkap.classList.remove('hidden');
+        return;
+      }
+      if (!claimState) claimState = {};
+      // Tab 3 selesai → Dokumen Diterima
+      claimState.status = "Dokumen Diterima";
+      localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      unlockTabUpTo(3);
+      catatHistoryProses('Tab 3 — Persyaratan', 'Lanjut ke Tab 4', 'Persyaratan tersimpan, lanjut ke Hak / Produk.');
+      showToast('Berhasil', 'Berpindah ke Tab 4 — Hak / Produk.', 'success');
+      setTimeout(() => switchTab('tab-hak-produk'), 300);
+    }
+
+    /** TAB 4 — Simpan (tetap di Tab 4, buka Tab 5) — wrapper saveProductCalculation */
+    function simpanTab4() {
+      // Panggil fungsi simpan produk yang sudah ada
+      if (typeof saveProductCalculation === 'function') {
+        saveProductCalculation();
+      } else {
+        if (!claimState) claimState = {};
+        localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      }
+      // Tab 4 selesai → Kalkulasi Manfaat
+      if (!claimState) claimState = {};
+      claimState.status = "Kalkulasi Manfaat";
+      localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      unlockTabUpTo(4); // Buka Tab 5 (index 4)
+      catatHistoryProses('Tab 4 — Hak / Produk', 'Simpan Draft', 'Kalkulasi produk/hak tersimpan sebagai draft.');
+      showToast('Data Tersimpan', 'Tab 5 (Status & Riwayat) kini terbuka. Klik Lanjut ke Tab 5 atau pindah sendiri.', 'success');
+      renderTabRejectionButtons();
+    }
+
+    /** TAB 4 — Lanjut ke Tab 5 (simpan produk + pindah) */
+    function lanjutKeTab5() {
+      if (typeof saveProductCalculation === 'function') {
+        saveProductCalculation();
+      } else {
+        if (!claimState) claimState = {};
+        localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      }
+      // Tab 4 selesai → Kalkulasi Manfaat
+      if (!claimState) claimState = {};
+      claimState.status = "Kalkulasi Manfaat";
+      localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      unlockTabUpTo(4);
+      catatHistoryProses('Tab 4 — Hak / Produk', 'Lanjut ke Tab 5', 'Kalkulasi produk tersimpan, lanjut ke Status & Riwayat.');
+      showToast('Berhasil', 'Berpindah ke Tab 5 — Status & Riwayat.', 'success');
+      setTimeout(() => switchTab('tab-riwayat'), 300);
+    }
+
 
     const PERSYARATAN_CONFIG = {
 
@@ -5804,12 +6090,12 @@
         { nama: 'Surat Penagihan Biaya Perawatan' },
       ],
 
-      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': [
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas': [
         { nama: 'Formulir Pengajuan', mandatory: false },
         { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
         { nama: 'Asli Surat Keterangan Ahli Waris (Istri/Suami)/Surat Keterangan Kuasa Ahli Waris (Anak) disahkan Lurah/Kepala Desa', mandatory: false },
         { nama: 'Asli Surat Keterangan Sekolah/Kuliah', mandatory: false },
-        { nama: 'Fotokopi Legalisir Keputusan Gugur/Tewas dari Dan/Kasatker', mandatory: true },
+        { nama: 'Fotokopi Legalisir Keputusan Tewas dari Dan/Kasatker', mandatory: true },
         { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
         { nama: 'Fotokopi Akta Kematian dari Dukcapil', mandatory: false },
         { nama: 'Fotokopi Legalisir Perincian Gaji saat meninggal dunia dari Pekas (DPP Gaji KU-107)', mandatory: false },
@@ -5821,7 +6107,24 @@
         { nama: 'Fotokopi Legalisir Kronologis Kejadian', mandatory: false },
         { nama: 'Fotokopi Resume Medis/Hasil Pemeriksaan Medis', mandatory: false },
       ],
-      'Kecelakaan Kerja - Gugur/Tewas': [
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
+        { nama: 'Asli Surat Keterangan Ahli Waris (Istri/Suami)/Surat Keterangan Kuasa Ahli Waris (Anak) disahkan Lurah/Kepala Desa', mandatory: false },
+        { nama: 'Asli Surat Keterangan Sekolah/Kuliah', mandatory: false },
+        { nama: 'Fotokopi Legalisir Keputusan Gugur dari Dan/Kasatker', mandatory: true },
+        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
+        { nama: 'Fotokopi Akta Kematian dari Dukcapil', mandatory: false },
+        { nama: 'Fotokopi Legalisir Perincian Gaji saat meninggal dunia dari Pekas (DPP Gaji KU-107)', mandatory: false },
+        { nama: 'Fotokopi e-KTP Ahli Waris', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan (Mitra Bayar Asabri)', mandatory: false },
+        { nama: 'Fotokopi Legalisir Sprin Tugas', mandatory: false },
+        { nama: 'Fotokopi Legalisir Kronologis Kejadian', mandatory: false },
+        { nama: 'Fotokopi Resume Medis/Hasil Pemeriksaan Medis', mandatory: false },
+      ],
+      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': [
         { nama: 'Formulir Pengajuan', mandatory: false },
         { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
         { nama: 'Asli Surat Keterangan Ahli Waris (Istri/Suami)/Surat Keterangan Kuasa Ahli Waris (Anak) disahkan Lurah/Kepala Desa', mandatory: false },
@@ -5929,28 +6232,36 @@
         { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false },
       ],
 
+      'Beasiswa JKK': [
+        { nama: 'Formulir Pengajuan Beasiswa JKK', mandatory: false },
+        { nama: 'Surat Keterangan Sekolah/Kuliah', mandatory: true },
+        { nama: 'Fotokopi Akta Kelahiran Anak', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju / Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false },
+      ],
+
+      'Beasiswa JKM': [
+        { nama: 'Formulir Pengajuan Beasiswa JKM', mandatory: false },
+        { nama: 'Surat Keterangan Sekolah/Kuliah', mandatory: true },
+        { nama: 'Fotokopi Akta Kelahiran Anak', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju / Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false },
+      ],
+
+      'Beasiswa JKm': [
+        { nama: 'Formulir Pengajuan Beasiswa JKM', mandatory: false },
+        { nama: 'Surat Keterangan Sekolah/Kuliah', mandatory: true },
+        { nama: 'Fotokopi Akta Kelahiran Anak', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju / Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false },
+      ],
+
       'Beasiswa JKK/JKM': [
         { nama: 'Formulir Pengajuan', mandatory: false },
         { nama: 'Surat Keterangan Sekolah/Kuliah', mandatory: true },
         { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
         { nama: 'Fotokopi Kartu Keluarga', mandatory: false },
         { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false },
-      ],
-
-      'Beasiswa JKm': [
-        { nama: 'Formulir Pengajuan Beasiswa JKm' },
-        { nama: 'Asli Surat Keterangan Sekolah/Kuliah (Aktif)' },
-        { nama: 'Fotokopi Akta Kelahiran Anak' },
-        { nama: 'Fotokopi e-KTP Pengaju / Kartu Keluarga (KK)' },
-        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju' },
-      ],
-
-      'Beasiswa JKK': [
-        { nama: 'Formulir Pengajuan Beasiswa JKK' },
-        { nama: 'Asli Surat Keterangan Sekolah/Kuliah (Aktif)' },
-        { nama: 'Fotokopi Akta Kelahiran Anak' },
-        { nama: 'Fotokopi e-KTP Pengaju / Kartu Keluarga (KK)' },
-        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju' },
       ],
     };
 
@@ -6035,8 +6346,10 @@
       ],
 
       // Kejadian berikut TIDAK ada dokumen mandatory:
+      'Beasiswa JKM': [],
       'Beasiswa JKm': [],
       'Beasiswa JKK': [],
+      'Beasiswa JKK/JKM': [],
       'UKP Tanpa Perubahan Data': [],
       'UKP Dengan Perubahan Data': [],
       'UKP Pembayaran Tunjangan Cacat': [],
@@ -6278,7 +6591,7 @@
       const fullList = getFullPersyaratanList(currentJenis);
 
       const btnPending = document.getElementById('btn-pending-doc');
-      const btnTeruskan = document.getElementById('btn-teruskan-doc');
+      const btnLanjut = document.getElementById('btn-lanjut-tab4') || document.getElementById('btn-teruskan-doc');
       const msgBelumLengkap = document.getElementById('msg-dokumen-belum-lengkap');
       
       let allMandatoryLengkap = true;
@@ -6294,22 +6607,26 @@
         }
       });
 
-      if (btnPending && btnTeruskan) {
+      if (btnLanjut) {
         if (allMandatoryLengkap) {
-          btnTeruskan.disabled = false;
-          btnTeruskan.classList.remove('opacity-50', 'cursor-not-allowed');
+          btnLanjut.disabled = false;
+          btnLanjut.classList.remove('opacity-50', 'cursor-not-allowed');
           if (msgBelumLengkap) msgBelumLengkap.classList.add('hidden');
           
           // Pending button is opposite
-          btnPending.disabled = true;
-          btnPending.classList.add('opacity-50', 'cursor-not-allowed');
+          if (btnPending) {
+            btnPending.disabled = true;
+            btnPending.classList.add('opacity-50', 'cursor-not-allowed');
+          }
         } else {
-          btnTeruskan.disabled = true;
-          btnTeruskan.classList.add('opacity-50', 'cursor-not-allowed');
+          btnLanjut.disabled = true;
+          btnLanjut.classList.add('opacity-50', 'cursor-not-allowed');
           if (msgBelumLengkap) msgBelumLengkap.classList.remove('hidden');
           
-          btnPending.disabled = false;
-          btnPending.classList.remove('opacity-50', 'cursor-not-allowed');
+          if (btnPending) {
+            btnPending.disabled = false;
+            btnPending.classList.remove('opacity-50', 'cursor-not-allowed');
+          }
         }
       }
 
@@ -6543,7 +6860,9 @@
       'Anak Meninggal Dunia': ['BPA'],
       'Meninggal Dunia dalam Dinas Aktif (JKm)': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
       'Kecelakaan Kerja — Dirawat': ['Perawatan JKK', 'Biaya Pengangkutan'],
-      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': ['NTTA', 'SRKK', 'Biaya Pengangkutan', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
       'Kecelakaan Kerja — Cacat': ['Santunan Cacat'],
       'Pensiun Sendiri — Meninggal Dunia': ['BPPP', 'UDW'],
       'Pensiun Sendiri — Istri/Suami Meninggal Dunia': ['BPI/S'],
@@ -6552,9 +6871,10 @@
       'Tunjangan Yatim/Piatu/Yatim-Piatu': ['Tunjangan Yatim/Piatu'],
       'Tunjangan Orang Tua — Meninggal Dunia': ['Tunjangan Orang Tua'],
       'Tunjangan Orang Tua — Meninggal': ['Tunjangan Orang Tua'],
-      'Beasiswa JKK/JKM': ['Beasiswa JKK/JKM'],
-      'Beasiswa JKm': ['Beasiswa JKm'],
       'Beasiswa JKK': ['Beasiswa JKK'],
+      'Beasiswa JKM': ['Beasiswa JKM'],
+      'Beasiswa JKm': ['Beasiswa JKM'],
+      'Beasiswa JKK/JKM': ['Beasiswa JKK'],
       'Uang Kekurangan Pensiun (UKP)': ['UKP'],
       'UKP Tanpa Perubahan Data': ['UKP Tanpa Perubahan Data'],
       'UKP Dengan Perubahan Data': ['UKP Dengan Perubahan Data'],
@@ -6569,6 +6889,14 @@
       'Meninggal Dunia dalam Dinas Aktif (JKm)_Ahli Waris Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
 
       // KK Meninggal
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
+
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
+
       'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
       'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
       'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
@@ -6591,9 +6919,6 @@
 
     function autoRenderProducts() {
       let jenisKejadian = mapJenisKejadian(claimState?.jenisKejadian || document.getElementById("kejadian-jenis")?.value || "");
-      if (jenisKejadian && (jenisKejadian.includes('Gugur/Tewas') || jenisKejadian.startsWith('Kecelakaan Kerja — Meninggal'))) {
-        jenisKejadian = 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)';
-      }
       if (jenisKejadian === 'Uang Kekurangan Pensiun (UKP)' || (jenisKejadian && jenisKejadian.startsWith('UKP'))) {
         const jUkp = claimState?.jenisUkp || 'Tanpa Perubahan Data';
         jenisKejadian = `UKP ${jUkp}`;
@@ -6667,8 +6992,8 @@
 
 
 
-      // If jenisKejadian is Beasiswa JKm or Beasiswa JKK -> filter cards so ONLY Beasiswa card remains
-      if (jenisKejadian === 'Beasiswa JKm' || jenisKejadian === 'Beasiswa JKK') {
+      // If jenisKejadian is Beasiswa JKm or Beasiswa JKK or Beasiswa JKM -> filter cards so ONLY Beasiswa card remains
+      if (jenisKejadian === 'Beasiswa JKm' || jenisKejadian === 'Beasiswa JKM' || jenisKejadian === 'Beasiswa JKK' || jenisKejadian === 'Beasiswa JKK/JKM') {
         const cards = container ? container.querySelectorAll('[id^="prod-card-"]') : [];
         cards.forEach(card => {
           const titleEl = card.querySelector('h4, span, div');
@@ -6739,8 +7064,26 @@
         }
       }
 
-      // Reset Jenis Produk selection
-      document.getElementById("ap-jenis-produk").value = "";
+      // Update and disable already added products in dropdown
+      const selectProduk = document.getElementById("ap-jenis-produk");
+      if (selectProduk) {
+        const hasBeasiswaActive = activeProducts.some(p => p.type && p.type.includes("Beasiswa"));
+        Array.from(selectProduk.options).forEach(opt => {
+          if (!opt.value) return;
+          const isBeasiswaOpt = opt.value.includes("Beasiswa");
+          const isAdded = activeProducts.some(p => p.type === opt.value) || (isBeasiswaOpt && hasBeasiswaActive);
+          
+          const baseText = opt.innerText.replace(/\s*\(Sudah Ditambahkan\)/g, '');
+          if (isAdded) {
+            opt.disabled = true;
+            opt.innerText = `${baseText} (Sudah Ditambahkan)`;
+          } else {
+            opt.disabled = false;
+            opt.innerText = baseText;
+          }
+        });
+        selectProduk.value = "";
+      }
 
       modal.classList.remove("hidden");
       setTimeout(() => {
@@ -6768,6 +7111,22 @@
         alert("Harap pilih jenis produk/klaim terlebih dahulu.");
         return;
       }
+
+      // Prevent duplicate product cards
+      const isBeasiswa = produk.includes("Beasiswa");
+      const alreadyExists = activeProducts.some(p => {
+        if (p.type === produk) return true;
+        if (isBeasiswa && p.type && p.type.includes("Beasiswa")) return true;
+        return false;
+      });
+
+      if (alreadyExists) {
+        if (!skipToastAndClose) {
+          showToast("Produk Sudah Ada", `Produk "${produk}" sudah ada dalam daftar kalkulasi manfaat.`, "warning");
+          closeAddProductModal();
+        }
+        return;
+      }
       
       const cardId = `prod-card-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       
@@ -6782,7 +7141,7 @@
       else if (produk === "Tunjangan Terbatas") category = "Tunjangan Terbatas";
       else if (produk === "Alih Status Tunjangan") category = "Alih Status Tunjangan";
       else if (produk.startsWith("SRKK")) category = "SRKK";
-      else if (produk === "Beasiswa JKK" || produk === "Beasiswa JKm") category = "Beasiswa";
+      else if (produk === "Beasiswa JKK" || produk === "Beasiswa JKM" || produk === "Beasiswa JKm" || produk === "Beasiswa JKK/JKM" || produk.includes("Beasiswa")) category = "Beasiswa";
       else if (produk === "NTIP") category = "NTIP";
       else if (produk.startsWith("UKP")) category = "UKP";
       else if (produk === "BPPP" || produk === "BPI/S" || produk === "BPA") category = "Pemakaman";
@@ -6822,18 +7181,18 @@
             </div>
             `}
             <div>
-              <label class="block font-bold text-slate-500 mb-1">TMT Pensiun</label>
-              <input type="date" id="${cardId}-tmt-pensiun" data-field="tanggal_kejadian" value="${tmtPensiunVal}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
+              <label class="block font-bold text-slate-500 mb-1">TMT Pensiun <span class="text-rose-500">*</span></label>
+              <input type="date" id="${cardId}-tmt-pensiun" data-field="tanggal_kejadian" onchange="this.classList.remove('border-rose-500'); syncSkepAcrossAllCards('${cardId}')" value="${tmtPensiunVal}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
             </div>
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Tanggal Skep Pensiun</label>
-              <input type="date" id="${cardId}-tgl-skep-pensiun" data-field="tanggal_skep_pensiun" onchange="syncUdwWithNtta()" value="${tglSkepVal}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
+              <label class="block font-bold text-slate-500 mb-1">Tanggal Skep Pensiun <span class="text-rose-500">*</span></label>
+              <input type="date" id="${cardId}-tgl-skep-pensiun" data-field="tanggal_skep_pensiun" onchange="syncUdwWithNtta(); this.classList.remove('border-rose-500'); syncSkepAcrossAllCards('${cardId}')" value="${tglSkepVal}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
             </div>
-            
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Nomor Skep Pensiun</label>
-              <input type="text" id="${cardId}-no-skep-pensiun" oninput="syncUdwWithNtta()" value="${noSkepVal}" placeholder="Nomor Skep..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue">
+              <label class="block font-bold text-slate-500 mb-1">Nomor Skep Pensiun <span class="text-rose-500">*</span></label>
+              <input type="text" id="${cardId}-no-skep-pensiun" oninput="syncUdwWithNtta(); this.classList.remove('border-rose-500'); syncSkepAcrossAllCards('${cardId}')" value="${noSkepVal}" placeholder="Nomor Skep..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue">
             </div>
+
             <div>
               <label class="block font-bold text-slate-500 mb-1">Pangkat Akhir</label>
               <input type="text" id="${cardId}-pangkat-akhir" value="${pangkatAkhirVal}" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none text-slate-500" readonly>
@@ -6947,20 +7306,20 @@
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
             <div>
               <label class="block font-bold text-slate-500 mb-1">TMT Pensiun <span class="text-rose-500">*</span></label>
-              <input type="date" id="${cardId}-tmt-pensiun" data-field="tanggal_kejadian" value="${tmtPensiunVal}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
+              <input type="date" id="${cardId}-tmt-pensiun" data-field="tanggal_kejadian" onchange="this.classList.remove('border-rose-500'); syncSkepAcrossAllCards('${cardId}')" value="${tmtPensiunVal}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
             </div>
             <div>
               <label class="block font-bold text-slate-500 mb-1">Tanggal Skep Pensiun <span class="text-rose-500">*</span></label>
-              <input type="date" id="${cardId}-tgl-skep-pensiun" data-field="tanggal_skep_pensiun" value="${tglSkepVal}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
+              <input type="date" id="${cardId}-tgl-skep-pensiun" data-field="tanggal_skep_pensiun" onchange="this.classList.remove('border-rose-500'); syncSkepAcrossAllCards('${cardId}')" value="${tglSkepVal}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
             </div>
 
  
             <div>
               <label class="block font-bold text-slate-500 mb-1">Nomor Skep Pensiun <span class="text-rose-500">*</span></label>
-              <input type="text" id="${cardId}-no-skep-pensiun" value="${noSkepVal}" placeholder="Nomor Skep..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue">
+              <input type="text" id="${cardId}-no-skep-pensiun" oninput="this.classList.remove('border-rose-500'); syncSkepAcrossAllCards('${cardId}')" value="${noSkepVal}" placeholder="Nomor Skep..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue">
             </div>
              <div>
-              <label class="block font-bold text-slate-500 mb-1">${dropdownLabel} <span class="text-rose-500">*</span></label>
+              <label class="block font-bold text-slate-500 mb-1">${dropdownLabel}</label>
               <div class="flex gap-1.5">
                 <select id="${cardId}-select-${(produk === 'Tunjangan Orang Tua' || produk === 'Pensiun Warakawuri' || produk === 'Tunjangan Yatim/Piatu') ? 'gaji-mkg' : 'penspok'}" onchange="calculateProduct('${cardId}', '${produk}')" class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 font-semibold outline-none focus:border-asabri-blue text-xs text-slate-700">
                   ${dropdownHtml}
@@ -6973,7 +7332,7 @@
               </div>
             </div>
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Status Penerima <span class="text-rose-500">*</span></label>
+              <label class="block font-bold text-slate-500 mb-1">Status Penerima</label>
               <select id="${cardId}-status-penerima" onchange="calculateProduct('${cardId}', '${produk}')" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
                 <option value="" disabled selected>-- Silahkan Pilih Status Peninggalan --</option>
                 <option value="peninggalan" selected>Peninggalan</option>
@@ -7330,9 +7689,10 @@
         `;
       } else if (category === "SRKK") {
         const reg = claimState?.regulasi || detectRegulasiCacat(claimState?.kejadianDetails?.tanggalKejadian || "") || 'PP 54/2020';
-        const tab2Kematian = document.getElementById('jenis-kematian-kk')?.value || claimState?.jenisKematianKk;
-        const initialType = (tab2Kematian === 'Gugur' || tab2Kematian === 'Tewas') ? tab2Kematian : (produk === "SRKK Tewas" ? "Tewas" : "Gugur");
-        const defaultNominalSRKK = getSRKK(initialType, reg);
+        const currentKej = claimState?.jenisKejadian || document.getElementById("kejadian-jenis")?.value || "";
+        const isTewas = currentKej.includes('Tewas');
+        const jenisSRKKLabel = isTewas ? 'Tewas' : 'Gugur';
+        const defaultNominalSRKK = getSRKKByJenisKejadian(currentKej, reg);
 
         // Read bintangJasa from per-peserta localStorage
         const nik = currentParticipant?.nik || currentParticipant?.nrp_nip || '';
@@ -7348,15 +7708,11 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
               <label class="block font-bold text-slate-500 mb-1">Jenis SRKK</label>
-              <select id="${cardId}-srkk-type" onchange="updateSrkkNominal('${cardId}')" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700">
-                <option value="Gugur" ${initialType === 'Gugur' ? 'selected' : ''}>Gugur</option>
-                <option value="Tewas" ${initialType === 'Tewas' ? 'selected' : ''}>Tewas</option>
-                <option value="Meninggal Biasa">Meninggal Biasa</option>
-              </select>
+              <input type="text" readonly id="${cardId}-srkk-type" value="${jenisSRKKLabel}" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 outline-none">
             </div>
             <div>
               <label class="block font-bold text-slate-500 mb-1">Nominal SRKK</label>
-              <input type="text" readonly id="${cardId}-srkk-nominal" value="${formatRupiah(defaultNominalSRKK)}" class="field-nominal w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono text-slate-600 outline-none">
+              <input type="text" readonly id="${cardId}-srkk-nominal" value="${formatRupiah(defaultNominalSRKK)}" class="field-nominal w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold font-mono text-slate-700 outline-none">
             </div>
           </div>
           <!-- Masa Terusan Gaji Section -->
@@ -7396,88 +7752,129 @@
       } else if (category === "Beasiswa") {
         const tglKejadian = claimState?.tanggalKejadian || claimState?.kejadianDetails?.tanggalKejadian || "";
         const regBeasiswa = detectRegulasi(tglKejadian) || claimState?.regulasi || 'PP 54/2020';
+        const isPP54 = (regBeasiswa === 'PP 54/2020');
         const maxAnak = getMaxAnakBeasiswa(regBeasiswa);
         
+        const currentJenis = mapJenisKejadian(claimState?.jenisKejadian || document.getElementById("kejadian-jenis")?.value || "");
+        const isStandaloneBeasiswa = (currentJenis === 'Beasiswa JKK' || currentJenis === 'Beasiswa JKM' || currentJenis === 'Beasiswa JKm' || currentJenis === 'Beasiswa JKK/JKM' || produk === 'Beasiswa JKK' || produk === 'Beasiswa JKM' || produk === 'Beasiswa JKm' || produk === 'Beasiswa JKK/JKM' || produk.includes('Beasiswa'));
+
         const nik = currentParticipant?.nik || currentParticipant?.nrp_nip || '';
-        const dataAnakList = currentParticipant?.anak || [
-          { nama: 'Budi Fauzi', usia: 20, jenjang: 'HE', suratSekolah: { status: true, no: '421.3/SK-S/2026/012', exp: '2026-12-31' } },
-          { nama: 'Ayu Fauzi', usia: 16, jenjang: 'SMA', suratSekolah: { status: true, no: '311.1/SK-S/2026/088', exp: '2027-06-30' } }
-        ];
+        const dataAnakList = (currentParticipant?.anak && currentParticipant.anak.length > 0)
+          ? currentParticipant.anak
+          : (claimState?.peserta?.anak && claimState.peserta.anak.length > 0)
+            ? claimState.peserta.anak
+            : (claimState?.dataKeluargaAnak && claimState.dataKeluargaAnak.length > 0)
+              ? claimState.dataKeluargaAnak
+              : [
+                  { nama: 'Budi Fauzi', usia: 20, tanggalLahir: '2006-06-20', jenjang: 'HE', suratSekolah: { status: true, no: '421.3/SK-S/2026/012', exp: '2026-12-31' } },
+                  { nama: 'Ayu Fauzi', usia: 16, tanggalLahir: '2010-11-12', jenjang: 'SMA', suratSekolah: { status: true, no: '311.1/SK-S/2026/088', exp: '2027-06-30' } }
+                ];
 
         let slotsHtml = '';
         let countValid = 0;
 
         for (let i = 1; i <= maxAnak; i++) {
-          const child = dataAnakList[i - 1] || { nama: `Anak ke-${i}`, tanggalLahir: null, jenjang: 'SMA', suratSekolah: { status: true, no: 'Doc-SK-00'+i, exp: '2026-12-31' } };
-          const childJenjang = child.jenjang || 'SMA';
-          const isKuliah = childJenjang === 'HE';
+          const child = dataAnakList[i - 1] || { nama: `Anak ke-${i}`, tanggalLahir: null, jenjang: (i === 1 ? 'HE' : 'SMA'), suratSekolah: { status: true, no: 'Doc-SK-00'+i, exp: '2026-12-31' } };
+          const childJenjang = child.jenjang || (i === 1 ? 'HE' : 'SMA');
+          const isKuliah = (childJenjang === 'HE' || childJenjang === 'Kuliah' || childJenjang === 'Perguruan Tinggi');
 
           // Hitung usia anak PADA SAAT tanggal kejadian (bukan hari ini)
-          const usiaAnak = child.tanggalLahir
-            ? hitungUsiaAnak(child.tanggalLahir, tglKejadian)
-            : (child.usia || 0); // fallback ke field usia statis jika tidak ada tgl lahir
+          const birthDate = child.tanggalLahir || child.tanggal_lahir || (i === 1 ? '2006-06-20' : '2010-11-12');
+          const usiaAnak = birthDate ? hitungUsiaAnak(birthDate, tglKejadian) : (child.usia || (i === 1 ? 20 : 16));
           const batasUsia = isKuliah ? 25 : 21;
 
           // Surat keterangan sekolah wajib hanya untuk jenjang D3/S1 (kuliah)
-          const isSuratValid = isKuliah
-            ? (child.suratSekolah && child.suratSekolah.status && (new Date(child.suratSekolah.exp) >= new Date()))
-            : true; // SD/SMP/SMA tidak butuh surat keterangan sekolah
-          const isUsiaValid = usiaAnak <= batasUsia;
+          const suratStatus = child.suratSekolah ? (child.suratSekolah.status && (new Date(child.suratSekolah.exp || '2099-12-31') >= new Date())) : true;
+          const isSuratValid = isKuliah ? suratStatus : true;
+          const usiaFinal = (usiaAnak && usiaAnak > 0) ? usiaAnak : (child.usia || (i === 1 ? 20 : 16));
+          const isUsiaValid = usiaFinal <= batasUsia;
           const isValid = isSuratValid && isUsiaValid;
           if (isValid) countValid++;
 
           const suratInfo = isKuliah
-            ? (child.suratSekolah ? child.suratSekolah.no : 'Belum diinput')
-            : '—  (Tidak diperlukan untuk ' + childJenjang + ')';
+            ? (child.suratSekolah && child.suratSekolah.no ? child.suratSekolah.no : (child.suratSekolah ? 'Doc-SK-421.3/2026' : '421.3/SK-S/2026/012'))
+            : '— (Tidak diperlukan untuk ' + childJenjang + ')';
 
-          const usiaLabel = child.tanggalLahir
-            ? `${usiaAnak} thn saat kejadian`
-            : `${usiaAnak} thn`;
+          const usiaLabel = `${usiaFinal} thn saat kejadian`;
+          const nominalNom = isPP54 ? 15000000 : 30000000;
 
-          slotsHtml += `
-            <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
-              <div class="flex items-center justify-between">
-                <span class="font-bold text-slate-700 text-xs flex items-center gap-1.5">
-                  <i class="fas fa-child text-asabri-blue"></i> Slot Anak ${i}
-                </span>
-                <span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${isValid ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
-                  ${isValid ? '✅ Memenuhi Syarat' : '❌ Terhenti / Invalid'}
-                </span>
+          if (isPP54) {
+            // PP 54/2020: Checkbox pilihan per anak (1 card per eligible child, TANPA dropdown, UNCHECKED by default)
+            slotsHtml += `
+              <div id="${cardId}-child-card-${i}" class="card-anak-beasiswa p-3.5 bg-white border border-slate-200 rounded-xl space-y-2.5 shadow-xs transition-all hover:border-asabri-blue/40">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <label for="${cardId}-child-chk-${i}" class="flex items-center gap-3 cursor-pointer select-none flex-1">
+                    <input type="checkbox" id="${cardId}-child-chk-${i}" data-child-name="${child.nama}" style="accent-color: #002D62; width: 18px; height: 18px; cursor: pointer;" class="rounded cursor-pointer transition-transform duration-150 active:scale-95 flex-shrink-0 mr-1.5" ${isValid ? '' : 'disabled'} onchange="onBeasiswaChildCheckboxChange('${cardId}', '${produk}')">
+                    <span class="font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-1.5">
+                      <i class="fas fa-user-graduate text-asabri-blue"></i> Proses Beasiswa untuk <span class="text-asabri-blue font-black underline decoration-dotted">${child.nama}</span> <span class="text-slate-500 font-normal">(${usiaLabel})</span>
+                    </span>
+                  </label>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[11px] font-bold font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-lg">Nominal: Rp ${nominalNom.toLocaleString('id-ID')}</span>
+                    <span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${isValid ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                      ${isValid ? '✅ Memenuhi Syarat' : '❌ Terhenti / Invalid'}
+                    </span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                  <div>
+                    <label class="block font-semibold text-slate-500 text-[10px] mb-1">Surat Keterangan Sekolah ${isKuliah ? '<span class="text-rose-500">*</span>' : '<span class="text-slate-400 font-normal">(opsional)</span>'}</label>
+                    <input type="text" readonly value="${suratInfo}" class="w-full ${isKuliah ? 'bg-slate-100' : 'bg-slate-50 italic text-slate-400'} border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-[11px] outline-none">
+                  </div>
+                  <div>
+                    <label class="block font-semibold text-slate-500 text-[10px] mb-1">Status Validasi</label>
+                    <span class="block py-1.5 font-mono text-[11px] ${isValid ? 'text-emerald-700' : 'text-rose-600'} font-bold">
+                      ${isValid
+                        ? (isKuliah
+                            ? `Surat berlaku: ${child.suratSekolah?.exp || 'Aktif'} | Usia ${usiaLabel} ≤ ${batasUsia} thn ✅`
+                            : `Usia ${usiaLabel} ≤ ${batasUsia} thn ✅`)
+                        : (!isSuratValid
+                            ? `Surat keterangan kuliah kedaluwarsa (usia ${usiaLabel})`
+                            : `Usia ${usiaLabel} > batas ${batasUsia} thn ❌`)}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                <div>
-                  <label class="block font-semibold text-slate-500 text-[10px]">Pilih Anak</label>
-                  <select class="w-full bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-semibold text-slate-700">
-                    ${dataAnakList.map((a, idx) => {
-                      const usiaSaatItu = a.tanggalLahir
-                        ? hitungUsiaAnak(a.tanggalLahir, tglKejadian)
-                        : (a.usia || 0);
-                      return `<option value="${a.nama}" ${idx === (i-1) ? 'selected' : ''}>${a.nama} (${usiaSaatItu} thn saat kejadian)</option>`;
-                    }).join('')}
-                  </select>
-                </div>
-                <div>
-                  <label class="block font-semibold text-slate-500 text-[10px]">Surat Keterangan Sekolah ${isKuliah ? '<span class="text-rose-500">*</span>' : '<span class="text-slate-400 font-normal">(opsional)</span>'}</label>
-                  <input type="text" readonly value="${suratInfo}" class="w-full ${isKuliah ? 'bg-slate-100' : 'bg-slate-50 italic text-slate-400'} border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-[11px] outline-none">
-                </div>
-                <div>
-                  <label class="block font-semibold text-slate-500 text-[10px]">Status Validasi</label>
-                  <span class="block py-1.5 font-mono text-[11px] ${isValid ? 'text-emerald-700' : 'text-rose-600'} font-bold">
-                    ${isValid
-                      ? (isKuliah
-                          ? `Surat berlaku: ${child.suratSekolah.exp} | Usia ${usiaLabel} ≤ ${batasUsia} thn ✅`
-                          : `Usia ${usiaLabel} ≤ ${batasUsia} thn ✅`)
-                      : (!isSuratValid
-                          ? `Surat keterangan kuliah kedaluwarsa (usia ${usiaLabel})`
-                          : `Usia ${usiaLabel} > batas ${batasUsia} thn ❌`)}
+            `;
+          } else {
+            // PP 102/2015: Maksimal 1 anak langsung tanpa checkbox & tanpa dropdown
+            slotsHtml += `
+              <div id="${cardId}-child-card-${i}" class="card-anak-beasiswa p-3.5 bg-white border border-slate-200 rounded-xl space-y-2.5 shadow-xs">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <span class="font-bold text-slate-800 text-xs flex items-center gap-1.5">
+                    <i class="fas fa-user-graduate text-asabri-blue"></i> Slot Anak 1: <span class="text-asabri-blue font-black">${child.nama}</span> <span class="text-slate-500 font-normal">(${usiaLabel})</span>
                   </span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[11px] font-bold font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-lg">Nominal: Rp ${nominalNom.toLocaleString('id-ID')}</span>
+                    <span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${isValid ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                      ${isValid ? '✅ Memenuhi Syarat' : '❌ Terhenti / Invalid'}
+                    </span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                  <div>
+                    <label class="block font-semibold text-slate-500 text-[10px] mb-1">Surat Keterangan Sekolah ${isKuliah ? '<span class="text-rose-500">*</span>' : '<span class="text-slate-400 font-normal">(opsional)</span>'}</label>
+                    <input type="text" readonly value="${suratInfo}" class="w-full ${isKuliah ? 'bg-slate-100' : 'bg-slate-50 italic text-slate-400'} border border-slate-200 rounded-lg px-2.5 py-1.5 font-mono text-[11px] outline-none">
+                  </div>
+                  <div>
+                    <label class="block font-semibold text-slate-500 text-[10px] mb-1">Status Validasi</label>
+                    <span class="block py-1.5 font-mono text-[11px] ${isValid ? 'text-emerald-700' : 'text-rose-600'} font-bold">
+                      ${isValid
+                        ? (isKuliah
+                            ? `Surat berlaku: ${child.suratSekolah?.exp || 'Aktif'} | Usia ${usiaLabel} ≤ ${batasUsia} thn ✅`
+                            : `Usia ${usiaLabel} ≤ ${batasUsia} thn ✅`)
+                        : (!isSuratValid
+                            ? `Surat keterangan kuliah kedaluwarsa (usia ${usiaLabel})`
+                            : `Usia ${usiaLabel} > batas ${batasUsia} thn ❌`)}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          `;
+            `;
+          }
         }
 
-        specificHtml = `
+        const toggleWrapperHtml = isStandaloneBeasiswa ? '' : `
           <div class="mb-2">
             <label class="flex items-center gap-2 cursor-pointer p-3 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
               <input type="checkbox" id="${cardId}-proses-sekarang" class="form-checkbox w-4 h-4 text-asabri-blue" onchange="toggleBeasiswaProses('${cardId}', this.checked)">
@@ -7486,19 +7883,24 @@
           </div>
 
           <div id="${cardId}-beasiswa-disabled-msg" class="text-xs text-slate-500 italic bg-slate-50 p-4 rounded-xl border border-slate-200">
-            Beasiswa tidak diproses dalam pengajuan ini. Dapat diajukan terpisah melalui kejadian "Beasiswa JKm".
+            Beasiswa tidak diproses dalam pengajuan ini. Dapat diajukan terpisah melalui kejadian "Beasiswa JKM" atau "Beasiswa JKK".
           </div>
+        `;
 
-          <div id="${cardId}-beasiswa-content" class="space-y-3 text-xs hidden opacity-50 pointer-events-none transition-all duration-300">
+        const contentClass = isStandaloneBeasiswa ? "space-y-3 text-xs block" : "space-y-3 text-xs hidden opacity-50 pointer-events-none transition-all duration-300";
+
+        specificHtml = `
+          ${toggleWrapperHtml}
+          <div id="${cardId}-beasiswa-content" class="${contentClass}">
             <!-- Header Regulasi & Slot Anak -->
             <div class="flex items-center justify-between bg-indigo-50 border border-indigo-100 p-3 rounded-xl">
               <div>
                 <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider block">Ketentuan Regulasi Beasiswa</span>
-                <strong class="text-indigo-900 text-xs">${regBeasiswa} — Maksimal ${maxAnak} Anak Berhak</strong>
+                <strong class="text-indigo-900 text-xs">${regBeasiswa} — Maksimal ${maxAnak} Anak Berhak ${isPP54 ? '(Bisa pilih 1 atau 2 anak)' : ''}</strong>
               </div>
               <div class="text-right">
                 <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider block">Status Slot Terverifikasi</span>
-                <span class="text-xs font-mono font-bold text-emerald-700">${countValid} dari ${maxAnak} Slot memenuhi syarat</span>
+                <span class="text-xs font-mono font-bold text-emerald-700">${countValid} dari ${maxAnak} Anak Terdaftar</span>
               </div>
             </div>
 
@@ -7530,8 +7932,8 @@
                 <input type="text" readonly id="${cardId}-nominal-per-anak" value="${formatRupiah(NOMINAL_BEASISWA[regBeasiswa]?.nominal || 15000000)}" class="field-nominal w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono text-emerald-700 outline-none">
               </div>
               <div>
-                <label class="block font-bold text-slate-500 mb-1">Jumlah Anak Berhak</label>
-                <input type="number" id="${cardId}-jml-anak" min="0" max="${maxAnak}" value="${countValid}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700">
+                <label class="block font-bold text-slate-500 mb-1">Jumlah Anak Diproses</label>
+                <input type="number" id="${cardId}-jml-anak" min="0" max="${maxAnak}" value="${isPP54 ? 0 : 1}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700" readonly>
               </div>
               <div class="sm:col-span-2">
                 <label class="block font-bold text-slate-500 mb-1">Maks Anak (${regBeasiswa})</label>
@@ -7540,7 +7942,7 @@
               <div class="sm:col-span-2">
                 <label class="block font-bold text-slate-500 mb-1">Total Beasiswa <span class="text-emerald-600 font-bold">(auto-kalkulasi)</span></label>
                 <div class="flex gap-2">
-                  <input type="text" readonly id="${cardId}-besar" placeholder="Pilih jenjang lalu klik Hitung..." class="field-nominal flex-1 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono text-slate-500 outline-none">
+                  <input type="text" readonly id="${cardId}-besar" placeholder="Pilih anak lalu klik Hitung..." class="field-nominal flex-1 bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono text-slate-500 outline-none">
                   <button type="button" onclick="calculateProduct('${cardId}', '${produk}')" class="px-3.5 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow-sm whitespace-nowrap">Hitung Beasiswa</button>
                 </div>
               </div>
@@ -8128,7 +8530,23 @@
         updateSelisihTmtCardUI(cardId, produk);
         updateSkorsingCardUI(cardId, produk);
       }
-      if (produk === "Beasiswa JKm") {
+      if (category === "Beasiswa" || produk.includes("Beasiswa")) {
+        const currentJenis = mapJenisKejadian(claimState?.jenisKejadian || document.getElementById("kejadian-jenis")?.value || "");
+        const isStandaloneBeasiswa = (currentJenis === 'Beasiswa JKK' || currentJenis === 'Beasiswa JKM' || currentJenis === 'Beasiswa JKm' || currentJenis === 'Beasiswa JKK/JKM' || produk.includes("Beasiswa"));
+        if (isStandaloneBeasiswa) {
+          const chk = document.getElementById(`${cardId}-proses-sekarang`);
+          if (chk) {
+            chk.checked = true;
+          }
+          const content = document.getElementById(`${cardId}-beasiswa-content`);
+          if (content) {
+            content.classList.remove("hidden", "opacity-50", "pointer-events-none");
+            content.classList.add("block");
+          }
+          const msg = document.getElementById(`${cardId}-beasiswa-disabled-msg`);
+          if (msg) msg.classList.add("hidden");
+        }
+        calculateProduct(cardId, produk);
         const valEl = document.getElementById(`${cardId}-besar`);
         const val = valEl ? parseRupiah(valEl.value) : 0;
         renderTpbForm(cardId, val);
@@ -8219,6 +8637,32 @@
     function calculateProduct(cardId, type) {
       const inputBesar = document.getElementById(`${cardId}-besar`);
       if (!inputBesar) return;
+
+      // ── Validasi Mandatory Fields (TMT Pensiun, Tgl Skep, No Skep) ──
+      const TYPES_NEED_SKEP = ["TA", "NTTA", "PP", "NTIP", "Pensiun Warakawuri",
+        "Tunjangan Yatim/Piatu", "Tunjangan Orang Tua", "Tunjangan Terbatas",
+        "UDW", "Tunjangan Cacat", "Alih Status Tunjangan"];
+      if (TYPES_NEED_SKEP.includes(type)) {
+        const tmtEl  = document.getElementById(`${cardId}-tmt-pensiun`);
+        const tglEl  = document.getElementById(`${cardId}-tgl-skep-pensiun`);
+        const noEl   = document.getElementById(`${cardId}-no-skep-pensiun`);
+        const missingFields = [];
+        [tmtEl, tglEl, noEl].forEach(el => {
+          if (el) el.classList.remove('border-rose-500');
+        });
+        if (tmtEl  && !tmtEl.value.trim())  { missingFields.push({ el: tmtEl,  label: 'TMT Pensiun' }); }
+        if (tglEl  && !tglEl.value.trim())  { missingFields.push({ el: tglEl,  label: 'Tanggal Skep Pensiun' }); }
+        if (noEl   && !noEl.value.trim())   { missingFields.push({ el: noEl,   label: 'Nomor Skep Pensiun' }); }
+        if (missingFields.length > 0) {
+          const labels = missingFields.map(f => `<strong>${f.label}</strong>`).join(', ');
+          showToast('Field Wajib Belum Diisi', `${labels} harus diisi terlebih dahulu sebelum dapat menghitung.`, 'warning');
+          missingFields.forEach(f => {
+            f.el.classList.add('border-rose-500');
+          });
+          missingFields[0].el.focus();
+          return;
+        }
+      }
 
       let computedVal = 0;
       
@@ -8316,33 +8760,36 @@
           const isMeninggalDunia = jk.startsWith("Meninggal Dunia dalam Dinas Aktif") || 
                                    jk.startsWith("Pensiun Sendiri — Meninggal Dunia") || 
                                    jk.startsWith("Kecelakaan Kerja — Meninggal Dunia");
+          const selectPenspokVal = document.getElementById(`${cardId}-select-penspok`)?.options[document.getElementById(`${cardId}-select-penspok`)?.selectedIndex]?.text || formatRupiah(penspok);
 
           if (isMeninggalDunia) {
             breakdownEl.innerHTML = `
-              <strong>Rincian Perhitungan PP &amp; Pensiun Terusan</strong><br>
+              <strong>Rincian Perhitungan Pensiun Pokok (PP)</strong><br>
               -------------------------------------<br>
-              Pensiun Pokok (Penspok) : ${formatRupiah(penspok)}<br>
-              Status Penerima        : ${factorLabel}<br>
+              Jenis Kejadian       : ${jk}<br>
+              Penspok (Dasar)      : ${formatRupiah(penspok)}<br>
+              Status Penerima      : ${statusPenerima} (${factorLabel})<br>
+              Penspok Disesuaikan  : ${formatRupiah(penspokAdjusted)}<br>
+              ${tunjCacatNominal > 0 ? tunjDetails : ''}
+              Kondisi Terusan      : ${kondisiTerusan} (${durasiTerusan} bulan)<br>
               -------------------------------------<br>
-              ${tunjDetails ? tunjDetails + '-------------------------------------<br>' : ''}Rumus: Penspok &times; Faktor Status Penerima<br>
+              Total Pensiun Terusan: ${formatRupiah(totalPensiunTerusan)}<br>
+              Rumus Final: Penspok + Tunj. Cacat<br>
               -------------------------------------<br>
-              <strong>TOTAL PP (Bulanan) : ${formatRupiah(computedVal)} / bulan</strong><br>
-              -------------------------------------<br>
-              Kondisi Terusan        : ${kondisiTerusan} (${durasiTerusan} bulan)<br>
-              Rumus Terusan          : ${durasiTerusan} bulan &times; ${formatRupiah(penspokAdjusted)}<br>
-              -------------------------------------<br>
-              <strong>TOTAL PENSIUN TERUSAN: ${formatRupiah(totalPensiunTerusan)}</strong>
+              <strong>PP Bulanan: ${formatRupiah(computedVal)} / bulan | PENSIUN TERUSAN: ${formatRupiah(totalPensiunTerusan)}</strong>
             `;
           } else {
             breakdownEl.innerHTML = `
-              <strong>Rincian Perhitungan PP</strong><br>
+              <strong>Rincian Perhitungan Pensiun Pokok (PP)</strong><br>
               -------------------------------------<br>
-              Pensiun Pokok (Penspok) : ${formatRupiah(penspok)}<br>
-              Status Penerima        : ${factorLabel}<br>
+              Penspok (Dasar)      : ${formatRupiah(penspok)}<br>
+              Status Penerima      : ${statusPenerima} (${factorLabel})<br>
+              Penspok Disesuaikan  : ${formatRupiah(penspokAdjusted)}<br>
+              ${tunjCacatNominal > 0 ? tunjDetails : ''}
               -------------------------------------<br>
-              ${tunjDetails ? tunjDetails + '-------------------------------------<br>' : ''}Rumus: Penspok &times; Faktor Status Penerima<br>
+              Rumus Final: Penspok Disesuaikan + Tunjangan Cacat<br>
               -------------------------------------<br>
-              <strong>TOTAL PP (Bulanan) : ${formatRupiah(computedVal)} / bulan</strong>
+              <strong>TOTAL MANFAAT PP: ${formatRupiah(computedVal)} / bulan</strong>
             `;
           }
           breakdownEl.classList.remove('hidden');
@@ -8366,41 +8813,26 @@
         computedVal = Math.round(res.totalPenspokWari * gpt);
         inputBesar.value = formatRupiah(computedVal);
 
-        const wariNominal = Math.round(res.penspokWari * gpt);
-        const anakNominal = Math.round(res.penspokAnak * gpt);
-
-        const rateWariStr = (res.penspokWari * 100).toFixed(0) + '%';
-        const rateAnakStr = (res.penspokAnak * 100).toFixed(0) + '%';
-
         const breakdownEl = document.getElementById(`${cardId}-breakdown`);
         if (breakdownEl) {
-          if (res.penspokAnak > 0) {
-            breakdownEl.innerHTML = `
-              <strong>Rincian Perhitungan Pensiun Warakawuri (PP No. 36/1968)</strong><br>
-              -------------------------------------<br>
-              Gaji Pokok Terakhir (GPT) : ${formatRupiah(gpt)}<br>
-              Kondisi Kematian         : ${kondisi}<br>
-              Total Anak Berhak (Max 2) : ${jumlahAnakBerhak} anak (Dihitung: ${res.jumlahDihitung} anak)<br>
-              -------------------------------------<br>
-              Penspok Wari       : ${rateWariStr} &times; ${formatRupiah(gpt)} = ${formatRupiah(wariNominal)}<br>
-              Penspok Anak       : ${rateAnakStr} &times; ${formatRupiah(gpt)} = ${formatRupiah(anakNominal)}<br>
-              -------------------------------------<br>
-              <strong>Total Penspok Wari : ${formatRupiah(computedVal)} / bulan</strong>
-            `;
-          } else {
-            breakdownEl.innerHTML = `
-              <strong>Rincian Perhitungan Pensiun Warakawuri (PP No. 36/1968)</strong><br>
-              -------------------------------------<br>
-              Gaji Pokok Terakhir (GPT) : ${formatRupiah(gpt)}<br>
-              Kondisi Kematian         : ${kondisi}<br>
-              Total Anak Berhak        : 0 anak (Tidak ada anak)<br>
-              -------------------------------------<br>
-              Penspok Wari       : ${rateWariStr} &times; ${formatRupiah(gpt)} = ${formatRupiah(wariNominal)}<br>
-              Penspok Anak       : 0% &times; ${formatRupiah(gpt)} = Rp 0<br>
-              -------------------------------------<br>
-              <strong>Total Penspok Wari : ${formatRupiah(computedVal)} / bulan</strong>
-            `;
-          }
+          const pctWari = (res.penspokWari * 100).toFixed(0) + '%';
+          const pctAnak = (res.penspokAnak * 100).toFixed(0) + '%';
+          const totalPct = (res.totalPenspokWari * 100).toFixed(0) + '%';
+          breakdownEl.innerHTML = `
+            <strong>Rincian Perhitungan Pensiun Warakawuri</strong><br>
+            -------------------------------------<br>
+            Gaji Pokok Terakhir (GPT) : ${formatRupiah(gpt)}<br>
+            Kondisi Kematian          : ${kondisi}<br>
+            Jumlah Anak Berhak        : ${jumlahAnakBerhak} anak<br>
+            -------------------------------------<br>
+            Penspok Wari (Dasar)      : ${pctWari} × GPT = ${formatRupiah(Math.round(res.penspokWari * gpt))}<br>
+            Penspok Anak Tambahan     : ${pctAnak} × GPT = ${formatRupiah(Math.round(res.penspokAnak * gpt))}<br>
+            -------------------------------------<br>
+            Total Persentase          : ${totalPct} × GPT<br>
+            Rumus Final               : (Penspok Wari + Penspok Anak) × GPT<br>
+            -------------------------------------<br>
+            <strong>TOTAL PENSIUN WARAKAWURI: ${formatRupiah(computedVal)} / bulan</strong>
+          `;
           breakdownEl.classList.remove('hidden');
         }
         updateRingkasanKlaim();
@@ -8440,36 +8872,22 @@
         computedVal = Math.round(ratePctNum * gpt);
         inputBesar.value = formatRupiah(computedVal);
 
-        const ratePctStr = (ratePctNum * 100).toString().replace('.', ',') + '%';
         const breakdownEl = document.getElementById(`${cardId}-breakdown`);
 
         if (breakdownEl) {
-          if (jumlahDihitung === 0) {
-            breakdownEl.innerHTML = `
-              <strong>Rincian Status Tunjangan Yatim/Piatu</strong><br>
-              -------------------------------------<br>
-              Anak Diperbarui          : ${anakYangBerubah}<br>
-              Penyebab Perubahan       : ${penyebab}<br>
-              Sisa Anak Berhak         : 0 anak<br>
-              Status Pembayaran        : <span class="text-rose-600 font-bold">Tunjangan Dihentikan Total</span><br>
-              -------------------------------------<br>
-              <strong>TOTAL TUNJANGAN: Rp 0 / bulan</strong>
-            `;
-          } else {
-            breakdownEl.innerHTML = `
-              <strong>Rincian Perhitungan Tunjangan Yatim/Piatu (Hitung Ulang Sisa Anak)</strong><br>
-              -------------------------------------<br>
-              Gaji Pokok Terakhir (GPT): ${formatRupiah(gpt)}<br>
-              Kondisi Kematian         : ${kondisi}<br>
-              Anak Diperbarui          : ${anakYangBerubah} (${penyebab})<br>
-              Sisa Anak Masih Berhak   : ${sisaAnakBerhak} anak (Dihitung Max: ${jumlahDihitung} anak)<br>
-              -------------------------------------<br>
-              Persentase Hak           : ${ratePctStr}<br>
-              Rumus                    : ${ratePctStr} &times; ${formatRupiah(gpt)}<br>
-              -------------------------------------<br>
-              <strong>TOTAL TUNJANGAN YATIM/PIATU: ${formatRupiah(computedVal)} / bulan</strong>
-            `;
-          }
+          const ratePctStr = (ratePctNum * 100).toFixed(1) + '%';
+          breakdownEl.innerHTML = `
+            <strong>Rincian Perhitungan Tunjangan Yatim/Piatu</strong><br>
+            -------------------------------------<br>
+            Gaji Pokok Terakhir (GPT) : ${formatRupiah(gpt)}<br>
+            Kondisi Kematian          : ${kondisi}<br>
+            Jumlah Anak Dihitung      : ${jumlahDihitung} anak<br>
+            -------------------------------------<br>
+            Persentase Tunjangan      : ${ratePctStr} × GPT<br>
+            Rumus Final               : ${ratePctStr} × ${formatRupiah(gpt)}<br>
+            -------------------------------------<br>
+            <strong>TOTAL TUNJANGAN YATIM/PIATU: ${formatRupiah(computedVal)} / bulan</strong>
+          `;
           breakdownEl.classList.remove('hidden');
         }
         updateRingkasanKlaim();
@@ -8514,8 +8932,8 @@
               -------------------------------------<br>
               <strong>TOTAL TUNJANGAN ORANG TUA: ${formatRupiah(computedVal)} / bulan</strong>
             `;
+            breakdownEl.classList.remove('hidden');
           }
-          breakdownEl.classList.remove('hidden');
         }
         updateRingkasanKlaim();
       } else if (type === "Tunjangan Terbatas") {
@@ -8613,7 +9031,7 @@
             Tanggal Kejadian      : ${tglSks ? formatIndoDate(tglSks) : '-'}<br>
             Pangkat / Golongan    : ${currentParticipant?.pangkat || '-'}<br>
             -------------------------------------<br>
-            Kategori Golongan     : ${isPerwira ? 'Perwira / PNS Gol III & IV' : 'Tamtama/Bintara / PNS Gol I & II'}<br>
+            Kategori Golongan     : ${isPerwira ? 'Perwira / PNS Gol III &amp; IV' : 'Tamtama/Bintara / PNS Gol I &amp; II'}<br>
             Nominal Ketentuan SKS : ${formatRupiah(computedVal)}<br>
             -------------------------------------<br>
             <strong>TOTAL MANFAAT SKS: ${formatRupiah(computedVal)}</strong>
@@ -8824,39 +9242,73 @@
       } else if (type === "BPPP" || type === "BPI/S") {
         calculatePemakamanProduct(cardId, type);
         return;
-      } else if (type === "Beasiswa JKK/JKM" || type === "Beasiswa JKK" || type === "Beasiswa JKm" || type === "BPA") {
+      } else if (type === "Beasiswa JKK/JKM" || type === "Beasiswa JKK" || type === "Beasiswa JKm" || type === "Beasiswa JKM" || type === "BPA" || type.includes("Beasiswa")) {
         const reg = claimState?.regulasi || 'PP 54/2020';
         const config = NOMINAL_BEASISWA[reg] || NOMINAL_BEASISWA['PP 54/2020'];
         const maxAnak = config.maksAnak;
         const rate = config.nominal;
 
-        const childInput = document.getElementById(`${cardId}-jml-anak`);
-        let count = childInput ? parseInt(childInput.value) || 0 : maxAnak;
-        if (count > maxAnak) {
-          count = maxAnak;
-          if (childInput) childInput.value = maxAnak;
+        const chks = document.querySelectorAll(`[id^="${cardId}-child-chk-"]`);
+        let count = 0;
+        let selectedChildrenNames = [];
+
+        if (chks.length > 0) {
+          chks.forEach((chk, idx) => {
+            if (chk.checked) {
+              count++;
+              const childName = chk.getAttribute('data-child-name') || `Anak ke-${idx + 1}`;
+              selectedChildrenNames.push(childName);
+            }
+          });
+        } else {
+          const childInput = document.getElementById(`${cardId}-jml-anak`);
+          count = childInput ? parseInt(childInput.value) || 0 : (reg === 'PP 54/2020' ? 0 : maxAnak);
+          if (count > maxAnak) count = maxAnak;
         }
+
+        if (count > maxAnak) count = maxAnak;
+
+        const childInput = document.getElementById(`${cardId}-jml-anak`);
+        if (childInput) childInput.value = count;
 
         const jenjangEl = document.getElementById(`${cardId}-jenjang`);
         const jenjang = jenjangEl ? jenjangEl.value : "HE";
         const JENJANG_LABELS = { 'SD': 'SD/Sederajat', 'SMP': 'SMP/Sederajat', 'SMA': 'SMA/Sederajat', 'HE': 'D3/S1/Perguruan Tinggi' };
         const jenjangLabel = JENJANG_LABELS[jenjang] || jenjang;
 
-        computedVal = count * rate;
-        inputBesar.value = formatRupiah(computedVal);
-
         // Update nominal per anak display
         const nominalPerAnakEl = document.getElementById(`${cardId}-nominal-per-anak`);
         if (nominalPerAnakEl) nominalPerAnakEl.value = formatRupiah(rate);
 
         const breakdownEl = document.getElementById(`${cardId}-breakdown`);
+
+        if (count === 0) {
+          computedVal = 0;
+          inputBesar.value = "Rp 0";
+          if (breakdownEl) {
+            breakdownEl.innerHTML = `
+              <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 font-semibold flex items-center gap-2">
+                <i class="fas fa-exclamation-triangle text-amber-600"></i>
+                <span>Pilih minimal 1 anak untuk diproses beasiswa.</span>
+              </div>
+            `;
+            breakdownEl.classList.remove('hidden');
+          }
+          updateRingkasanKlaim();
+          return;
+        }
+
+        computedVal = count * rate;
+        inputBesar.value = formatRupiah(computedVal);
+
         if (breakdownEl) {
+          const childrenStr = selectedChildrenNames.length > 0 ? `<br>Anak yang Diproses      : ${selectedChildrenNames.join(', ')}` : '';
           breakdownEl.innerHTML = `
             <strong>Rincian Perhitungan Beasiswa (${type})</strong><br>
             -------------------------------------<br>
             Regulasi                : ${reg}<br>
             Jenjang Pendidikan      : ${jenjangLabel} (Info LPK)<br>
-            Jumlah Anak Berhak      : ${count} anak (Maks ${maxAnak} anak)<br>
+            Jumlah Anak Diproses    : ${count} anak (dari maks ${maxAnak} anak)${childrenStr}<br>
             -------------------------------------<br>
             Nominal per Anak (Flat) : ${formatRupiah(rate)}<br>
             Rumus Final             : ${count} anak &times; ${formatRupiah(rate)}<br>
@@ -8865,6 +9317,9 @@
           `;
           breakdownEl.classList.remove('hidden');
         }
+        showToast("Kalkulasi Selesai", "Nilai manfaat produk berhasil dihitung.", "success");
+        updateRingkasanKlaim();
+        return;
       } else if (type === "Biaya Pemakaman JKm" || type === "Biaya Pemakaman") {
         const reg = claimState?.regulasi || 'PP 54/2020';
         computedVal = REGULASI_PARAMS[reg].BIAYA_PEMAKAMAN_JKM;
@@ -8884,15 +9339,21 @@
     }
 
     function skipProductCalculation() {
+      unlockTabUpTo(4); // Tetap buka Tab 5 walau dilewati
+      catatHistoryProses('Tab 4 — Hak / Produk', 'Lewati Kalkulasi', 'Kalkulasi produk dilewati. Lanjut ke Tab 5.');
       showToast("Kalkulasi Dilewati", "Melanjutkan ke tab Status & Riwayat tanpa kalkulasi produk.", "info");
       switchTab("tab-riwayat");
     }
 
     function saveProductCalculation() {
-      showToast("Kalkulasi Disimpan", "Seluruh rincian manfaat produk berhasil disimpan.", "success");
-      setTimeout(() => {
-        switchTab("tab-riwayat");
-      }, 500);
+      // Simpan claimState ke localStorage
+      if (claimState) {
+        localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+      }
+      // Buka Tab 5 setelah produk tersimpan
+      unlockTabUpTo(4);
+      catatHistoryProses('Tab 4 — Hak / Produk', 'Simpan Kalkulasi Produk', 'Seluruh rincian manfaat produk berhasil disimpan. Tab 5 terbuka.');
+      showToast("Kalkulasi Disimpan", "Seluruh rincian manfaat produk berhasil disimpan. Tab 5 (Status & Riwayat) kini terbuka.", "success");
     }
 
     function renderTab5Data() {
@@ -8919,93 +9380,143 @@
       
       const stepperContainer = document.getElementById("claim-stepper-container");
       if (stepperContainer) {
-        const status = claimState?.status || "Kalkulasi Manfaat";
-        const s = status.toLowerCase();
-        
-        const STEP_NAMES = [
-          "Registrasi",
-          "Dokumen Diterima",
-          "Dokumen Terpending",
-          "Kalkulasi Manfaat",
-          "Menunggu Verifikasi",
-          "Terverifikasi",
-          "Menunggu Approval",
-          "SP Terbit",
-          "Selesai"
+        const status = claimState?.status || "Registrasi";
+        const logs   = claimState?.logs   || [];
+
+        // ── Cek apakah klaim PERNAH melewati status Pending ──
+        // (dari tombol "Simpan & Pending" di Tab 1, atau riwayat log)
+        const hasPernahPending =
+          status === "Dokumen Terpending" ||
+          logs.some(l => (l.status || l.aksi || "").toLowerCase().includes("pending") ||
+                         (l.keterangan || "").toLowerCase().includes("pending"));
+
+        // ── Definisi 10 STEP (urutan final) ──
+        // "Dokumen Terpending" hanya dimasukkan ke array jika pernah pending
+        const ALL_STEPS_BASE = [
+          { key: "registrasi",         label: "Registrasi" },
+          { key: "terpending",          label: "Dokumen Terpending", conditional: true },
+          { key: "dokumen_diterima",    label: "Dokumen Diterima" },
+          { key: "kalkulasi",           label: "Kalkulasi Manfaat" },
+          { key: "ajukan_verifikator",  label: "Ajukan Verifikator" },
+          { key: "menunggu_verifikasi", label: "Menunggu Verifikasi" },
+          { key: "terverifikasi",       label: "Terverifikasi" },
+          { key: "menunggu_approval",   label: "Menunggu Approval" },
+          { key: "sp_terbit",           label: "SP Terbit" },
+          { key: "selesai",             label: "Selesai" },
         ];
 
-        let activeIndex = 3; // Default to Kalkulasi Manfaat
-        if (s.includes("registrasi")) activeIndex = 0;
-        else if (s.includes("dokumen diterima")) activeIndex = 1;
-        else if (s.includes("terpending")) activeIndex = 2;
-        else if (s.includes("kalkulasi manfaat") || s.includes("draft") || s.includes("diproses")) activeIndex = 3;
-        else if (s.includes("menunggu verifikasi")) activeIndex = 4;
-        else if (s.includes("terverifikasi")) activeIndex = 5;
-        else if (s.includes("menunggu approval") || s.includes("approval")) activeIndex = 6;
-        else if (s.includes("sp terbit")) activeIndex = 7;
-        else if (s.includes("selesai")) activeIndex = 8;
-        else if (s.includes("dikembalikan ke verifikator")) activeIndex = 4;
-        else if (s.includes("staf") || s.includes("kembalikan")) activeIndex = 1; // Dikembalikan ke Staf (Dokumen Diterima / Terpending)
+        // Filter step kondisional "Dokumen Terpending" berdasarkan hasPernahPending
+        const STEPS = ALL_STEPS_BASE.filter(s => !s.conditional || hasPernahPending);
 
-        const progressPercent = (activeIndex / 8) * 100;
+        // ── Mapping status → index step aktif ──
+        const s = status.toLowerCase();
+        let activeIndex = 0;
+        if      (s === "registrasi" || s.includes("registrasi"))                         activeIndex = 0;
+        else if (hasPernahPending && (s === "dokumen terpending" || s.includes("pending"))) activeIndex = STEPS.findIndex(x => x.key === "terpending");
+        else if (s === "dokumen diterima" || s.includes("dokumen diterima") || s.includes("staf") || s.includes("kembalikan")) activeIndex = STEPS.findIndex(x => x.key === "dokumen_diterima");
+        else if (s.includes("kalkulasi") || s.includes("diproses") || s.includes("draft") || s.includes("menunggu proses bidang")) activeIndex = STEPS.findIndex(x => x.key === "kalkulasi");
+        else if (s.includes("ajukan verifikator") || s.includes("ajukan ke verifikator"))  activeIndex = STEPS.findIndex(x => x.key === "ajukan_verifikator");
+        else if (s.includes("menunggu verifikasi") || s.includes("dikembalikan ke verifikator")) activeIndex = STEPS.findIndex(x => x.key === "menunggu_verifikasi");
+        else if (s.includes("terverifikasi"))                                              activeIndex = STEPS.findIndex(x => x.key === "terverifikasi");
+        else if (s.includes("menunggu approval") || s.includes("menunggu approve"))        activeIndex = STEPS.findIndex(x => x.key === "menunggu_approval");
+        else if (s.includes("sp terbit") || s.includes("disetujui") || s.includes("approve")) activeIndex = STEPS.findIndex(x => x.key === "sp_terbit");
+        else if (s.includes("selesai"))                                                    activeIndex = STEPS.findIndex(x => x.key === "selesai");
+        if (activeIndex < 0) activeIndex = 0;
+
+        // ── Ambil timestamp real dari logs untuk step yang sudah selesai ──
+        function getStepTimestamp(stepKey) {
+          const keyMap = {
+            registrasi:         ["registrasi", "generate", "nomor agenda"],
+            terpending:         ["pending", "terpending", "simpan & pending"],
+            dokumen_diterima:   ["dokumen diterima", "simpan tab 3", "persyaratan"],
+            kalkulasi:          ["kalkulasi", "simpan tab 4", "hak produk"],
+            ajukan_verifikator: ["ajukan", "verifikator"],
+            menunggu_verifikasi:["menunggu verifikasi"],
+            terverifikasi:      ["terverifikasi", "setujui verifikator"],
+            menunggu_approval:  ["menunggu approval", "approve"],
+            sp_terbit:          ["sp terbit", "approve kakancab"],
+            selesai:            ["selesai", "ap3"],
+          };
+          const keywords = keyMap[stepKey] || [];
+          const matchedLog = logs.find(l => {
+            const text = ((l.aksi || "") + " " + (l.status || "") + " " + (l.keterangan || "")).toLowerCase();
+            return keywords.some(kw => text.includes(kw));
+          });
+          if (matchedLog?.tanggal) return matchedLog.tanggal;
+          // Fallback: gunakan waktu sekarang untuk step aktif
+          return null;
+        }
+
+        const nowDateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+        const nowTimeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+        const maxSteps = STEPS.length - 1;
+        const progressPercent = maxSteps > 0 ? (activeIndex / maxSteps) * 100 : 0;
 
         let stepsHtml = `
           <div class="absolute top-[28px] left-[5%] right-[5%] h-0.5 bg-slate-100 -z-1">
-            <div class="h-full bg-emerald-500 transition-all duration-500" style="width: ${progressPercent}%;"></div>
+            <div class="h-full bg-emerald-500 transition-all duration-700" style="width: ${progressPercent}%;"></div>
           </div>
         `;
 
-        STEP_NAMES.forEach((name, i) => {
-          const isPendingStep = name === "Dokumen Terpending" && i === activeIndex;
+        STEPS.forEach((step, i) => {
+          const ts = getStepTimestamp(step.key);
+          const tsDisplay = ts || (i <= activeIndex ? `${nowDateStr} ${nowTimeStr}` : "-");
+
           if (i < activeIndex) {
+            // ── SELESAI — hijau + centang ──
             stepsHtml += `
-              <div class="flex flex-col items-center text-center min-w-[100px] relative z-10">
+              <div class="flex flex-col items-center text-center min-w-[90px] relative z-10">
                 <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-300 flex items-center justify-center font-bold text-sm mb-2 shadow-sm">
                   <i class="fas fa-check"></i>
                 </div>
-                <span class="text-slate-700 font-bold">${name}</span>
-                <span class="text-[9px] text-slate-400 font-mono mt-0.5">${todayStr} 09:00 WIB</span>
+                <span class="text-slate-700 font-bold text-[10px] leading-tight">${step.label}</span>
+                <span class="text-[9px] text-slate-400 font-mono mt-0.5">${tsDisplay}</span>
               </div>
             `;
           } else if (i === activeIndex) {
-            if (i === 8) {
+            if (step.key === "selesai") {
+              // ── SELESAI FINAL ──
               stepsHtml += `
-                <div class="flex flex-col items-center text-center min-w-[100px] relative z-10">
-                  <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-300 flex items-center justify-center font-bold text-sm mb-2 shadow-sm">
-                    <i class="fas fa-check"></i>
+                <div class="flex flex-col items-center text-center min-w-[90px] relative z-10">
+                  <div class="w-8 h-8 rounded-full bg-emerald-500 text-white border border-emerald-600 flex items-center justify-center font-bold text-sm mb-2 shadow-sm">
+                    <i class="fas fa-star"></i>
                   </div>
-                  <span class="text-emerald-600 font-bold">${name}</span>
-                  <span class="text-[9px] text-slate-400 font-mono mt-0.5">${todayStr} ${timeStr}</span>
+                  <span class="text-emerald-600 font-bold text-[10px] leading-tight">${step.label}</span>
+                  <span class="text-[9px] text-emerald-500 font-mono mt-0.5">${tsDisplay}</span>
                 </div>
               `;
-            } else if (isPendingStep) {
+            } else if (step.key === "terpending") {
+              // ── DOKUMEN TERPENDING — kuning/amber ──
               stepsHtml += `
-                <div class="flex flex-col items-center text-center min-w-[100px] relative z-10">
+                <div class="flex flex-col items-center text-center min-w-[90px] relative z-10">
                   <div class="w-8 h-8 rounded-full bg-amber-400 text-white border border-amber-500 flex items-center justify-center font-bold text-sm mb-2 shadow-sm animate-pulse">
                     <i class="fas fa-circle-exclamation"></i>
                   </div>
-                  <span class="text-amber-500 font-bold">${name}</span>
-                  <span class="text-[9px] text-slate-400 font-mono mt-0.5">${todayStr} ${timeStr}</span>
+                  <span class="text-amber-600 font-bold text-[10px] leading-tight">${step.label}</span>
+                  <span class="text-[9px] text-amber-400 font-mono mt-0.5">${tsDisplay}</span>
                 </div>
               `;
             } else {
+              // ── AKTIF SAAT INI — biru + spin ──
               stepsHtml += `
-                <div class="flex flex-col items-center text-center min-w-[100px] relative z-10">
-                  <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 border border-blue-300 flex items-center justify-center font-bold text-sm mb-2 shadow-sm animate-pulse">
+                <div class="flex flex-col items-center text-center min-w-[90px] relative z-10">
+                  <div class="w-9 h-9 rounded-full bg-blue-600 text-white border-2 border-blue-400 ring-4 ring-blue-100 flex items-center justify-center font-bold text-sm mb-2 shadow-md">
                     <i class="fas fa-circle-notch fa-spin text-xs"></i>
                   </div>
-                  <span class="text-blue-600 font-bold">${name}</span>
-                  <span class="text-[9px] text-slate-400 font-mono mt-0.5">${todayStr} ${timeStr}</span>
+                  <span class="text-blue-700 font-bold text-[10px] leading-tight">${step.label}</span>
+                  <span class="text-[9px] text-blue-400 font-mono mt-0.5">${tsDisplay}</span>
                 </div>
               `;
             }
           } else {
+            // ── BELUM TERCAPAI — abu-abu ──
             stepsHtml += `
-              <div class="flex flex-col items-center text-center min-w-[100px] relative z-10">
+              <div class="flex flex-col items-center text-center min-w-[90px] relative z-10 opacity-50">
                 <div class="w-8 h-8 rounded-full bg-slate-50 text-slate-400 border border-slate-200 flex items-center justify-center font-bold text-xs mb-2">
                   ${i + 1}
                 </div>
-                <span class="text-slate-400">${name}</span>
+                <span class="text-slate-400 text-[10px] leading-tight">${step.label}</span>
                 <span class="text-[9px] text-slate-300 font-mono mt-0.5">-</span>
               </div>
             `;
@@ -9014,6 +9525,7 @@
 
         stepperContainer.innerHTML = stepsHtml;
       }
+
 
       // Action Card rendering based on Role
       const approvalContainer = document.getElementById("kakancab-approval-container");
@@ -9419,6 +9931,66 @@
         });
       }
 
+      // Populate SLA Summary Card dynamically
+      const slaSummaryContainer = document.getElementById("t5-sla-summary-container");
+      if (slaSummaryContainer) {
+        const slaTab1Start = claimState?.slaStartTime ? new Date(claimState.slaStartTime) : null;
+        const slaTab1Str = slaTab1Start ? slaTab1Start.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB' : 'Belum Dimulai';
+        
+        const slaTab2Start = claimState?.slaTab2StartTime ? new Date(claimState.slaTab2StartTime) : null;
+        const slaTab2Str = slaTab2Start ? slaTab2Start.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' WIB' : 'Belum Dimulai';
+
+        const now = new Date();
+        const durasiTab1 = slaTab1Start ? Math.max(0, Math.floor((now - slaTab1Start) / 1000)) : 0;
+        const durasiTab2 = slaTab2Start ? Math.max(0, Math.floor((now - slaTab2Start) / 1000)) : 0;
+
+        const formatDuration = (sec) => {
+          if (sec <= 0) return "0 Menit";
+          const d = Math.floor(sec / (3600 * 24));
+          const h = Math.floor((sec % (3600 * 24)) / 3600);
+          const m = Math.floor((sec % 3600) / 60);
+          const s = sec % 60;
+          let parts = [];
+          if (d > 0) parts.push(`${d} Hari`);
+          if (h > 0) parts.push(`${h} Jam`);
+          parts.push(`${m} Menit`);
+          parts.push(`${s} Detik`);
+          return parts.join(' ');
+        };
+
+        slaSummaryContainer.innerHTML = `
+          <!-- Item SLA 1: Tab 1 (Pengajuan & Dokumen) -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="fas fa-folder-open text-blue-600"></i> SLA 1: Pengajuan & Terima Dokumen (Tab 1)
+              </span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Aktif</span>
+            </div>
+            <div class="text-[11px] text-slate-600 space-y-1">
+              <div>Waktu Mulai: <strong class="font-mono text-slate-800">${slaTab1Str}</strong></div>
+              <div>Durasi Pemrosesan: <strong class="font-mono text-blue-700">${formatDuration(durasiTab1)}</strong></div>
+            </div>
+          </div>
+
+          <!-- Item SLA 2: Tab 2 (Kalkulasi & Verifikasi) -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="fas fa-calculator text-emerald-600"></i> SLA 2: Kalkulasi & Verifikasi (Tab 2)
+              </span>
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${slaTab2Start ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-500 border border-slate-200'}">
+                ${slaTab2Start ? 'Aktif' : 'Menunggu'}
+              </span>
+            </div>
+            <div class="text-[11px] text-slate-600 space-y-1">
+              <div>Waktu Mulai: <strong class="font-mono text-slate-800">${slaTab2Str}</strong></div>
+              <div>Durasi Pemrosesan: <strong class="font-mono text-emerald-700">${formatDuration(durasiTab2)}</strong></div>
+            </div>
+          </div>
+        `;
+      }
+
       // Populate Activity Logs dynamically
       const logsTbody = document.getElementById("t5-logs-tbody");
       if (logsTbody) {
@@ -9526,6 +10098,76 @@
       delete claimState.tdsPremium;
       localStorage.setItem("registrasiKlaim", JSON.stringify(claimState));
       addClaimLog("SK | Staf KANCAB", "Pengajuan Klaim", "Menunggu Verifikasi", "Berkas diajukan ke Verifikator untuk peninjauan.");
+
+      // Sync status & ensure claim exists in global asabri_claims database
+      try {
+        const noAgenda = claimState.noRegistrasi || claimState.noAgenda || claimState.noReg;
+        if (noAgenda) {
+          const claims = getClaims();
+          const idx = claims.findIndex(c => c.noRegistrasi === noAgenda || c.noAgenda === noAgenda || c.noReg === noAgenda);
+          
+          const currentProdList = (claimState.productsDetail && claimState.productsDetail.length > 0)
+            ? claimState.productsDetail
+            : ((typeof activeProducts !== 'undefined' && activeProducts && activeProducts.length > 0)
+              ? activeProducts.map(p => ({ nama: p.type, nominalKotor: 57822900, potongan: 0, nominalBersih: 57822900 }))
+              : null);
+          const manfaatStr = currentProdList ? currentProdList.map(p => p.nama).join(' + ') : (claimState.jenisKejadian || "Pensiun");
+
+          if (idx !== -1) {
+            claims[idx].status = "Menunggu Verifikasi";
+            if (claimState.participant || claimState.peserta || currentParticipant) {
+              claims[idx].participant = claimState.participant || claimState.peserta || currentParticipant;
+            }
+            if (claimState.jenisKejadian) claims[idx].jenisKejadian = claimState.jenisKejadian;
+            if (currentProdList) {
+              claims[idx].products = currentProdList;
+              claims[idx].manfaatKlaim = manfaatStr;
+            }
+            saveClaims(claims);
+          } else {
+            // If not found in asabri_claims, create & add it
+            const pesObj = claimState.participant || claimState.peserta || currentParticipant || {};
+            const newClaimObj = {
+              noRegistrasi: noAgenda,
+              noAgenda: noAgenda,
+              noReg: noAgenda,
+              tanggalRegistrasi: claimState.tanggalRegistrasi || new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+              jenisKejadian: claimState.jenisKejadian || "Pensiun",
+              jenisKlaim: claimState.jenisKejadian || "Pensiun",
+              manfaatKlaim: manfaatStr,
+              products: currentProdList,
+              kantorCabang: claimState.kantorCabang || "KC Utama Jakarta",
+              status: "Menunggu Verifikasi",
+              nik: pesObj.nik || claimState.nik || "-",
+              namaPeserta: pesObj.nama || claimState.namaPeserta || "-",
+              participant: pesObj,
+              auditTrail: [
+                { user: "Staf Kancab Utama", aksi: "Pengajuan Klaim", tanggal: new Date().toLocaleDateString('id-ID') }
+              ]
+            };
+            addClaim(newClaimObj);
+          }
+
+          // Also sync to asabri_product_verifications so verifikator receives identical product list immediately
+          if (currentProdList && currentProdList.length > 0) {
+            const verifData = JSON.parse(localStorage.getItem("asabri_product_verifications") || "{}");
+            verifData[noAgenda] = currentProdList.map(p => ({
+              nama: p.nama || p.type || 'TA',
+              status: 'Menunggu Verifikasi',
+              catatanPenolakan: '',
+              nominalKotor: p.nominalKotor || 57822900,
+              potongan: p.potongan || 0,
+              nominalBersih: p.nominalBersih !== undefined ? p.nominalBersih : (p.nominalKotor || 57822900) - (p.potongan || 0)
+            }));
+            localStorage.setItem("asabri_product_verifications", JSON.stringify(verifData));
+          }
+
+          console.log('asabri_claims setelah ajukan:', JSON.parse(localStorage.getItem('asabri_claims')));
+        }
+      } catch(e) {
+        console.error("Error syncing ajukanKeVerifikator to asabri_claims:", e);
+      }
+
       showToast("Berhasil", "Klaim berhasil diajukan ke Verifikator.", "success");
       renderTab5Data();
     }
@@ -10056,7 +10698,7 @@
       } else if (key === 'Kecelakaan Kerja — Dirawat') {
         claimState.sjpNumber = `SJP/JKT/${romanMonth}/${currentYear}/${suffix}`;
         spNames = ["SJP"];
-      } else if (['Beasiswa JKK/JKM', 'Beasiswa JKm', 'Beasiswa JKK'].includes(key) || key.includes('Beasiswa')) {
+      } else if (['Beasiswa JKK/JKM', 'Beasiswa JKm', 'Beasiswa JKM', 'Beasiswa JKK'].includes(key) || key.includes('Beasiswa')) {
         claimState.spNumberBeasiswa = `SP-BEASISWA/JKT/${romanMonth}/${currentYear}/${suffix}`;
         spNames = ["SP Beasiswa"];
       } else {
@@ -11356,22 +11998,26 @@
 
     function renderTabRejectionButtons() {
       const currentRole = localStorage.getItem('currentRole') || 'Staf KANCAB';
+      const unlockedMax = getUnlockedTabMax();
 
       // 1. Tab 1 (Data Peserta)
       const t1Container = document.getElementById("tab-1-action-buttons");
       if (t1Container) {
+        // Tombol [Tolak] + [Simpan] selalu tampil
+        // Tombol [Lanjut ke Tab 2] tampil jika: tanda terima sudah tersimpan ATAU Tab 2 sudah pernah dibuka
+        const canGoTab2 = isTandaTerimaSaved || (unlockedMax >= 1);
         let buttonsHtml = `
           <button type="button" onclick="showPopupTolak('${currentRole}', 'Data Peserta')" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 animate-fade-in">
             <i class="fas fa-circle-xmark"></i> Tolak
           </button>
-          <button type="button" onclick="openModalTandaTerima()" class="px-5 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 animate-fade-in">
+          <button type="button" onclick="openModalTandaTerima()" class="px-5 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 animate-fade-in">
             <i class="fas fa-floppy-disk"></i> Simpan
           </button>
         `;
 
-        if (isTandaTerimaSaved) {
+        if (canGoTab2) {
           buttonsHtml += `
-            <button type="button" onclick="switchTab('tab-kejadian')" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 animate-fade-in">
+            <button type="button" onclick="lanjutKeTab2()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow flex items-center gap-1.5 animate-fade-in">
               Lanjut ke Tab 2 <i class="fas fa-arrow-right"></i>
             </button>
           `;
@@ -11380,7 +12026,10 @@
         t1Container.innerHTML = buttonsHtml;
       }
 
-      // 2. Tab 2 (Data Kejadian)
+      // Refresh visual nav tab UI setiap kali render
+      updateTabNavUI(null);
+
+      // 2. Tab 2 (Data Kejadian) — hanya Tolak (Simpan + Lanjut sudah di HTML)
       const t2Container = document.getElementById("tab-2-reject-button");
       if (t2Container) {
         t2Container.innerHTML = `
@@ -11760,6 +12409,10 @@
             <span id="tt-no-registrasi" class="font-mono font-bold text-slate-800">-</span>
           </div>
           <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
+            <span class="text-slate-500 font-semibold">Jenis Kejadian</span>
+            <span id="tt-jenis-kejadian" class="font-bold text-slate-800 text-right">-</span>
+          </div>
+          <div class="flex justify-between border-b border-slate-200/60 pb-1.5">
             <span class="text-slate-500 font-semibold">Nama</span>
             <span id="tt-nama" class="font-bold text-slate-800">-</span>
           </div>
@@ -11808,7 +12461,8 @@
     function openModalTandaTerima() {
       const p = currentParticipant || {};
       const pengaju = (claimState && (claimState.tipePengunjung || claimState.pengaju)) || {};
-      const regNo = document.getElementById("t1-noreg")?.innerText || claimState?.noRegistrasi || "-";
+      const regNo = document.getElementById("t1-noreg")?.innerText || claimState?.noRegistrasi || claimState?.noAgenda || "-";
+      const jenisKejadian = claimState?.jenisKejadian || document.getElementById("top-kejadian")?.innerText || document.getElementById("kejadian-jenis")?.value || "-";
       const namaPeserta = p.nama || "-";
       const nipNrp = p.nrp_nip || p.nrp || p.nip || p.nik || "-";
       const namaPengunjung = pengaju.nama || p.nama || "-";
@@ -11816,6 +12470,8 @@
       const noTelp = claimState?.tandaTerima?.noTelepon || pengaju.telp || p.no_telepon || p.telepon || document.getElementById('side-pengaju-telp')?.innerText || "-";
 
       document.getElementById("tt-no-registrasi").innerText = regNo;
+      const ttKejadianEl = document.getElementById("tt-jenis-kejadian");
+      if (ttKejadianEl) ttKejadianEl.innerText = jenisKejadian;
       document.getElementById("tt-nama").innerText = namaPeserta;
       document.getElementById("tt-nip-nrp").innerText = nipNrp;
       document.getElementById("tt-status-kepesertaan").innerText = "Aktif";
@@ -11847,6 +12503,7 @@
       if (!claimState) claimState = {};
       claimState.tandaTerima = {
         noRegistrasi: document.getElementById("tt-no-registrasi").innerText,
+        jenisKejadian: document.getElementById("tt-jenis-kejadian")?.innerText || claimState.jenisKejadian || "-",
         nama: document.getElementById("tt-nama").innerText,
         nipNrp: document.getElementById("tt-nip-nrp").innerText,
         statusKepesertaan: document.getElementById("tt-status-kepesertaan").innerText,
@@ -11864,6 +12521,10 @@
 
       claimState.catatanTandaTerima = catatanVal;
       isTandaTerimaSaved = true;
+
+      // Buka Tab 2 otomatis setelah Tanda Terima tersimpan
+      unlockTabUpTo(1);
+      catatHistoryProses('Tab 1 — Data Peserta', 'Simpan & Cetak Tanda Terima', 'Tanda terima dicetak, Tab 2 (Data Kejadian) kini terbuka.');
 
       // Close modal
       closeModalTandaTerima();
@@ -11912,6 +12573,7 @@
           </div>
           <table>
             <tr><td class="label">No. Registrasi</td><td class="colon">:</td><td class="val">${data.noRegistrasi}</td></tr>
+            <tr><td class="label">Jenis Kejadian</td><td class="colon">:</td><td class="val">${data.jenisKejadian || '-'}</td></tr>
             <tr><td class="label">Nama Peserta</td><td class="colon">:</td><td class="val">${data.nama}</td></tr>
             <tr><td class="label">NIP / NRP</td><td class="colon">:</td><td class="val">${data.nipNrp}</td></tr>
             <tr><td class="label">Status Kepesertaan</td><td class="colon">:</td><td class="val">${data.statusKepesertaan}</td></tr>

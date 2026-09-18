@@ -407,13 +407,13 @@
   <script src="data.js?v=1.0.1"></script>
   <script src="shared.js?v=1.0.1"></script>
   <script>
-    // Helper to render dynamic SVG Donut Chart (Diameter responsive minimal 200px)
-    function renderDonutChart(svgId, totalId, tooltipId, data) {
+    // Helper to render dynamic SVG Donut Chart
+    function renderDonutChart(svgId, totalId, tooltipId, data, overrideTotal) {
       const svg = document.getElementById(svgId);
       const totalEl = document.getElementById(totalId);
       if (!svg || !totalEl) return;
 
-      const totalVal = data.reduce((sum, item) => sum + item.value, 0);
+      const totalVal = overrideTotal !== undefined ? overrideTotal : data.reduce((sum, item) => sum + item.value, 0);
       totalEl.innerText = totalVal;
 
       let accumulatedPercent = 0;
@@ -450,7 +450,7 @@
       legendEl.innerHTML = data.map((item, idx) => {
         const percent = totalVal > 0 ? Math.round((item.value / totalVal) * 100) : 0;
         return `
-          <div class="flex items-center justify-between cursor-pointer hover:bg-slate-55 p-1 rounded-lg transition-colors" style="border-bottom: 1px solid #f1f5f9;"
+          <div class="flex items-center justify-between cursor-pointer hover:bg-slate-50 p-1.5 rounded-lg transition-colors" style="border-bottom: 1px solid #f1f5f9;"
                onmouseenter="showCustomTooltip('${tooltipId}', '${item.label}', '${item.value} (${percent}%)')" 
                onmouseleave="hideCustomTooltip('${tooltipId}')">
             <span class="flex items-center gap-2">
@@ -562,22 +562,81 @@
       window.addEventListener("storage", updateMetrics);
     });
 
+    // 10 STATUS KLAIM Standard (Sesuai Stepper Tab 5 kejadian.html)
+    const STATUS_KLAIM_DASHBOARD = [
+      'Registrasi',
+      'Dokumen Terpending', // kondisional, hanya tampil jika ada data dengan status ini
+      'Dokumen Diterima',
+      'Kalkulasi Manfaat',
+      'Ajukan Verifikator',
+      'Menunggu Verifikasi',
+      'Terverifikasi',
+      'Menunggu Approval',
+      'SP Terbit',
+      'Selesai',
+    ];
+
+    const STATUS_KLAIM_COLORS = {
+      'Registrasi': '#94A3B8',
+      'Dokumen Terpending': '#F59E0B',
+      'Dokumen Diterima': '#3B82F6',
+      'Kalkulasi Manfaat': '#0EA5E9',
+      'Ajukan Verifikator': '#0284C7',
+      'Menunggu Verifikasi': '#6366F1',
+      'Terverifikasi': '#8B5CF6',
+      'Menunggu Approval': '#EC4899',
+      'SP Terbit': '#0D9488',
+      'Selesai': '#22C55E'
+    };
+
+    function normalizeClaimStatus(status) {
+      if (!status || status.trim() === '' || status === 'Registrasi' || status === 'Terdaftar') return 'Registrasi';
+      const s = status.trim();
+      if (s === 'Dokumen Terpending' || s === 'Pending' || s === 'Dipending') return 'Dokumen Terpending';
+      if (s === 'Dokumen Diterima' || s === 'Diterima') return 'Dokumen Diterima';
+      if (s === 'Kalkulasi Manfaat') return 'Kalkulasi Manfaat';
+      if (s === 'Ajukan Verifikator') return 'Ajukan Verifikator';
+      if (s === 'Menunggu Verifikasi' || s === 'Verifikasi Kancab' || s === 'Verifikasi Dokumen') return 'Menunggu Verifikasi';
+      if (s === 'Terverifikasi' || s === 'Verifikasi Medis Layer 1' || s === 'Verifikasi Medis Layer 2' || s === 'Review RS' || s === 'Dispute RS') return 'Terverifikasi';
+      if (s === 'Menunggu Approval' || s === 'Approval Kabid') return 'Menunggu Approval';
+      // Hapus Proses Pembayaran — trigger AP3 otomatis terjadi di status 'SP Terbit'
+      if (s === 'SP Terbit' || s === 'SJP Terbit' || s === 'SJPP Terbit' || s === 'SP Restitusi Terbit' || s === 'Proses Pembayaran' || s === 'Keuangan') return 'SP Terbit';
+      if (s === 'Selesai') return 'Selesai';
+      return s;
+    }
+
+    function hitungRingkasanStatus(semuaKlaim) {
+      const total = semuaKlaim.length;
+      const normalizedKlaim = semuaKlaim.map(k => ({
+        ...k,
+        statusNorm: normalizeClaimStatus(k.status)
+      }));
+
+      const ringkasan = STATUS_KLAIM_DASHBOARD.map(status => {
+        const jumlah = normalizedKlaim.filter(k => k.statusNorm === status).length;
+        const persen = total > 0 ? ((jumlah / total) * 100).toFixed(0) : 0;
+        return { 
+          status, 
+          label: status, 
+          jumlah: Number(jumlah), 
+          value: Number(jumlah), 
+          persen: Number(persen), 
+          color: STATUS_KLAIM_COLORS[status] || '#94A3B8' 
+        };
+      }).filter(item => {
+        // Kondisional: Jika status 'Dokumen Terpending' tidak ada datanya, JANGAN ditampilkan di dashboard (skip baris ini)
+        if (item.status === 'Dokumen Terpending' && item.jumlah === 0) {
+          return false;
+        }
+        return true;
+      });
+
+      return { total, ringkasan };
+    }
+
     function updateMetrics() {
       const claims = getClaims();
-      
       const total = claims.length;
-      
-      // Calculate category counts for 10 stages
-      const registrasiCount = claims.filter(c => !c.status || c.status === "Registrasi").length;
-      const dokDiterimaCount = claims.filter(c => c.status === "Dokumen Diterima" || c.status === "Diterima").length;
-      const dokTerpendingCount = claims.filter(c => c.status === "Dokumen Terpending" || c.status === "Pending").length;
-      const kalkManfaatCount = claims.filter(c => c.status === "Kalkulasi Manfaat").length;
-      const menVerifCount = claims.filter(c => c.status === "Menunggu Verifikasi" || c.status === "Verifikasi Kancab" || c.status === "Verifikasi Dokumen").length;
-      const terverifikasiCount = claims.filter(c => c.status === "Terverifikasi" || c.status === "Verifikasi Medis Layer 1" || c.status === "Verifikasi Medis Layer 2" || c.status === "Review RS" || c.status === "Dispute RS").length;
-      const menApprCount = claims.filter(c => c.status === "Menunggu Approval" || c.status === "Approval Kabid").length;
-      const spTerbitCount = claims.filter(c => c.status === "SP Terbit" || c.status === "SJP Terbit" || c.status === "SJPP Terbit" || c.status === "SP Restitusi Terbit").length;
-      const prosBayarCount = claims.filter(c => c.status === "Proses Pembayaran" || c.status === "Keuangan").length;
-      const selesaiCount = claims.filter(c => c.status === "Selesai").length;
 
       const pendingCount = claims.filter(c => (c.status || "").toLowerCase().includes("pending")).length;
       const ditolakCount = claims.filter(c => (c.status || "").toLowerCase().includes("tolak")).length;
@@ -595,24 +654,21 @@
       document.getElementById("stat-pending").innerText = pendingCount;
       document.getElementById("stat-sla-warning").innerText = slaWarning;
       
-      // Ringkasan Status Registrasi - 3 categories
+      // Card 1: Ringkasan Status Registrasi - 3 categories
       const statusData = [
         { label: "Diterima", value: diterimaCount, color: "#3B82F6" },
         { label: "Dipending", value: pendingCount, color: "#F59E0B" },
         { label: "Ditolak", value: ditolakCount, color: "#EF4444" }
       ];
+      renderDonutChart("status-donut-svg", "status-total-donut", "status-chart-tooltip", statusData);
+      renderLegend("status-legend-list", statusData, total, "status-chart-tooltip");
 
-      // Status Progress Klaim (Progress Berkas Diterima) - 6 categories
-      const progressData = [
-        { label: "Menunggu Verifikasi", value: menVerifCount, color: "#6366F1" },
-        { label: "Terverifikasi", value: terverifikasiCount, color: "#8B5CF6" },
-        { label: "Menunggu Approval", value: menApprCount, color: "#EC4899" },
-        { label: "SP Terbit", value: spTerbitCount, color: "#14B8A6" },
-        { label: "Proses Pembayaran", value: prosBayarCount, color: "#F43F5E" },
-        { label: "Selesai", value: selesaiCount, color: "#22C55E" }
-      ];
+      // Card 2: Ringkasan Status Berkas - 10 Status Klaim Final (Dokumen Terpending kondisional)
+      const { total: totalRingkasan, ringkasan: ringkasanData } = hitungRingkasanStatus(claims);
+      renderDonutChart("progress-donut-svg", "progress-total-donut", "progress-chart-tooltip", ringkasanData, totalRingkasan);
+      renderLegend("progress-legend-list", ringkasanData, totalRingkasan, "progress-chart-tooltip");
 
-      // Monitoring SLA - 3 categories
+      // Card 3: Monitoring SLA - 3 categories
       const slaNormal = claims.filter(c => c.sla && c.sla.status === "normal").length;
       const slaMendekati = claims.filter(c => c.sla && c.sla.status === "mendekati").length;
       const slaMelewati = claims.filter(c => c.sla && c.sla.status === "melewati").length;
@@ -622,14 +678,6 @@
         { label: "Mendekati Batas", value: slaMendekati, color: "#f59e0b" },
         { label: "Melewati SLA", value: slaMelewati, color: "#ef4444" }
       ];
-
-      renderDonutChart("status-donut-svg", "status-total-donut", "status-chart-tooltip", statusData);
-      renderLegend("status-legend-list", statusData, total, "status-chart-tooltip");
-
-      const progressTotal = menVerifCount + terverifikasiCount + menApprCount + spTerbitCount + prosBayarCount + selesaiCount;
-      renderDonutChart("progress-donut-svg", "progress-total-donut", "progress-chart-tooltip", progressData);
-      renderLegend("progress-legend-list", progressData, progressTotal, "progress-chart-tooltip");
-
       const totalSla = slaNormal + slaMendekati + slaMelewati;
       renderDonutChart("sla-donut-svg", "sla-total-donut", "sla-chart-tooltip", slaData);
       renderLegend("sla-legend-list", slaData, totalSla, "sla-chart-tooltip");
@@ -701,29 +749,27 @@
         let statusBadge = "";
         const stat = (c.status || "").toLowerCase();
         if (stat.includes("pending")) {
-          statusBadge = `<span class="bg-amber-50 border border-amber-200 text-amber-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-hourglass-half text-amber-500"></i> Pending</span>`;
+          statusBadge = `<span class="bg-amber-50 border border-amber-200 text-amber-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-hourglass-half text-amber-500"></i> Dokumen Terpending</span>`;
         } else if (stat.includes("tolak")) {
           statusBadge = `<span class="bg-rose-50 border border-rose-250 text-rose-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-circle-xmark text-rose-500"></i> Ditolak</span>`;
-        } else if (stat.includes("daftar")) {
-          statusBadge = `<span class="bg-slate-100 border border-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-id-card text-slate-500"></i> Terdaftar</span>`;
-        } else if (stat.includes("terima")) {
-          statusBadge = `<span class="bg-blue-50 border border-blue-200 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-file-import text-blue-500"></i> Dokumen Diterima</span>`;
-        } else if (stat.includes("verifikasi") || stat.includes("verif")) {
-          statusBadge = `<span class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-user-check text-indigo-500"></i> Diverifikasi</span>`;
-        } else if (stat.includes("setuju")) {
-          statusBadge = `<span class="bg-emerald-50 border border-emerald-250 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-circle-check text-emerald-500"></i> Disetujui</span>`;
-        } else if (stat.includes("sp terbit") || stat.includes("sp_terbit")) {
+        } else if (stat.includes("kalkulasi")) {
+          statusBadge = `<span class="bg-sky-50 border border-sky-200 text-sky-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-calculator text-sky-500"></i> Kalkulasi Manfaat</span>`;
+        } else if (stat.includes("ajukan")) {
+          statusBadge = `<span class="bg-cyan-50 border border-cyan-200 text-cyan-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-paper-plane text-cyan-500"></i> Ajukan Verifikator</span>`;
+        } else if (stat.includes("menunggu verifikasi")) {
+          statusBadge = `<span class="bg-indigo-50 border border-indigo-200 text-indigo-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-user-clock text-indigo-500"></i> Menunggu Verifikasi</span>`;
+        } else if (stat.includes("terverifikasi") || stat.includes("verifikasi") || stat.includes("verif")) {
+          statusBadge = `<span class="bg-purple-50 border border-purple-200 text-purple-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-user-check text-purple-500"></i> Terverifikasi</span>`;
+        } else if (stat.includes("approval") || stat.includes("setuju")) {
+          statusBadge = `<span class="bg-pink-50 border border-pink-200 text-pink-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-file-signature text-pink-500"></i> Menunggu Approval</span>`;
+        } else if (stat.includes("sp terbit") || stat.includes("sp_terbit") || stat.includes("proses") || stat.includes("bayar")) {
           statusBadge = `<span class="bg-teal-50 border border-teal-200 text-teal-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-file-invoice-dollar text-teal-500"></i> SP Terbit</span>`;
-        } else if (stat.includes("proses") || stat.includes("bayar")) {
-          if (stat.includes("selesai")) {
-            statusBadge = `<span class="bg-green-100 border border-green-200 text-green-800 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-check-double text-green-600"></i> Selesai</span>`;
-          } else {
-            statusBadge = `<span class="bg-cyan-50 border border-cyan-200 text-cyan-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-spinner fa-spin text-cyan-500"></i> Proses Bayar</span>`;
-          }
         } else if (stat.includes("selesai")) {
-          statusBadge = `<span class="bg-green-100 border border-green-200 text-green-800 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-circle-check text-green-600"></i> Selesai</span>`;
+          statusBadge = `<span class="bg-green-100 border border-green-200 text-green-800 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-check-double text-green-600"></i> Selesai</span>`;
+        } else if (stat.includes("terima") || stat.includes("dokumen diterima")) {
+          statusBadge = `<span class="bg-blue-50 border border-blue-200 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-file-import text-blue-500"></i> Dokumen Diterima</span>`;
         } else {
-          statusBadge = `<span class="bg-emerald-50 border border-emerald-250 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-circle-check text-emerald-500"></i> Diterima</span>`;
+          statusBadge = `<span class="bg-slate-100 border border-slate-200 text-slate-700 px-2 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1"><i class="fas fa-id-card text-slate-500"></i> Registrasi</span>`;
         }
 
         const NIP_NRP = c.peserta?.nrp_nip || c.participant?.nrp_nip || c.nrp || c.nrp_nip || c.nik || c.peserta?.nik || c.participant?.nik || '-';

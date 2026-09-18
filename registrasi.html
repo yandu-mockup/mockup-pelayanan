@@ -509,7 +509,8 @@
       'Istri/Suami Meninggal Dunia',
       'Anak Meninggal Dunia',
       'Meninggal Dunia Dalam Dinas Aktif',
-      'Kecelakaan Kerja - Meninggal Dunia (Gugur/Tewas)',
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas',
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur',
       'Kecelakaan Kerja - Cacat',
       'Pensiun Sendiri - Meninggal Dunia',
       'Pensiun Sendiri - Istri/Suami Meninggal Dunia',
@@ -517,7 +518,8 @@
       'Pensiun Warakawuri - Meninggal Dunia',
       'Tunjangan Yatim/Piatu/YatimPiatu',
       'Tunjangan Orang Tua',
-      'Beasiswa JKK/JKM',
+      'Beasiswa JKK',
+      'Beasiswa JKM',
       'Uang Kekurangan Pensiun (UKP)',
     ];
 
@@ -1298,6 +1300,30 @@
 
       // Save to localStorage with key 'registrasiKlaim'
       localStorage.setItem("registrasiKlaim", JSON.stringify(registrationState));
+
+      // Also sync to global asabri_claims database so it appears across verifikasi.html and other lists
+      try {
+        const newClaimObj = {
+          noRegistrasi: regNo,
+          noAgenda: regNo,
+          noReg: regNo,
+          tanggalRegistrasi: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+          jenisKejadian: jenisKejadian,
+          jenisKlaim: jenisKejadian,
+          manfaatKlaim: jenisKejadian,
+          kantorCabang: registrationState.kantorCabang || "KC Utama Jakarta",
+          status: "Registrasi",
+          nik: currentParticipant?.nik || "-",
+          namaPeserta: currentParticipant?.nama || "-",
+          participant: currentParticipant,
+          auditTrail: [
+            { user: "Staf Kancab Utama", aksi: "Registrasi Klaim", tanggal: new Date().toLocaleDateString('id-ID') }
+          ]
+        };
+        addClaim(newClaimObj);
+      } catch(e) {
+        console.error("Error sync claim into asabri_claims:", e);
+      }
 
       // Set toast notifications for redirected page
       sessionStorage.setItem("asabri_toast_title", "Registrasi Berhasil");

@@ -45,13 +45,36 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+    .print-only {
+      display: none;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .printable-area, .printable-area * {
+        visibility: visible;
+      }
+      .printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+    }
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
 <body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
 
   <!-- TOPBAR / HEADER BAR -->
-  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50 no-print">
     <div class="flex items-center gap-5">
       <div class="flex items-center gap-3">
         <div class="flex items-center">
@@ -90,7 +113,7 @@
   <div class="flex flex-1 overflow-hidden">
 
     <!-- SIDEBAR: Navigation Panel -->
-    <div id="sidebar"></div>
+    <div id="sidebar" class="no-print"></div>
     <script>
       renderSidebar('verifikasi');
     </script>
@@ -99,19 +122,29 @@
     <main class="flex-1 flex flex-col overflow-hidden">
       
       <!-- BREADCRUMB BAR -->
-      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
-        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0 no-print">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500" id="breadcrumb-container">
           <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
           <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
-          <span class="font-bold text-asabri-blue">6. List Verifikasi</span>
+          <span class="font-bold text-asabri-blue cursor-pointer" onclick="showLevel(1)">6. List Verifikasi</span>
+          <span id="breadcrumb-level2" class="hidden flex items-center gap-2">
+            <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+            <span class="font-bold text-slate-700" id="bc-level2-text">Detail Request</span>
+          </span>
+          <span id="breadcrumb-level3" class="hidden flex items-center gap-2">
+            <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+            <span class="font-bold text-slate-700" id="bc-level3-text">Rincian Produk</span>
+          </span>
         </div>
       </div>
 
-      <!-- WORKSPACE PANELS -->
+      <!-- WORKSPACE PANELS CONTAINER -->
       <div class="flex-1 overflow-y-auto p-8 space-y-6">
 
-        <!-- MAIN CARD -->
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+        <!-- ========================================================================= -->
+        <!-- LEVEL 1: LIST VERIFIKASI -->
+        <!-- ========================================================================= -->
+        <div id="level-1-container" class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
           
           <!-- Card Header & Quick Metrics -->
           <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-amber-50/30 flex flex-wrap items-center justify-between gap-4">
@@ -120,12 +153,15 @@
                 <i class="fas fa-file-signature"></i>
               </div>
               <div>
-                <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">Antrian List Verifikasi</h1>
-                <p class="text-xs font-medium text-slate-500">Daftar klaim peserta yang membutuhkan pemeriksaan dan verifikasi berkas oleh Verifikator.</p>
+                <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">Antrian List Verifikasi (Level 1)</h1>
+                <p class="text-xs font-medium text-slate-500">Daftar klaim peserta yang membutuhkan pemeriksaan dan verifikasi produk oleh Verifikator.</p>
               </div>
             </div>
 
             <div class="flex items-center gap-3">
+              <button onclick="window.print()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2">
+                <i class="fas fa-print text-asabri-blue"></i> Cetak List
+              </button>
               <div class="bg-white border border-slate-200 px-4 py-2 rounded-2xl shadow-sm flex items-center gap-3">
                 <div class="w-3 h-3 rounded-full bg-amber-500"></div>
                 <div class="flex flex-col">
@@ -142,9 +178,14 @@
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <i class="fas fa-filter text-asabri-blue"></i> Filter Data Verifikasi
               </span>
-              <button onclick="resetFilters()" class="text-xs font-bold text-asabri-blue hover:text-asabri-blueDark transition-colors flex items-center gap-1">
-                <i class="fas fa-undo text-[10px]"></i> Reset Filter
-              </button>
+              <div class="flex items-center gap-3">
+                <button onclick="applyFilters()" class="bg-asabri-blue hover:bg-asabri-blueDark text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5">
+                  <i class="fas fa-search text-[10px]"></i> Cari
+                </button>
+                <button onclick="resetFilters()" class="text-xs font-bold text-asabri-blue hover:text-asabri-blueDark transition-colors flex items-center gap-1">
+                  <i class="fas fa-undo text-[10px]"></i> Reset Filter
+                </button>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -192,7 +233,7 @@
           </div>
 
           <!-- Table Container -->
-          <div class="overflow-x-auto">
+          <div class="overflow-x-auto printable-area">
             <table class="w-full text-left text-xs border-collapse">
               <thead>
                 <tr class="bg-slate-100/80 text-slate-600 font-extrabold text-[11px] uppercase tracking-wider border-b border-slate-200">
@@ -209,7 +250,7 @@
                   <th class="py-3.5 px-4">NIK</th>
                   <th class="py-3.5 px-4 text-center">Total Request Produk</th>
                   <th class="py-3.5 px-4 text-center">Waktu Berjalan</th>
-                  <th class="py-3.5 px-4 text-center">Aksi</th>
+                  <th class="py-3.5 px-4 text-center no-print">Aksi</th>
                 </tr>
               </thead>
               <tbody id="verifikasi-table-body" class="divide-y divide-slate-100 font-medium">
@@ -224,7 +265,420 @@
               <i class="fas fa-folder-open"></i>
             </div>
             <h3 class="text-sm font-bold text-slate-700">Tidak ada antrian verifikasi</h3>
-            <p class="text-xs text-slate-400 max-w-sm mx-auto">Tidak ditemukan klaim dengan status 'Menunggu Verifikasi' yang sesuai kriteria filter.</p>
+            <p class="text-xs text-slate-400 max-w-sm mx-auto">Tidak ditemukan klaim yang sesuai kriteria filter.</p>
+          </div>
+
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- LEVEL 2: DETAIL REQUEST VERIFIKASI (PER KLAIM) -->
+        <!-- ========================================================================= -->
+        <div id="level-2-container" class="hidden space-y-6">
+          
+          <!-- Level 2 Navigation & Action Topbar -->
+          <div class="flex items-center justify-between bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+            <button onclick="showLevel(1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-slate-300">
+              <i class="fas fa-arrow-left text-[10px]"></i> Kembali ke List Antrian (Level 1)
+            </button>
+
+            <div class="flex items-center gap-3">
+              <button onclick="cetakLPKGabungan()" class="bg-blue-50 hover:bg-blue-100 text-asabri-blue border border-blue-200 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm">
+                <i class="fas fa-print"></i> Cetak LPK Gabungan
+              </button>
+            </div>
+          </div>
+
+          <!-- Info Header Card -->
+          <div class="bg-gradient-to-br from-asabri-blueDark to-asabri-blue text-white rounded-3xl p-6 shadow-md relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-9xl">
+              <i class="fas fa-clipboard-check"></i>
+            </div>
+            
+            <div class="relative z-10 flex flex-wrap items-start justify-between gap-6">
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-semibold mb-3">
+                  <i class="fas fa-folder-open text-amber-300"></i> <span id="l2-header-noagenda">REG/000082/0123/IX/2025</span>
+                </div>
+                <h2 class="text-xl font-black tracking-tight flex items-center gap-3" id="l2-header-nama">
+                  ADM. WIRATA ATMAJA
+                </h2>
+                <p class="text-xs text-blue-100 mt-1 flex items-center gap-2" id="l2-header-sub">
+                  <span>Pensiun / TNI AD</span> • <span class="font-mono" id="l2-header-nik">31750012345678</span>
+                </p>
+              </div>
+
+              <!-- Header Badges Info Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white/10 border border-white/15 p-4 rounded-2xl backdrop-blur-md text-xs">
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">KTPA</span>
+                  <span class="font-mono font-extrabold text-white" id="l2-info-ktpa">ASB-2024-001234</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Nopens</span>
+                  <span class="font-mono font-extrabold text-white" id="l2-info-nopens">NOP-998822</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">NRP / NIP</span>
+                  <span class="font-mono font-extrabold text-white" id="l2-info-nrpnip">198904211101</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Jenis Kejadian</span>
+                  <span class="font-extrabold text-amber-300" id="l2-info-kejadian">Pensiun</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Tgl Kunjungan</span>
+                  <span class="font-semibold text-white" id="l2-info-tglkunjungan">14 Mei 2025</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Pengunjung</span>
+                  <span class="font-semibold text-white" id="l2-info-pengunjung">Diri Sendiri (YBS)</span>
+                </div>
+                <div class="col-span-2">
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Kantor Cabang</span>
+                  <span class="font-semibold text-white" id="l2-info-cabang">KC Utama Jakarta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabel Jenis Produk yang Diajukan -->
+          <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-extrabold text-slate-800">Tabel Jenis Produk yang Diajukan (Level 2)</h3>
+                <p class="text-xs text-slate-500 font-medium">Verifikasi dilakukan secara TERPISAH untuk setiap jenis produk di bawah ini.</p>
+              </div>
+              <span class="bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold px-3 py-1.5 rounded-xl flex items-center gap-1.5">
+                <i class="fas fa-info-circle text-amber-500"></i> Produk terverifikasi langsung lanjut ke Kakancab
+              </span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/80 text-slate-600 font-extrabold text-[11px] uppercase tracking-wider border-b border-slate-200">
+                    <th class="py-3.5 px-6">Jenis Produk</th>
+                    <th class="py-3.5 px-6 text-right">Jumlah Kotor</th>
+                    <th class="py-3.5 px-6 text-right">Potongan</th>
+                    <th class="py-3.5 px-6 text-right">Jumlah Bersih</th>
+                    <th class="py-3.5 px-6 text-center">Status Produk</th>
+                    <th class="py-3.5 px-6 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="l2-produk-table-body" class="divide-y divide-slate-100 font-medium">
+                  <!-- Dynamic Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- LEVEL 3 & LEVEL 4: RINCIAN PESERTA PER PRODUK & PANEL AKSI VERIFIKATOR -->
+        <!-- ========================================================================= -->
+        <div id="level-3-container" class="hidden space-y-6">
+          
+          <!-- Navigation Topbar Level 3 -->
+          <div class="flex items-center justify-between bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+            <button onclick="showLevel(2)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-slate-300">
+              <i class="fas fa-arrow-left text-[10px]"></i> Kembali ke Detail Request (Level 2)
+            </button>
+
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-500">Produk Aktif: <b class="text-asabri-blue text-sm uppercase" id="l3-current-produk-title">TA (Tabungan Asuransi)</b></span>
+              <button onclick="cetakLPKSatuan()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm">
+                <i class="fas fa-print"></i> Cetak LPK Satuan
+              </button>
+            </div>
+          </div>
+
+          <!-- BLOK 1: Rincian Peserta (Data Personal, Read-only) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-user-check text-asabri-blue"></i> Blok 1: Rincian Peserta (Data Personal)
+              </h4>
+              <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 text-xs">
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nama Lengkap Peserta</span>
+                <span class="font-extrabold text-slate-800 text-sm" id="l3-b1-nama">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">KTPA</span>
+                <span class="font-mono font-bold text-slate-700" id="l3-b1-ktpa">ASB-2024-001234</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">NRP / NIP</span>
+                <span class="font-mono font-bold text-slate-700" id="l3-b1-nrpnip">198904211101</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">NOPENS</span>
+                <span class="font-mono font-bold text-slate-700" id="l3-b1-nopens">NOP-998822</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Pangkat / Golongan</span>
+                <span class="font-semibold text-slate-700" id="l3-b1-pangkat">Mayor Inf / III/d</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Kesatuan / Matra</span>
+                <span class="font-semibold text-slate-700" id="l3-b1-kesatuan">Kodam Jaya (TNI AD)</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">NIK / KTP</span>
+                <span class="font-mono font-bold text-slate-700" id="l3-b1-nik">31750012345678</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Gaji Pokok Terakhir</span>
+                <span class="font-mono font-extrabold text-asabri-blue" id="l3-b1-gaji">Rp 4.750.000</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Tanggal Lahir</span>
+                <span class="font-semibold text-slate-700" id="l3-b1-tgllahir">12 Mei 1980</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Status Pensiun</span>
+                <span class="font-bold text-slate-800" id="l3-b1-statuspensiun">Aktif</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOK 2: Data Kejadian (Read-only) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-calendar-alt text-asabri-blue"></i> Blok 2: Data Kejadian (Read-only)
+              </h4>
+              <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Jenis Kejadian</span>
+                <span class="font-extrabold text-amber-600" id="l3-b2-kejadian">Pensiun</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Tanggal Kejadian / TMT</span>
+                <span class="font-semibold text-slate-700" id="l3-b2-tglkejadian">01 Mei 2025</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">No. SKEP Pensiun</span>
+                <span class="font-mono font-bold text-slate-700" id="l3-b2-skep">SKEP/092/V/2025</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Masa Kerja (MKG)</span>
+                <span class="font-semibold text-slate-700" id="l3-b2-mkg">28 Tahun 02 Bulan</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Catatan Kejadian</span>
+                <span class="font-medium text-slate-700" id="l3-b2-catatankejadian">-</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nama Pengunjung</span>
+                <span class="font-bold text-slate-800" id="l3-b2-namapengunjung">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nama Penerima</span>
+                <span class="font-bold text-slate-800" id="l3-b2-namapenerima">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Objek Kejadian</span>
+                <span class="font-bold text-asabri-blue" id="l3-b2-objekkejadian">Peserta Sendiri</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOK 3: Data Rekening (Read-only) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-university text-asabri-blue"></i> Blok 3: Data Rekening Pembayaran (Read-only)
+              </h4>
+              <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nama Bank Pembayar</span>
+                <span class="font-bold text-slate-800" id="l3-b3-bank">Bank Mandiri Taspen (Mantap)</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nomor Rekening</span>
+                <span class="font-mono font-bold text-slate-800" id="l3-b3-norek">124000876123</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nama Pemilik Rekening</span>
+                <span class="font-bold text-slate-800" id="l3-b3-namarek">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Cabang Mitra Bayar</span>
+                <span class="font-bold text-slate-800" id="l3-b3-cabang">KC Utama Jakarta</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOK 4: Data Produk & Potongan Hutang -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                  <i class="fas fa-calculator text-asabri-blue"></i> Blok 4: Data Produk & Rincian Perhitungan Nominal
+                </h4>
+                <p class="text-xs text-slate-500 font-medium">Spesifik rincian nominal dan potongan hutang untuk produk yang dipilih.</p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="refreshPotHutang()" class="bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 active:scale-95">
+                  <i id="pot-hutang-header-icon" class="fas fa-sync-alt text-[10px]"></i> Tarik Data Hutang Terbaru
+                </button>
+              </div>
+            </div>
+
+            <!-- Jenis Produk / Klaim (di awal blok) -->
+            <div class="bg-blue-50/70 border border-blue-200/80 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-asabri-blue text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <div>
+                  <span class="text-[10px] font-extrabold text-asabri-blue uppercase tracking-wider block">Jenis Produk / Klaim</span>
+                  <span class="text-base font-black text-slate-800" id="l3-b4-jenisproduk">TA - Tabungan Asuransi</span>
+                </div>
+              </div>
+              <span class="px-3 py-1 bg-white text-asabri-blue border border-blue-200 rounded-lg text-xs font-bold shadow-xs">
+                Perhitungan Terverifikasi Otomatis
+              </span>
+            </div>
+
+            <!-- Calculated Amount Summary Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <span class="text-xs font-bold text-slate-400 uppercase block mb-1">Besar Produk (Kotor)</span>
+                <span class="text-lg font-black text-slate-800 font-mono" id="l3-b4-kotor">Rp 57.822.900</span>
+              </div>
+
+              <div class="bg-rose-50/60 p-4 rounded-2xl border border-rose-200 flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-rose-500 uppercase">Potongan Hutang</span>
+                  <button type="button" onclick="refreshPotHutang()" title="Tarik Ulang Data Hutang Terbaru dari Manajemen Piutang" class="px-2 py-0.5 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-[11px] font-bold transition-all shadow-2xs flex items-center gap-1">
+                    <i id="pot-hutang-refresh-icon" class="fas fa-sync-alt text-[10px]"></i>
+                    <span>Reload 🔄</span>
+                  </button>
+                </div>
+                <div class="flex items-baseline justify-between mt-1">
+                  <span class="text-lg font-black text-rose-600 font-mono" id="l3-b4-potongan">Rp 0</span>
+                  <span class="text-[10px] text-slate-400 font-medium italic">Data Peserta</span>
+                </div>
+              </div>
+
+              <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200">
+                <span class="text-xs font-bold text-emerald-600 uppercase block mb-1">Jumlah Bersih Diterima</span>
+                <span class="text-xl font-black text-emerald-700 font-mono" id="l3-b4-bersih">Rp 57.822.900</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOK 5: Dokumen Persyaratan (BARU) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                  <i class="fas fa-folder-open text-asabri-blue"></i> Blok 5: Dokumen Persyaratan
+                </h4>
+                <p class="text-xs text-slate-500 font-medium">Seluruh berkas persyaratan klaim (mandatory & non-mandatory) dari Tab 3.</p>
+              </div>
+              <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only / Verifikasi</span>
+            </div>
+
+            <!-- Table of Documents -->
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-xs">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] border-b border-slate-200">
+                  <tr>
+                    <th class="py-3 px-4 w-12 text-center">No.</th>
+                    <th class="py-3 px-4">Nama Dokumen</th>
+                    <th class="py-3 px-4">Nomor Dokumen</th>
+                    <th class="py-3 px-4">Tanggal Dokumen</th>
+                    <th class="py-3 px-4 text-center">Status Upload</th>
+                    <th class="py-3 px-4 text-center w-36">Pratinjau</th>
+                  </tr>
+                </thead>
+                <tbody id="l3-b5-dokumen-tbody" class="divide-y divide-slate-100 font-medium">
+                  <!-- Rendered dynamically by renderBlok5Dokumen() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TOMBOL LIHAT DATA PESERTA (BARU) -->
+          <div class="flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-100 p-4 rounded-2xl shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-base">
+                <i class="fas fa-id-card"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-slate-800 block">Profil Lengkap & Master Data Peserta</span>
+                <span class="text-[11px] text-slate-500">Buka Master Data Peserta untuk melihat riwayat mutasi, anggota keluarga, dan rincian data historis.</span>
+              </div>
+            </div>
+            <button id="btn-lihat-data-peserta" onclick="lihatDataPeserta()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-2 border border-indigo-500 hover:shadow-indigo-500/20 active:scale-95">
+              <i class="fas fa-user-circle text-sm"></i> Lihat Data Peserta
+            </button>
+          </div>
+
+          <!-- LEVEL 4: PANEL AKSI VERIFIKATOR (BAGIAN BAWAH LEVEL 3) -->
+          <div class="bg-slate-900 text-white border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 flex items-center gap-1.5">
+                  <i class="fas fa-gavel"></i> LEVEL 4 — PANEL AKSI VERIFIKATOR PER PRODUK
+                </span>
+                <h4 class="text-base font-extrabold text-white mt-1">Keputusan Verifikasi Produk: <span class="text-amber-300 uppercase" id="l4-produk-target-title">TA</span></h4>
+              </div>
+
+              <!-- Real-time Status Badge -->
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">Status Saat Ini:</span>
+                <span id="l4-current-status-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  Menunggu Verifikasi
+                </span>
+              </div>
+            </div>
+
+            <!-- Notes Display if Rejected -->
+            <div id="l4-rejection-note-box" class="hidden bg-rose-950/60 border border-rose-800 p-4 rounded-2xl text-xs space-y-1">
+              <span class="font-bold text-rose-400 flex items-center gap-1.5">
+                <i class="fas fa-exclamation-triangle"></i> Catatan Penolakan Final:
+              </span>
+              <p class="text-slate-200 italic font-medium" id="l4-rejection-note-text">-</p>
+            </div>
+
+            <!-- Action Buttons Row -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+              <button onclick="showLevel(2)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all border border-slate-700 flex items-center gap-2">
+                <i class="fas fa-arrow-left"></i> Kembali ke List
+              </button>
+
+              <!-- Active Decision Buttons (Hanya tampil saat status 'Menunggu Verifikasi') -->
+              <div id="l4-action-buttons-group" class="flex items-center gap-3">
+                <button onclick="triggerVerifikasi('Tolak')" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
+                  <i class="fas fa-times-circle"></i> Tolak
+                </button>
+
+                <button onclick="triggerVerifikasi('Verifikasi')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-6 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
+                  <i class="fas fa-check-circle"></i> Verifikasi
+                </button>
+              </div>
+
+              <!-- Completed Status Banner (Muncul saat produk sudah Terverifikasi / Ditolak) -->
+              <div id="l4-completed-status-banner" class="hidden flex items-center gap-2.5 text-xs font-bold px-4 py-2 rounded-2xl border">
+                <span id="l4-completed-status-icon"><i class="fas fa-check-circle"></i></span>
+                <span id="l4-completed-status-text">Produk telah diverifikasi.</span>
+              </div>
+            </div>
           </div>
 
         </div>
@@ -232,6 +686,156 @@
       </div>
     </main>
   </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DIALOGS -->
+  <!-- ========================================================================= -->
+
+  <!-- Modal Tolak Produk (Wajib Catatan) -->
+  <div id="modal-tolak" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3 text-rose-600 border-b border-slate-100 pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center text-lg">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-slate-800 text-sm">Tolak Produk Ini (FINAL)</h3>
+          <p class="text-[11px] text-slate-500">Proses akan selesai & tercatat sebagai histori penolakan.</p>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700">Catatan Penolakan (Wajib Isi):</label>
+        <textarea id="modal-tolak-catatan" rows="4" placeholder="Tuliskan alasan penolakan secara rinci..." class="w-full bg-slate-50 border border-slate-300 rounded-2xl p-3 text-xs outline-none focus:border-rose-500 font-medium"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeModal('modal-tolak')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-700">Batal</button>
+        <button onclick="submitTolakProduk()" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm">Simpan & Tolak</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal Preview Dokumen Persyaratan (BARU) -->
+  <div id="modal-preview-dokumen-persyaratan" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 animate-fade-in max-h-[90vh] flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-asabri-blue flex items-center justify-center text-lg border border-blue-100">
+            <i class="fas fa-file-invoice text-asabri-blue" id="mdl-doc-icon"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2">
+              <span id="mdl-doc-title">Preview Dokumen Persyaratan</span>
+            </h3>
+            <p class="text-[11px] text-slate-500 font-medium" id="mdl-doc-subtitle">Berkas resmi terverifikasi dari pengajuan klaim Tab 3.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-preview-dokumen-persyaratan')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body / Document Preview Container -->
+      <div class="flex-1 overflow-y-auto space-y-4 pr-1">
+        <!-- Metadata Info Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Nomor Dokumen</span>
+            <span class="text-xs font-bold text-slate-800 font-mono" id="mdl-doc-nomor">SKEP/092/V/2025</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Tanggal Dokumen</span>
+            <span class="text-xs font-bold text-slate-800" id="mdl-doc-tanggal">14 Mei 2025</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Status Berkas</span>
+            <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600" id="mdl-doc-status">
+              <i class="fas fa-check-circle text-emerald-500"></i> Sudah Diupload
+            </span>
+          </div>
+        </div>
+
+        <!-- Simulated Document Paper / Visual Preview -->
+        <div id="mdl-doc-content-container" class="relative rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-6 shadow-inner text-slate-800 space-y-4">
+          <!-- Watermark / Stamp -->
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+            <i class="fas fa-shield-alt text-9xl text-slate-900"></i>
+          </div>
+
+          <!-- Document Header Preview -->
+          <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-asabri-blue text-white flex items-center justify-center text-xs font-bold">A</div>
+              <div>
+                <span class="text-[11px] font-black tracking-wide uppercase text-slate-800 block">PT ASABRI (PERSERO)</span>
+                <span class="text-[9px] text-slate-400 font-semibold">ARSIP ELEKTRONIK DOKUMEN KLAIM</span>
+              </div>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-200">
+              E-DOCUMENT VERIFIED
+            </span>
+          </div>
+
+          <!-- Document Inner Content Body -->
+          <div id="mdl-doc-visual-box" class="space-y-3">
+            <div class="text-center py-2">
+              <h4 class="text-xs font-black uppercase text-slate-800 tracking-wider" id="mdl-doc-paper-heading">SURAT KEPUTUSAN PENSIUN</h4>
+              <span class="text-[10px] font-mono text-slate-500 block" id="mdl-doc-paper-subheading">Nomor: SKEP/092/V/2025</span>
+            </div>
+
+            <div class="bg-white/90 border border-slate-200/80 rounded-xl p-4 text-xs space-y-2 font-mono">
+              <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                <span class="text-slate-400 text-[11px]">Nama Dokumen:</span>
+                <span class="font-bold text-slate-800 text-right" id="mdl-doc-detail-name">Asli Salinan Keputusan Pensiun</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                <span class="text-slate-400 text-[11px]">Nama Peserta:</span>
+                <span class="font-bold text-slate-800 text-right" id="mdl-doc-detail-peserta">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                <span class="text-slate-400 text-[11px]">No. KTPA / NIK:</span>
+                <span class="font-bold text-slate-800 text-right" id="mdl-doc-detail-id">ASB-2024-001234 / 31750012345678</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">Waktu Validasi:</span>
+                <span class="font-bold text-slate-700 text-right" id="mdl-doc-detail-waktu">14 Mei 2025 • 09:30 WIB</span>
+              </div>
+            </div>
+
+            <!-- Authentic Seal & Signature Section -->
+            <div class="flex items-center justify-between pt-2">
+              <div class="flex items-center gap-2 text-[10px] text-slate-500">
+                <i class="fas fa-qrcode text-2xl text-slate-700"></i>
+                <div>
+                  <span class="font-bold block text-slate-700">DIGITAL SIGNATURE ID</span>
+                  <span class="font-mono text-[9px] text-slate-400">SHA256: 8f9b2c4e1d09aa17...</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-[9px] text-slate-400 block">Status Verifikasi</span>
+                <span class="text-[10px] font-bold text-emerald-600 flex items-center gap-1 justify-end">
+                  <i class="fas fa-check-double text-xs"></i> Sah & Terlampir
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <span class="text-[11px] text-slate-400 italic">Pratinjau dokumen untuk verifikasi keabsahan data klaim.</span>
+        <button onclick="closeModal('modal-preview-dokumen-persyaratan')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2 rounded-xl text-xs font-bold transition-colors shadow-2xs">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+
 
   <!-- Scripts -->
   <script src="data.js"></script>
@@ -247,6 +851,9 @@
       kejadian: '',
     };
 
+    let activeNoAgenda = null;
+    let activeNamaProduk = null;
+
     document.addEventListener("DOMContentLoaded", () => {
       // Toggle sidebar functionality
       document.getElementById("sidebar-toggle")?.addEventListener("click", () => {
@@ -257,26 +864,199 @@
         }
       });
 
-      renderTable();
+      // Ensure storage structures initialized
+      initVerifStatuses();
+
+      // Multi-tab & dynamic storage listener for real-time list update
+      window.addEventListener("storage", () => {
+        initVerifStatuses();
+        const activeLevel1 = !document.getElementById("level-1-container").classList.contains("hidden");
+        if (activeLevel1) {
+          renderLevel1List();
+        }
+      });
+
+      // Check URL parameters for direct navigation
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetAgenda = urlParams.get('noAgenda');
+      
+      if (targetAgenda) {
+        openLevel2Detail(targetAgenda);
+      } else {
+        showLevel(1);
+      }
     });
 
+    // Storage initializers
+    function getProductVerifStatuses() {
+      return JSON.parse(localStorage.getItem("asabri_product_verifications") || "{}");
+    }
+
+    function saveProductVerifStatuses(data) {
+      localStorage.setItem("asabri_product_verifications", JSON.stringify(data));
+    }
+
+    function initVerifStatuses() {
+      const claims = getClaims();
+      const verifData = getProductVerifStatuses();
+      let updated = false;
+
+      claims.forEach(c => {
+        const noAgenda = c.noRegistrasi || c.noAgenda || c.noReg;
+        const currentStored = verifData[noAgenda];
+        const hasValidStored = Array.isArray(currentStored) && currentStored.length > 0;
+        const claimHasProds = Array.isArray(c.products) && c.products.length > 0;
+
+        if (noAgenda && (!hasValidStored || (claimHasProds && currentStored.length !== c.products.length))) {
+          const prods = getProductListForClaim(c);
+          verifData[noAgenda] = prods.map(p => {
+            const existing = (currentStored || []).find(e => e.nama === p.nama);
+            return {
+              nama: p.nama,
+              status: existing?.status || 'Menunggu Verifikasi',
+              catatanPenolakan: existing?.catatanPenolakan || '',
+              nominalKotor: p.nominalKotor || 57822900,
+              potongan: p.potongan || 0,
+              nominalBersih: p.nominalBersih !== undefined ? p.nominalBersih : (p.nominalKotor || 57822900) - (p.potongan || 0)
+            };
+          });
+          updated = true;
+        }
+      });
+
+      if (updated) saveProductVerifStatuses(verifData);
+    }
+
+
+
+    function getProductListForClaim(c) {
+      let claimObj = c;
+      if (typeof c === 'string') {
+        const claims = getClaims();
+        claimObj = claims.find(x => x.noRegistrasi === c || x.noAgenda === c || x.noReg === c);
+        if (!claimObj) {
+          try {
+            const reg = JSON.parse(localStorage.getItem("registrasiKlaim") || "{}");
+            if (reg.noAgenda === c || reg.noRegistrasi === c || reg.noReg === c) {
+              claimObj = reg;
+            }
+          } catch(e) {}
+        }
+      }
+      if (!claimObj) {
+        try {
+          claimObj = JSON.parse(localStorage.getItem("registrasiKlaim") || "{}");
+        } catch(e) {}
+      }
+      claimObj = claimObj || {};
+
+      // 1. Check if claim has products / productsDetail array attached
+      const prods = (Array.isArray(claimObj.products) && claimObj.products.length > 0)
+        ? claimObj.products
+        : ((Array.isArray(claimObj.productsDetail) && claimObj.productsDetail.length > 0) ? claimObj.productsDetail : null);
+
+      if (prods && prods.length > 0) {
+        return prods.map(p => ({
+          nama: p.nama || p.type || 'TA',
+          nominalKotor: p.nominalKotor || p.besar || 57822900,
+          potongan: p.potongan || 0,
+          nominalBersih: p.nominalBersih !== undefined ? p.nominalBersih : (p.nominalKotor || p.besar || 57822900) - (p.potongan || 0)
+        }));
+      }
+
+      // 2. Parse from manfaatKlaim / klaimDidapatkan string if plus separated (e.g., "TA + PP" or "Pensiun Pertama (TA + PP)")
+      const str = claimObj.manfaatKlaim || claimObj.klaimDidapatkan || claimObj.jenisKejadian || "Pensiun";
+      
+      // Match inside parenthesis or split by '+'
+      let rawNames = [];
+      if (str.includes('(') && str.includes(')')) {
+        const inside = str.substring(str.indexOf('(') + 1, str.indexOf(')'));
+        rawNames = inside.split('+').map(s => s.trim()).filter(Boolean);
+      } else {
+        rawNames = str.split('+').map(s => s.trim()).filter(Boolean);
+      }
+
+      const mapDefaultNominal = {
+        'TA': 57822900,
+        'PP': 4250000,
+        'NTTA': 15000000,
+        'SRKK': 25000000,
+        'NTIP': 12000000,
+        'Santunan Kematian': 42000000,
+        'Pensiun': 57822900
+      };
+
+      const mapKejadian = {
+        'Pensiun': [{ nama: 'TA', nominalKotor: 57822900, potongan: 0, nominalBersih: 57822900 }, { nama: 'PP', nominalKotor: 4250000, potongan: 0, nominalBersih: 4250000 }],
+        'Pensiun Pertama': [{ nama: 'TA', nominalKotor: 57822900, potongan: 0, nominalBersih: 57822900 }, { nama: 'PP', nominalKotor: 4250000, potongan: 0, nominalBersih: 4250000 }],
+        'THT': [{ nama: 'TA', nominalKotor: 57822900, potongan: 0, nominalBersih: 57822900 }, { nama: 'NTTA', nominalKotor: 15000000, potongan: 0, nominalBersih: 15000000 }],
+        'JKK': [{ nama: 'SRKK', nominalKotor: 25000000, potongan: 0, nominalBersih: 25000000 }],
+        'JKm': [{ nama: 'Santunan Kematian', nominalKotor: 42000000, potongan: 0, nominalBersih: 42000000 }]
+      };
+
+      if (rawNames.length > 1) {
+        return rawNames.map(name => {
+          const kotor = mapDefaultNominal[name] || 30000000;
+          return {
+            nama: name,
+            nominalKotor: kotor,
+            potongan: 0,
+            nominalBersih: kotor
+          };
+        });
+      }
+
+      const mainType = rawNames[0] || 'Pensiun';
+      return mapKejadian[mainType] || [{ nama: mainType, nominalKotor: mapDefaultNominal[mainType] || 57822900, potongan: 0, nominalBersih: mapDefaultNominal[mainType] || 57822900 }];
+    }
+
+    // View Navigation Controller
+    function showLevel(levelNum) {
+      const l1 = document.getElementById("level-1-container");
+      const l2 = document.getElementById("level-2-container");
+      const l3 = document.getElementById("level-3-container");
+      
+      const bc2 = document.getElementById("breadcrumb-level2");
+      const bc3 = document.getElementById("breadcrumb-level3");
+
+      l1.classList.add("hidden");
+      l2.classList.add("hidden");
+      l3.classList.add("hidden");
+
+      bc2.classList.add("hidden");
+      bc3.classList.add("hidden");
+
+      if (levelNum === 1) {
+        l1.classList.remove("hidden");
+        renderLevel1List();
+      } else if (levelNum === 2) {
+        l2.classList.remove("hidden");
+        bc2.classList.remove("hidden");
+        renderLevel2Detail();
+      } else if (levelNum === 3 || levelNum === 4) {
+        l3.classList.remove("hidden");
+        bc2.classList.remove("hidden");
+        bc3.classList.remove("hidden");
+        renderLevel3Rincian();
+      }
+    }
+
+    // =========================================================================
+    // LEVEL 1 FUNCTIONS
+    // =========================================================================
     function getVerifikasiClaims() {
       const claims = getClaims();
-      // Filter for claims requiring verification
       return claims.filter(c => {
         const status = (c.status || '').toLowerCase();
-        return status.includes('verifikasi') || status.includes('menunggu verifikasi') || status === 'dokumen diterima';
+        return status.includes('verifikasi') || status.includes('menunggu verifikasi') || status === 'dokumen diterima' || status === 'registrasi';
       });
     }
 
     function calculateTotalProduk(claim) {
-      if (claim.manfaatKlaim) {
-        return claim.manfaatKlaim.split('+').length;
-      }
-      if (claim.klaimDidapatkan) {
-        return claim.klaimDidapatkan.split('+').length;
-      }
-      return 1;
+      const noAgenda = claim.noRegistrasi || claim.noAgenda || claim.noReg;
+      const verifData = getProductVerifStatuses();
+      if (verifData[noAgenda]) return verifData[noAgenda].length;
+      return getProductListForClaim(claim).length;
     }
 
     function applyFilters() {
@@ -288,7 +1068,7 @@
       FILTER_LIST_VERIFIKASI.sampaiTanggal = document.getElementById("filter-sampai-tanggal").value;
       FILTER_LIST_VERIFIKASI.kejadian = document.getElementById("filter-kejadian").value.toLowerCase();
 
-      renderTable();
+      renderLevel1List();
     }
 
     function resetFilters() {
@@ -303,12 +1083,12 @@
       applyFilters();
     }
 
-    function renderTable() {
+    function renderLevel1List() {
       const tbody = document.getElementById("verifikasi-table-body");
       const emptyState = document.getElementById("empty-state");
       const countEl = document.getElementById("total-antrian-count");
 
-      let claims = getVerifikasiClaims();
+      let claims = getClaims(); // get all claims for rich display
 
       // Apply Filters
       claims = claims.filter(c => {
@@ -342,33 +1122,35 @@
         const p = c.participant || {};
         const totalProduk = calculateTotalProduk(c);
         const tglKunjungan = c.tanggalRegistrasi || c.tanggal || "14 Mei 2025";
-        const noAgenda = c.noRegistrasi || c.noAgenda || "REG/000082/0123/IX/2025";
+        const noAgenda = c.noRegistrasi || c.noAgenda || c.noReg || "REG/000082/0123/IX/2025";
         const userEntri = c.auditTrail && c.auditTrail[0] ? c.auditTrail[0].user : "Staf Kancab Utama";
 
         return `
           <tr class="hover:bg-amber-50/30 transition-colors">
-            <td class="py-3 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${tglKunjungan}</td>
-            <td class="py-3 px-4 font-bold text-slate-800">${c.jenisKejadian || c.jenisKlaim || 'Pensiun'}</td>
-            <td class="py-3 px-4 text-slate-600">${c.kantorCabang || 'KC Utama Jakarta'}</td>
-            <td class="py-3 px-4 text-slate-600">${userEntri}</td>
-            <td class="py-3 px-4 font-bold text-asabri-blue">${p.nama || c.namaPeserta || '-'}</td>
-            <td class="py-3 px-4 text-slate-600">${p.nama || c.namaPeserta || 'Diri Sendiri'}</td>
-            <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.ktpa || 'ASB-2024-001234'}</td>
-            <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.nrp_nip || c.nik || '-'}</td>
-            <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.nopens || 'NOP-998822'}</td>
-            <td class="py-3 px-4 text-slate-600">${p.matra_angkatan || 'TNI AD'}</td>
-            <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.nik || c.nik || '-'}</td>
-            <td class="py-3 px-4 text-center">
-              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-asabri-blue font-bold text-xs">${totalProduk}</span>
+            <td class="py-3.5 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${tglKunjungan}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-800">${c.jenisKejadian || c.jenisKlaim || 'Pensiun'}</td>
+            <td class="py-3.5 px-4 text-slate-600">${c.kantorCabang || 'KC Utama Jakarta'}</td>
+            <td class="py-3.5 px-4 text-slate-600">${userEntri}</td>
+            <td class="py-3.5 px-4 font-bold text-asabri-blue">${p.nama || c.namaPeserta || '-'}</td>
+            <td class="py-3.5 px-4 text-slate-600">${getNamaPengunjung(c, p)}</td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-[11px]">${p.ktpa || 'ASB-2024-001234'}</td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-[11px]">${p.nrp_nip || c.nik || '-'}</td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-[11px]">${p.nopens || 'NOP-998822'}</td>
+            <td class="py-3.5 px-4 text-slate-600">${p.matra_angkatan || 'TNI AD'}</td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-[11px]">${p.nik || c.nik || '-'}</td>
+            <td class="py-3.5 px-4 text-center">
+              <button onclick="openLevel2Detail('${noAgenda}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-asabri-blue hover:bg-asabri-blue hover:text-white font-bold text-xs transition-all shadow-sm">
+                <span>${totalProduk} Produk</span> <i class="fas fa-chevron-right text-[9px]"></i>
+              </button>
             </td>
-            <td class="py-3 px-4 text-center">
+            <td class="py-3.5 px-4 text-center">
               <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 font-extrabold text-[10px] border border-amber-200">
                 <i class="fas fa-clock text-[9px] animate-spin"></i> ${c.sla ? c.sla.waktu : '25 menit'}
               </span>
             </td>
-            <td class="py-3 px-4 text-center whitespace-nowrap">
-              <button onclick="goToVerifikasi('${noAgenda}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1.5 mx-auto">
-                <i class="fas fa-file-signature text-[10px]"></i> Daftar Verifikasi & Ubah
+            <td class="py-3.5 px-4 text-center whitespace-nowrap no-print">
+              <button onclick="openLevel2Detail('${noAgenda}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm inline-flex items-center gap-1.5">
+                <i class="fas fa-list-check text-[10px]"></i> Daftar Verifikasi
               </button>
             </td>
           </tr>
@@ -376,23 +1158,1016 @@
       }).join('');
     }
 
-    function goToVerifikasi(noAgenda) {
-      const claims = getClaims();
-      let claim = claims.find(c => c.noRegistrasi === noAgenda || c.noAgenda === noAgenda);
-      if (claim) {
-        // Ensure status is 'Menunggu Verifikasi' if it's in verification queue
-        if (!claim.status || claim.status === 'Dokumen Diterima' || claim.status === 'Registrasi') {
-          claim.status = 'Menunggu Verifikasi';
-        }
-        localStorage.setItem("detailKlaim", JSON.stringify(claim));
-        localStorage.setItem("registrasiKlaim", JSON.stringify(claim));
-        localStorage.setItem("selectedNoAgenda", noAgenda);
-      }
-      // Set active role to Verifikator automatically
-      localStorage.setItem("YANDU_ROLE", "verifikator");
-      localStorage.setItem("currentRole", "Verifikator");
+    // =========================================================================
+    // LEVEL 2 FUNCTIONS
+    // =========================================================================
+    function openLevel2Detail(noAgenda) {
+      activeNoAgenda = noAgenda;
+      showLevel(2);
+    }
 
-      window.location.href = `kejadian.html?noAgenda=${encodeURIComponent(noAgenda)}&startTab=5`;
+    function renderLevel2Detail() {
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+
+      if (!claim) {
+        claim = claims[0] || {
+          noRegistrasi: activeNoAgenda,
+          jenisKejadian: 'Pensiun',
+          kantorCabang: 'KC Utama Jakarta',
+          participant: { nama: 'ADM. WIRATA ATMAJA', ktpa: 'ASB-2024-001234', nopens: 'NOP-998822', nrp_nip: '198904211101', nik: '31750012345678' }
+        };
+      }
+
+      const p = claim.participant || {};
+
+      const elNoAgenda = document.getElementById("l2-header-noagenda");
+      if (elNoAgenda) elNoAgenda.innerText = activeNoAgenda;
+      
+      const elNama = document.getElementById("l2-header-nama");
+      if (elNama) elNama.innerText = p.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+      
+      const elSub = document.getElementById("l2-header-sub");
+      if (elSub) {
+        elSub.innerHTML = `<span>${claim.jenisKejadian || 'Pensiun'} / ${p.matra_angkatan || 'TNI AD'}</span> • <span class="font-mono" id="l2-header-nik">${p.nik || claim.nik || "31750012345678"}</span>`;
+      }
+
+      const elKtpa = document.getElementById("l2-info-ktpa");
+      if (elKtpa) elKtpa.innerText = p.ktpa || "ASB-2024-001234";
+      
+      const elNopens = document.getElementById("l2-info-nopens");
+      if (elNopens) elNopens.innerText = p.nopens || "NOP-998822";
+      
+      const elNrpnip = document.getElementById("l2-info-nrpnip");
+      if (elNrpnip) elNrpnip.innerText = p.nrp_nip || claim.nik || "198904211101";
+      
+      const elKejadian = document.getElementById("l2-info-kejadian");
+      if (elKejadian) elKejadian.innerText = claim.jenisKejadian || "Pensiun";
+      
+      const elTgl = document.getElementById("l2-info-tglkunjungan");
+      if (elTgl) elTgl.innerText = claim.tanggalRegistrasi || claim.tanggal || "14 Mei 2025";
+      
+      const elPengunjung = document.getElementById("l2-info-pengunjung");
+      if (elPengunjung) elPengunjung.innerText = getNamaPengunjung(claim, p);
+      
+      const elCabang = document.getElementById("l2-info-cabang");
+      if (elCabang) elCabang.innerText = claim.kantorCabang || "KC Utama Jakarta";
+
+      const elBc = document.getElementById("bc-level2-text");
+      if (elBc) elBc.innerText = `Detail ${activeNoAgenda}`;
+
+      // Checkpoint 3 console log
+      console.log('getProductListForClaim result:', getProductListForClaim(activeNoAgenda));
+
+      // Render Produk List Table
+      const verifData = getProductVerifStatuses();
+      let prodList = (verifData[activeNoAgenda] && verifData[activeNoAgenda].length > 0)
+        ? verifData[activeNoAgenda]
+        : getProductListForClaim(claim || activeNoAgenda);
+
+      if (!prodList || prodList.length === 0) {
+        prodList = getProductListForClaim(claim || activeNoAgenda);
+      }
+
+      const tbody = document.getElementById("l2-produk-table-body");
+      tbody.innerHTML = prodList.map(item => {
+        let badgeClass = "bg-amber-100 text-amber-800 border-amber-300";
+        if (item.status === 'Terverifikasi') badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+        if (item.status === 'Ditolak') badgeClass = "bg-rose-100 text-rose-800 border-rose-300";
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-4 px-6 font-extrabold text-slate-800 text-xs">
+              <span class="text-asabri-blue uppercase">${item.nama}</span>
+              ${item.catatanPenolakan ? `<p class="text-[10px] text-rose-500 font-normal mt-0.5"><i class="fas fa-info-circle mr-1"></i>${item.catatanPenolakan}</p>` : ''}
+            </td>
+            <td class="py-4 px-6 text-right font-mono font-bold text-slate-700">${formatRupiah(item.nominalKotor)}</td>
+            <td class="py-4 px-6 text-right font-mono font-semibold text-rose-600">${formatRupiah(item.potongan)}</td>
+            <td class="py-4 px-6 text-right font-mono font-black text-emerald-600 text-sm">${formatRupiah(item.nominalBersih)}</td>
+            <td class="py-4 px-6 text-center">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold border ${badgeClass}">
+                ${item.status}
+              </span>
+            </td>
+            <td class="py-4 px-6 text-center">
+              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="${item.status === 'Terverifikasi' ? 'bg-emerald-600 hover:bg-emerald-700' : (item.status === 'Ditolak' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-asabri-blue hover:bg-asabri-blueDark')} text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5">
+                <i class="${item.status === 'Terverifikasi' ? 'fas fa-eye' : (item.status === 'Ditolak' ? 'fas fa-eye' : 'fas fa-search')} text-[10px]"></i> ${item.status === 'Terverifikasi' ? 'Lihat Rincian' : (item.status === 'Ditolak' ? 'Lihat Rincian' : 'Rincian & Verifikasi')}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // LEVEL 3 & 4 FUNCTIONS
+    // =========================================================================
+    let currentParticipantNik = '';
+
+    function getNamaPengunjung(claim, participant) {
+      if (!claim) claim = {};
+      if (!participant) participant = claim.participant || {};
+
+      // Cek apakah ada data tipePengunjung / pengaju di claim atau registrasiKlaim
+      let tp = claim.tipePengunjung || claim.pengaju || null;
+
+      if (!tp) {
+        try {
+          const rawReg = localStorage.getItem("registrasiKlaim");
+          if (rawReg) {
+            const parsed = JSON.parse(rawReg);
+            const noAgenda = claim.noRegistrasi || claim.noAgenda || claim.noReg;
+            if (parsed.noAgenda === noAgenda || !noAgenda || (typeof activeNoAgenda !== 'undefined' && activeNoAgenda === parsed.noAgenda)) {
+              tp = parsed.tipePengunjung || parsed.pengaju;
+            } else if (parsed.tipePengunjung) {
+              tp = parsed.tipePengunjung;
+            }
+          }
+        } catch(e) {}
+      }
+
+      // Jika berupa string langsung
+      if (typeof tp === 'string') {
+        if (tp === 'Peserta' || tp === 'Diri Sendiri' || tp === 'Peserta Sendiri') {
+          return participant.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+        }
+        return tp;
+      }
+
+      // Jika berupa object { jenis, nama, hubungan } dari registrasi.html
+      if (tp && typeof tp === 'object') {
+        const jenis = tp.jenis || tp.tipe || '';
+        const nama = tp.nama || '';
+        const hubungan = tp.hubungan ? ` (${tp.hubungan})` : '';
+
+        // Tipe Pengunjung: Peserta -> Nama Peserta itu sendiri
+        if (jenis === 'Peserta') {
+          return nama || participant.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+        }
+        // Tipe Pengunjung: Keluarga / Keluarga Terdaftar -> Nama anggota keluarga yang datang / Keluarga + hubungan
+        if (jenis === 'Keluarga' || jenis === 'Keluarga Terdaftar') {
+          if (nama) return `${nama}${hubungan}`;
+          return hubungan ? `Keluarga${hubungan}` : (participant.pasangan?.nama || "Keluarga Peserta");
+        }
+        // Tipe Pengunjung: Lainnya / Belum Terdaftar -> Nama yang diinput manual saat itu
+        if (jenis === 'Lainnya' || jenis === 'Belum Terdaftar') {
+          if (nama) return `${nama}${hubungan}`;
+          return "Penerima Kuasa / Lainnya";
+        }
+        if (nama) return `${nama}${hubungan}`;
+      }
+
+      // Fallback data langsung dari claim
+      if (claim.namaPengunjung) return claim.namaPengunjung;
+      if (claim.pengunjung) return claim.pengunjung;
+
+      // Default: Peserta itu sendiri
+      return participant.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+    }
+
+    const PERSYARATAN_CONFIG = {
+      'Pensiun': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Formulir SP3R', mandatory: false },
+        { nama: 'Asli Salinan Keputusan Pensiun', mandatory: true },
+        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
+        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: true },
+        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
+        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah usia 21-25 tahun)', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
+        { nama: 'Fotokopi NPWP', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
+        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false }
+      ],
+      'Pensiun Pertama': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Formulir SP3R', mandatory: false },
+        { nama: 'Asli Salinan Keputusan Pensiun', mandatory: true },
+        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
+        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: true },
+        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
+        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah usia 21-25 tahun)', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
+        { nama: 'Fotokopi NPWP', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
+        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false }
+      ],
+      'THT': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Asli Salinan Keputusan Pensiun / Pemberhentian', mandatory: true },
+        { nama: 'Asli SKPP dari KPPN / e-SKPP', mandatory: true },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false }
+      ],
+      'JKK': [
+        { nama: 'Formulir Pengajuan JKK', mandatory: false },
+        { nama: 'Surat Laporan Kecelakaan Kerja dari Satker', mandatory: true },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Resume Medis / Surat Keterangan Dokter', mandatory: true },
+        { nama: 'Kwitansi Asli Biaya Perawatan & Pengobatan', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false }
+      ],
+      'JKm': [
+        { nama: 'Formulir Pengajuan JKm', mandatory: false },
+        { nama: 'Surat Keterangan Kematian dari Rumah Sakit / Kelurahan', mandatory: true },
+        { nama: 'Akta Kematian dari Dukcapil', mandatory: true },
+        { nama: 'Surat Keterangan Ahli Waris', mandatory: false },
+        { nama: 'Fotokopi e-KTP Ahli Waris & KK', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Penerima', mandatory: false }
+      ]
+    };
+
+    const ALIAS_DOKUMEN_MANDATORY = {
+      'Pensiun Pertama': 'Pensiun',
+      'Pensiun Sendiri — Meninggal Dunia': 'JKm',
+      'Meninggal Dunia dalam Dinas Aktif': 'JKm',
+      'Kecelakaan Kerja — Dirawat': 'JKK',
+      'Kecelakaan Kerja — Cacat': 'JKK',
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas': 'JKK',
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur': 'JKK',
+      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': 'JKK'
+    };
+
+    function formatTanggalIndo(dateStr) {
+      if (!dateStr || dateStr === '-') return '-';
+      if (/[a-zA-Z]/.test(dateStr)) return dateStr;
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+      } catch(e) {
+        return dateStr;
+      }
+    }
+
+    function getFullPersyaratanList(jenisKejadian) {
+      if (!jenisKejadian) return PERSYARATAN_CONFIG['Pensiun'];
+      if (PERSYARATAN_CONFIG[jenisKejadian]) return PERSYARATAN_CONFIG[jenisKejadian];
+      const alias = ALIAS_DOKUMEN_MANDATORY[jenisKejadian];
+      if (alias && PERSYARATAN_CONFIG[alias]) return PERSYARATAN_CONFIG[alias];
+      
+      const keys = Object.keys(PERSYARATAN_CONFIG);
+      const matched = keys.find(k => jenisKejadian.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(jenisKejadian.toLowerCase()));
+      return matched ? PERSYARATAN_CONFIG[matched] : PERSYARATAN_CONFIG['Pensiun'];
+    }
+
+    function getDokumenPersyaratanForClaim(claim) {
+      const jenis = claim.jenisKejadian || claim.jenisKlaim || "Pensiun";
+      
+      if (claim.dokumenPersyaratan && Array.isArray(claim.dokumenPersyaratan) && claim.dokumenPersyaratan.length > 0) {
+        return claim.dokumenPersyaratan.map(d => ({
+          ...d,
+          fileUrl: d.fileUrl || (d.statusUpload === 'Sudah Diupload' ? 'uploaded_doc.pdf' : null)
+        }));
+      }
+      
+      const fullDocList = getFullPersyaratanList(jenis);
+      const sampleNumbers = {
+        'Asli Salinan Keputusan Pensiun': claim.skepPensiun || claim.kejadianDetails?.nomorSkep || 'SKEP/092/V/2025',
+        'Asli Salinan Keputusan Pensiun / Pemberhentian': claim.skepPensiun || 'SKEP/092/V/2025',
+        'Asli SKPP dari KPPN/e-SKPP': 'SKPP-2025-0892',
+        'Asli SKPP dari KPPN / e-SKPP': 'SKPP-2025-0892',
+        'Fotokopi e-KTP Pengaju': claim.participant?.nik || claim.nik || '31750012345678',
+        'Fotokopi e-KTP yang masih berlaku': claim.participant?.nik || claim.nik || '31750012345678',
+        'Fotokopi e-KTP Ahli Waris': '31750098765432',
+        'Fotokopi e-KTP Ahli Waris & KK': '31750098765432',
+        'Fotokopi Kartu Keluarga (KK)': '3175001122334455',
+        'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU': 'NIKAH/124/IX/2012',
+        'Fotokopi NPWP': '09.876.543.2-012.000',
+        'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)': claim.noRekening || '124000876123',
+        'Fotokopi Buku Rekening Tabungan Pengaju': claim.noRekening || '124000876123',
+        'Fotokopi Buku Rekening Tabungan Penerima': claim.noRekening || '124000876123',
+        'Formulir Pengajuan': claim.noRegistrasi || claim.noAgenda || 'REG/000082/0123/IX/2025',
+        'Formulir Pengajuan JKK': claim.noRegistrasi || 'REG/000082/0123/IX/2025',
+        'Formulir Pengajuan JKm': claim.noRegistrasi || 'REG/000082/0123/IX/2025',
+        'Formulir SP3R': 'SP3R-2025-00129',
+        'Fotokopi Keputusan Pengangkatan Pertama/CPNS': 'SKEP/001/I/1997',
+        'Asli Riwayat Hidup Singkat (RHS)': 'RHS-2025-08',
+        'Akta Kematian dari Dukcapil': 'KM-2025/098/DKCP',
+        'Surat Keterangan Kematian dari Rumah Sakit / Kelurahan': 'SKK-RS/045/V/2025',
+        'Surat Laporan Kecelakaan Kerja dari Satker': 'LAKA/088/V/2025',
+        'Resume Medis / Surat Keterangan Dokter': 'RM-9901/2025',
+        'Kwitansi Asli Biaya Perawatan & Pengobatan': 'KWT-4412/2025',
+        'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)': 'DOK-FOTO-01'
+      };
+
+      const defaultTgl = claim.tanggalRegistrasi || claim.tanggal || '14 Mei 2025';
+
+      return fullDocList.map((item, idx) => {
+        const isMandatory = item.mandatory !== false;
+        const isUploaded = isMandatory ? true : (idx % 2 === 0);
+        return {
+          namaDokumen: item.nama,
+          nomor: isUploaded ? (sampleNumbers[item.nama] || `DOC-00${idx + 1}/ASB/2025`) : '-',
+          tanggal: isUploaded ? defaultTgl : '-',
+          statusUpload: isUploaded ? 'Sudah Diupload' : 'Belum Diupload',
+          fileUrl: isUploaded ? (item.fileUrl || `mock_doc_${idx + 1}.pdf`) : null,
+          isMandatory: isMandatory
+        };
+      });
+    }
+
+    let currentBlok5Docs = [];
+
+    function renderBlok5Dokumen(claim) {
+      const tbody = document.getElementById("l3-b5-dokumen-tbody");
+      if (!tbody) return;
+
+      currentBlok5Docs = getDokumenPersyaratanForClaim(claim);
+      
+      if (currentBlok5Docs.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-6 px-4 text-center text-slate-400 italic bg-slate-50">
+              Tidak ada dokumen persyaratan yang terdaftar untuk kejadian ini.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = currentBlok5Docs.map((doc, idx) => {
+        const isUploaded = doc.statusUpload === 'Sudah Diupload';
+        const statusBadge = isUploaded
+          ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+               <i class="fas fa-check-circle text-emerald-500"></i> Sudah Diupload
+             </span>`
+          : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+               <i class="fas fa-times-circle text-slate-400"></i> Belum Diupload
+             </span>`;
+
+        const actionBtn = isUploaded
+          ? `<button type="button" onclick="previewDokumenPersyaratanByIndex(${idx})" title="Lihat Pratinjau Dokumen" class="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-asabri-blue border border-blue-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-1.5 active:scale-95 mx-auto">
+               <i class="fas fa-eye text-xs"></i> <span>Lihat Dokumen</span>
+             </button>`
+          : `<button type="button" disabled class="px-3 py-1 bg-slate-100 text-slate-400 border border-slate-200 rounded-xl text-xs font-semibold cursor-not-allowed flex items-center justify-center gap-1.5 opacity-50 mx-auto" title="Dokumen belum diupload">
+               <i class="fas fa-eye-slash text-xs"></i> <span>Lihat Dokumen</span>
+             </button>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-3.5 px-4 text-center font-mono text-slate-400 text-xs">${idx + 1}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-800 text-xs">
+              ${doc.namaDokumen}
+              ${doc.isMandatory ? '<span class="text-rose-500 font-bold ml-1 text-xs" title="Dokumen Mandatory / Wajib">*</span>' : ''}
+            </td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-xs">${doc.nomor || '-'}</td>
+            <td class="py-3.5 px-4 text-slate-600 text-xs">${doc.tanggal || '-'}</td>
+            <td class="py-3.5 px-4 text-center whitespace-nowrap">${statusBadge}</td>
+            <td class="py-3.5 px-4 text-center whitespace-nowrap">${actionBtn}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function previewDokumenPersyaratanByIndex(idx) {
+      const doc = currentBlok5Docs[idx];
+      if (!doc) return;
+      previewDokumenPersyaratan(doc.namaDokumen, doc.nomor, doc.tanggal, doc.fileUrl);
+    }
+
+    function previewDokumenPersyaratan(namaDokumen, nomor, tanggal, fileUrl) {
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+      if (!claim) claim = claims[0] || {};
+      const p = claim.participant || {};
+      const namaPeserta = p.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+      const ktpa = p.ktpa || p.noPeserta || p.no_ktpa || "ASB-2024-001234";
+      const nik = p.nik || claim.nik || "31750012345678";
+
+      document.getElementById("mdl-doc-title").innerText = `Preview: ${namaDokumen}`;
+      document.getElementById("mdl-doc-subtitle").innerText = `Berkas resmi untuk ${namaPeserta} (${ktpa})`;
+      document.getElementById("mdl-doc-nomor").innerText = nomor || "-";
+      document.getElementById("mdl-doc-tanggal").innerText = tanggal || "-";
+      document.getElementById("mdl-doc-paper-heading").innerText = (namaDokumen || "DOKUMEN PERSYARATAN").toUpperCase();
+      document.getElementById("mdl-doc-paper-subheading").innerText = `Nomor: ${nomor || '-'}`;
+      document.getElementById("mdl-doc-detail-name").innerText = namaDokumen;
+      document.getElementById("mdl-doc-detail-peserta").innerText = namaPeserta;
+      document.getElementById("mdl-doc-detail-id").innerText = `${ktpa} / ${nik}`;
+      document.getElementById("mdl-doc-detail-waktu").innerText = `${tanggal || '14 Mei 2025'} • Terverifikasi Sistem`;
+
+      const iconEl = document.getElementById("mdl-doc-icon");
+      if (iconEl) {
+        const lower = (namaDokumen || '').toLowerCase();
+        if (lower.includes('ktp') || lower.includes('kk')) {
+          iconEl.className = "fas fa-id-card text-asabri-blue";
+        } else if (lower.includes('rekening')) {
+          iconEl.className = "fas fa-credit-card text-asabri-blue";
+        } else if (lower.includes('foto')) {
+          iconEl.className = "fas fa-image text-asabri-blue";
+        } else if (lower.includes('skep') || lower.includes('keputusan')) {
+          iconEl.className = "fas fa-file-contract text-asabri-blue";
+        } else {
+          iconEl.className = "fas fa-file-alt text-asabri-blue";
+        }
+      }
+
+      openModal('modal-preview-dokumen-persyaratan');
+    }
+
+    function lihatDataPeserta(nikAtauKtpa) {
+      const targetNik = nikAtauKtpa || currentParticipantNik;
+      const claims = getClaims();
+      const claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda)) || claims[0] || {};
+      const p = claim.participant || {};
+      const nik = targetNik || p.nik || claim.nik || '3171092801890001';
+      const ktpa = p.ktpa || p.noPeserta || p.no_ktpa || '';
+
+      if (ktpa) {
+        window.location.href = `data-peserta.html?nik=${encodeURIComponent(nik)}&ktpa=${encodeURIComponent(ktpa)}`;
+      } else {
+        window.location.href = `data-peserta.html?nik=${encodeURIComponent(nik)}`;
+      }
+    }
+
+    function openLevel3Rincian(noAgenda, namaProduk) {
+      activeNoAgenda = noAgenda;
+      activeNamaProduk = namaProduk;
+      showLevel(3);
+    }
+
+    function renderLevel3Rincian() {
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+
+      if (!claim) {
+        claim = claims[0] || {};
+      }
+
+      const p = claim.participant || {};
+      currentParticipantNik = p.nik || claim.nik || '';
+
+      const verifData = getProductVerifStatuses();
+      const prodList = verifData[activeNoAgenda] || [];
+      const currentProd = prodList.find(item => item.nama === activeNamaProduk) || {
+        nama: activeNamaProduk,
+        status: 'Menunggu Verifikasi',
+        catatanPenolakan: '',
+        nominalKotor: 57822900,
+        potongan: 0,
+        nominalBersih: 57822900
+      };
+
+      document.getElementById("bc-level3-text").innerText = `Produk ${activeNamaProduk}`;
+      document.getElementById("l3-current-produk-title").innerText = `${activeNamaProduk} (${getNamaPanjangProduk(activeNamaProduk)})`;
+
+      // Blok 1: Rincian Peserta (Data Personal)
+      document.getElementById("l3-b1-nama").innerText = p.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+      document.getElementById("l3-b1-ktpa").innerText = p.ktpa || p.noPeserta || p.no_ktpa || "ASB-2024-001234";
+      document.getElementById("l3-b1-nrpnip").innerText = p.nrp_nip || p.nip || claim.nik || "198904211101";
+      document.getElementById("l3-b1-nopens").innerText = p.nopens || "NOP-998822";
+      document.getElementById("l3-b1-pangkat").innerText = p.pangkat || (p.golongan_pangkat ? (p.pangkat + ' / ' + p.golongan_pangkat) : "Mayor Inf / III/d");
+      document.getElementById("l3-b1-kesatuan").innerText = p.unitKerja || p.kesatuan || "Kodam Jaya (TNI AD)";
+      document.getElementById("l3-b1-nik").innerText = p.nik || claim.nik || "31750012345678";
+      document.getElementById("l3-b1-gaji").innerText = formatRupiah(p.gaji_pokok_terakhir || p.gajiPokok || 4750000);
+      document.getElementById("l3-b1-tgllahir").innerText = formatTanggalIndo(p.tanggal_lahir || p.tglLahir || "1980-05-12");
+      document.getElementById("l3-b1-statuspensiun").innerText = p.statusKepesertaan || p.status_kepesertaan || (claim.jenisKejadian === 'Pensiun' ? 'Pensiunan' : 'Aktif') || "-";
+
+      // Blok 2: Data Kejadian
+      const kejadianType = claim.jenisKejadian || claim.jenisKlaim || "Pensiun";
+      document.getElementById("l3-b2-kejadian").innerText = kejadianType;
+      document.getElementById("l3-b2-tglkejadian").innerText = formatTanggalIndo(claim.tanggalKejadian || claim.kejadianDetails?.tanggalKejadian || claim.tanggalRegistrasi || claim.tanggal || "01 Mei 2025");
+      document.getElementById("l3-b2-skep").innerText = claim.kejadianDetails?.nomorSkep || claim.skepPensiun || "SKEP/092/V/2025";
+      document.getElementById("l3-b2-mkg").innerText = claim.mkg || "28 Tahun 02 Bulan";
+      document.getElementById("l3-b2-catatankejadian").innerText = claim.kejadianDetails?.catatan || claim.catatanKejadian || claim.catatan || "-";
+      document.getElementById("l3-b2-namapengunjung").innerText = getNamaPengunjung(claim, p);
+      document.getElementById("l3-b2-namapenerima").innerText = claim.kejadianDetails?.ahliWarisMeninggal?.nama || claim.kejadianDetails?.atasNama || claim.ahliWaris || claim.namaPenerima || p.nama || claim.namaPeserta || "-";
+      
+      let objekKejadianText = "Peserta Sendiri";
+      if (claim.objekKejadian) {
+        objekKejadianText = claim.objekKejadian;
+      } else if (kejadianType.includes('Istri') || kejadianType.includes('Suami')) {
+        objekKejadianText = p.pasangan?.nama ? `${p.pasangan.nama} (Pasangan)` : "Istri/Suami";
+      } else if (kejadianType.includes('Anak')) {
+        objekKejadianText = (p.anak && p.anak[0]) ? `${p.anak[0].nama} (Anak)` : "Anak Peserta";
+      } else {
+        objekKejadianText = p.nama || claim.namaPeserta || "Peserta Sendiri";
+      }
+      document.getElementById("l3-b2-objekkejadian").innerText = objekKejadianText;
+
+      // Blok 3: Data Rekening Pembayaran
+      document.getElementById("l3-b3-bank").innerText = claim.kejadianDetails?.mitraBayar || claim.bankPembayar || (p.kantor_bayar ? p.kantor_bayar.bank : "Bank Mandiri Taspen (Mantap)");
+      document.getElementById("l3-b3-norek").innerText = claim.kejadianDetails?.nomorRekening || claim.noRekening || (p.kantor_bayar ? p.kantor_bayar.no_rekening : "124000876123");
+      document.getElementById("l3-b3-namarek").innerText = claim.kejadianDetails?.atasNama || p.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+      document.getElementById("l3-b3-cabang").innerText = claim.kejadianDetails?.cabangMitra || claim.cabangMitraBayar || claim.cabangMitra || claim.kantorCabang || "KC Utama Jakarta";
+
+      // Blok 4: Data Produk & Rincian Perhitungan Nominal
+      document.getElementById("l3-b4-jenisproduk").innerText = `${activeNamaProduk} - ${getNamaPanjangProduk(activeNamaProduk)}`;
+      document.getElementById("l3-b4-kotor").innerText = formatRupiah(currentProd.nominalKotor);
+      document.getElementById("l3-b4-potongan").innerText = formatRupiah(currentProd.potongan);
+      document.getElementById("l3-b4-bersih").innerText = formatRupiah(currentProd.nominalBersih);
+
+      // Blok 5: Dokumen Persyaratan
+      renderBlok5Dokumen(claim);
+
+      // Level 4 Panel Aksi Update
+      document.getElementById("l4-produk-target-title").innerText = `${currentProd.nama}`;
+      
+      const badge = document.getElementById("l4-current-status-badge");
+      badge.innerText = currentProd.status;
+      badge.className = "px-3 py-1 rounded-full text-xs font-bold border ";
+      
+      const btnGroup = document.getElementById("l4-action-buttons-group");
+      const completedBanner = document.getElementById("l4-completed-status-banner");
+      const completedIcon = document.getElementById("l4-completed-status-icon");
+      const completedText = document.getElementById("l4-completed-status-text");
+
+      if (currentProd.status === 'Terverifikasi') {
+        badge.className += "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+        // Tombol verifikasi hilang jika sudah diverifikasi
+        if (btnGroup) btnGroup.classList.add("hidden");
+        if (completedBanner) {
+          completedBanner.classList.remove("hidden");
+          completedBanner.className = "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-2xl border bg-emerald-950/60 text-emerald-300 border-emerald-700/50";
+          completedIcon.innerHTML = '<i class="fas fa-check-circle text-emerald-400 text-sm"></i>';
+          completedText.innerText = "Produk ini telah TERVERIFIKASI dan siap diajukan ke Kakancab.";
+        }
+      } else if (currentProd.status === 'Ditolak') {
+        badge.className += "bg-rose-500/20 text-rose-300 border-rose-500/40";
+        // Tombol verifikasi hilang jika sudah ditolak
+        if (btnGroup) btnGroup.classList.add("hidden");
+        if (completedBanner) {
+          completedBanner.classList.remove("hidden");
+          completedBanner.className = "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-2xl border bg-rose-950/60 text-rose-300 border-rose-700/50";
+          completedIcon.innerHTML = '<i class="fas fa-times-circle text-rose-400 text-sm"></i>';
+          completedText.innerText = "Produk ini telah DITOLAK (Keputusan Final).";
+        }
+      } else {
+        badge.className += "bg-amber-500/20 text-amber-300 border-amber-500/40";
+        // Tombol verifikasi & tolak tampil hanya jika status belum diverifikasi
+        if (btnGroup) btnGroup.classList.remove("hidden");
+        if (completedBanner) completedBanner.classList.add("hidden");
+      }
+
+      const noteBox = document.getElementById("l4-rejection-note-box");
+      if (currentProd.status === 'Ditolak' && currentProd.catatanPenolakan) {
+        noteBox.classList.remove("hidden");
+        document.getElementById("l4-rejection-note-text").innerText = currentProd.catatanPenolakan;
+      } else {
+        noteBox.classList.add("hidden");
+      }
+    }
+
+    function getNamaPanjangProduk(code) {
+      const names = {
+        'TA': 'Tabungan Asuransi',
+        'PP': 'Pensiun Pertama',
+        'NTTA': 'Nilai Tunai Tabungan Asuransi',
+        'SRKK': 'Santunan Risiko Kecelakaan Kerja',
+        'NTIP': 'Nilai Tunai Iuran Pasti'
+      };
+      return names[code] || 'Produk Klaim';
+    }
+
+    // =========================================================================
+    // LEVEL 4 LOGIC & ACTION CONTROLLER
+    // =========================================================================
+    function triggerVerifikasi(aksi) {
+      if (aksi === 'Verifikasi') {
+        aksiVerifikatorPerProduk(activeNoAgenda, activeNamaProduk, 'Verifikasi', '');
+      } else if (aksi === 'Tolak') {
+        document.getElementById("modal-tolak-catatan").value = '';
+        openModal('modal-tolak');
+      }
+    }
+
+    function aksiVerifikatorPerProduk(noAgenda, namaProduk, aksi, catatan) {
+      const verifData = getProductVerifStatuses();
+      if (!verifData[noAgenda]) return;
+
+      const prod = verifData[noAgenda].find(p => p.nama === namaProduk);
+      if (!prod) return;
+
+      if (aksi === 'Verifikasi') {
+        prod.status = 'Terverifikasi';
+        prod.catatanPenolakan = '';
+        saveProductVerifStatuses(verifData);
+
+        // Sync claim status in asabri_claims so approval-produk.html immediately recognizes it
+        try {
+          const claims = getClaims();
+          const claim = claims.find(c => (c.noRegistrasi === noAgenda || c.noAgenda === noAgenda || c.noReg === noAgenda));
+          if (claim) {
+            claim.status = 'Terverifikasi';
+            claim.waktuVerifikasiTimestamp = Date.now();
+            claim.tanggalVerifikasi = new Date().toISOString();
+            saveClaims(claims);
+          }
+        } catch(e) {
+          console.error("Error updating claim status in asabri_claims:", e);
+        }
+
+        showToast("Verifikasi Berhasil", `Produk ${namaProduk} telah TERVERIFIKASI dan siap diajukan ke Kakancab.`, "success");
+        renderLevel3Rincian();
+        renderLevel2Detail();
+        if (typeof renderLevel1List === 'function') renderLevel1List();
+      }
+
+      if (aksi === 'Tolak') {
+        if (!catatan.trim()) {
+          showToast("Peringatan", "Wajib mengisi Catatan Penolakan!", "warning");
+          return;
+        }
+        prod.status = 'Ditolak';
+        prod.catatanPenolakan = catatan;
+        saveProductVerifStatuses(verifData);
+
+        // Update main claim status if all are rejected or partially verified
+        try {
+          const claims = getClaims();
+          const claim = claims.find(c => (c.noRegistrasi === noAgenda || c.noAgenda === noAgenda || c.noReg === noAgenda));
+          if (claim) {
+            const allProds = verifData[noAgenda] || [];
+            const allDitolak = allProds.length > 0 && allProds.every(p => p.status === 'Ditolak');
+            const hasTerverifikasi = allProds.some(p => p.status === 'Terverifikasi');
+            if (allDitolak) {
+              claim.status = 'Ditolak';
+            } else if (hasTerverifikasi) {
+              claim.status = 'Terverifikasi';
+            }
+            saveClaims(claims);
+          }
+        } catch(e) {
+          console.error("Error updating claim status in asabri_claims:", e);
+        }
+
+        showToast("Produk Ditolak", `Status produk ${namaProduk} telah diubah menjadi DITOLAK (Final).`, "danger");
+        closeModal('modal-tolak');
+        renderLevel3Rincian();
+        renderLevel2Detail();
+        if (typeof renderLevel1List === 'function') renderLevel1List();
+      }
+    }
+
+    function submitTolakProduk() {
+      const catatan = document.getElementById("modal-tolak-catatan").value;
+      aksiVerifikatorPerProduk(activeNoAgenda, activeNamaProduk, 'Tolak', catatan);
+    }
+
+    function getSisaHutangDariManajemenPiutang(nikPeserta) {
+      let nik = nikPeserta;
+      if (!nik) {
+        const claims = getClaims();
+        let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+        if (!claim) claim = claims[0] || {};
+        nik = claim.participant?.nik || claim.nik || currentParticipantNik;
+      }
+      if (!nik) return 0;
+
+      let raw = localStorage.getItem("hutangData_" + nik);
+      if (!raw) {
+        // Fallback check by KTPA or NOPENS
+        const claims = getClaims();
+        let claim = claims.find(c => c.nik === nik || c.participant?.nik === nik) || {};
+        const ktpa = claim.participant?.ktpa || claim.participant?.noPeserta || claim.participant?.no_ktpa || claim.ktpa;
+        if (ktpa) raw = localStorage.getItem("hutangData_" + ktpa);
+      }
+
+      if (raw) {
+        try {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) {
+            return list.reduce((total, h) => {
+              const status = (h.status || '').toLowerCase();
+              if (status === 'belum lunas' || status === 'dalam cicilan' || status === 'aktif' || status === 'pending') {
+                const jumlah = parseFloat(h.jumlah || h.plafon || 0);
+                const dibayar = parseFloat(h.dibayar !== undefined ? h.dibayar : (h.jumlahDibayar || 0));
+                const sisa = (h.sisaHutang !== undefined && h.sisaHutang !== null)
+                  ? parseFloat(h.sisaHutang)
+                  : Math.max(0, jumlah - dibayar);
+                return total + sisa;
+              }
+              return total;
+            }, 0);
+          }
+        } catch(e) {
+          console.error("Error reading hutangData:", e);
+        }
+      }
+      return 0;
+    }
+
+    function refreshPotHutang(nikPeserta) {
+      let nik = nikPeserta || currentParticipantNik;
+      if (!nik) {
+        const claims = getClaims();
+        let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+        if (!claim) claim = claims[0] || {};
+        nik = claim.participant?.nik || claim.nik;
+      }
+
+      const icon1 = document.getElementById("pot-hutang-refresh-icon");
+      const icon2 = document.getElementById("pot-hutang-header-icon");
+      if (icon1) icon1.classList.add("fa-spin");
+      if (icon2) icon2.classList.add("fa-spin");
+
+      const hutangTerbaru = getSisaHutangDariManajemenPiutang(nik);
+
+      const verifData = getProductVerifStatuses();
+      if (verifData[activeNoAgenda]) {
+        const item = verifData[activeNoAgenda].find(p => p.nama === activeNamaProduk);
+        if (item) {
+          item.potongan = hutangTerbaru;
+          item.nominalBersih = Math.max(0, item.nominalKotor - item.potongan);
+          saveProductVerifStatuses(verifData);
+        }
+      }
+
+      const potEl = document.getElementById("l3-b4-potongan");
+      if (potEl) potEl.innerText = formatRupiah(hutangTerbaru);
+
+      const prodList = verifData[activeNoAgenda] || [];
+      const currentProd = prodList.find(item => item.nama === activeNamaProduk) || {
+        nominalKotor: 57822900,
+        potongan: hutangTerbaru,
+        nominalBersih: Math.max(0, 57822900 - hutangTerbaru)
+      };
+
+      const bersihEl = document.getElementById("l3-b4-bersih");
+      if (bersihEl) bersihEl.innerText = formatRupiah(currentProd.nominalBersih);
+
+      setTimeout(() => {
+        if (icon1) icon1.classList.remove("fa-spin");
+        if (icon2) icon2.classList.remove("fa-spin");
+        showToast(
+          "Data Hutang Disinkronisasi",
+          `Potongan hutang terbaru (${formatRupiah(hutangTerbaru)}) berhasil ditarik dari Manajemen Piutang. Jumlah bersih telah dihitung ulang.`,
+          "success"
+        );
+      }, 350);
+    }
+
+
+
+
+    function openModal(id) {
+      document.getElementById(id)?.classList.remove("hidden");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id)?.classList.add("hidden");
+    }
+
+    // =========================================================================
+    // LPK (LEMBAR PERHITUNGAN KLAIM) GENERATION ENGINE
+    // =========================================================================
+    function buildLPKContext(targetNoAgenda, targetNamaProduk) {
+      const targetAgenda = targetNoAgenda || activeNoAgenda;
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === targetAgenda || c.noAgenda === targetAgenda || c.noReg === targetAgenda)) || claims[0] || {};
+      const pes = claim.participant || {};
+      const verifData = getVerificationProductStatuses ? getVerificationProductStatuses() : JSON.parse(localStorage.getItem('asabri_product_verifications') || '{}');
+      
+      let prodList = verifData[targetAgenda];
+      if (!prodList || prodList.length === 0) {
+        prodList = getProductListForClaim(claim || targetAgenda);
+      }
+
+      const now = new Date();
+      const tglProses = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+      const pad = (n, len) => String(n).padStart(len, '0');
+      const noAgendaLPK = `${pad(now.getDate(),2)}${pad(now.getMonth()+1,2)}${now.getFullYear()}/${pad(Math.floor(Math.random()*999999)+1, 6)}`;
+
+      // Hutang
+      let jnsHutang = '-';
+      let besarHutang = 'Rp 0';
+      const nik = pes.nik || claim.nik || '';
+      if (nik) {
+        try {
+          const lh = JSON.parse(localStorage.getItem('hutangData_' + nik) || '[]');
+          const unpaid = Array.isArray(lh) ? lh.filter(h => h.status !== 'Lunas') : [];
+          if (unpaid.length > 0) {
+            jnsHutang = unpaid.map(h => h.jenis || 'Lainnya').join(', ');
+            const total = unpaid.reduce((s, h) => s + parseFloat(h.nominal || h.jumlah || 0), 0);
+            besarHutang = formatRupiah(total);
+          }
+        } catch(e) {}
+      }
+
+      // Filter products
+      let filteredProducts = (prodList || []).filter(p => p.status !== 'Ditolak');
+      if (filteredProducts.length === 0) {
+        filteredProducts = prodList || [];
+      }
+
+      const products = filteredProducts.map(prod => {
+        const kotor = prod.nominalKotor || prod.hak || 57822900;
+        const pot = prod.potongan || 0;
+        const netto = prod.nominalBersih !== undefined ? prod.nominalBersih : Math.max(0, kotor - pot);
+        return {
+          nama: prod.nama || prod.type || 'TA',
+          type: prod.nama || prod.type || 'TA',
+          hak: kotor,
+          potongan: pot,
+          netto: netto
+        };
+      });
+
+      const totalHak = products.reduce((s, p) => s + p.hak, 0);
+      const totalPot = products.reduce((s, p) => s + p.potongan, 0);
+      const totalNetto = Math.max(0, totalHak - totalPot);
+
+      return {
+        tglProses,
+        noAgendaLPK,
+        noAgenda: targetAgenda,
+        namaKancab: claim.kantorCabang || pes.kantorCabang || 'KC JAKARTA UTAMA',
+        namaKakancab: 'Kepala Kantor Cabang Utama',
+        ktpa: pes.ktpa || pes.noKTPA || pes.noPeserta || 'ASB-2024-001234',
+        nrp: pes.nrp_nip || pes.nrp || pes.nip || claim.nik || '-',
+        nama: pes.nama || claim.namaPeserta || 'ADM. WIRATA ATMAJA',
+        jnsKelamin: pes.jenisKelamin || pes.gender || 'Laki-Laki',
+        tglLahir: pes.tanggalLahir || pes.tglLahir || '12 Mei 1980',
+        tmtPeserta: pes.tmtPeserta || pes.tmt || '01 Maret 2002',
+        pangkatPertama: pes.pangkatPertama || pes.pangkat || 'Letda Inf',
+        satkerPertama: pes.satkerPertama || pes.satker || 'Yonif 201/Jaya Yudha',
+        pangkatAkhir: pes.pangkat || 'Mayor Inf / III/d',
+        satkerAkhir: pes.unitKerja || pes.kesatuan || pes.satker || 'Kodam Jaya (TNI AD)',
+        jnsLayanan: claim.jenisKejadian || claim.jenisKlaim || 'Pensiun',
+        tanggalKejadian: claim.tanggalKejadian || claim.kejadianDetails?.tanggalKejadian || claim.tanggalRegistrasi || claim.tanggal || '01 Mei 2025',
+        noSkep: claim.skepPensiun || claim.kejadianDetails?.nomorSkep || 'SKEP/092/V/2025',
+        tglSkep: claim.tglSkep || claim.tanggalRegistrasi || '14 Mei 2025',
+        masaKerjaGaji: claim.mkg || pes.masaKerja || '28 Tahun 02 Bulan',
+        kodeJiwa: pes.kodeJiwa || '1100',
+        gajiPokokPertama: formatRupiah(pes.gajiPokokPertama || 1850000),
+        gajiPokokAkhir: formatRupiah(pes.gaji_pokok_terakhir || pes.gajiPokok || 4750000),
+        jnsHutang,
+        besarHutang,
+        namaPenerima: claim.kejadianDetails?.atasNama || claim.namaPenerima || pes.nama || claim.namaPeserta || 'ADM. WIRATA ATMAJA',
+        hubKeluarga: 'Diri Sendiri',
+        identitas: `KTP: ${pes.nik || claim.nik || '31750012345678'}`,
+        alamat: pes.alamatKTP || pes.alamat || 'Jl. Raya Cawang No. 12, Jakarta Timur',
+        saranaBayar: claim.kejadianDetails?.mitraBayar || claim.bankPembayar || 'Bank Mandiri Taspen (Mantap)',
+        noRek: claim.kejadianDetails?.nomorRekening || claim.noRekening || '124000876123',
+        anRek: claim.kejadianDetails?.atasNama || pes.nama || claim.namaPeserta || 'ADM. WIRATA ATMAJA',
+        mediaBayar: claim.kejadianDetails?.cabangMitra || claim.kantorCabang || 'KCU Jakarta',
+        products,
+        totalHak,
+        totalPot,
+        totalNetto,
+        regulasi: claim.regulasi || 'PP 54/2020 & UU No. 11/1969',
+        tglGenerate: tglProses + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB'
+      };
+    }
+
+    function generateLPKGabunganHtml(ctx) {
+      const prodHtml = ctx.products.map((p, i) => `
+        <div style="margin-bottom:8px">
+          <strong>PROGRAM ${p.nama.toUpperCase()}</strong><br>
+          <table style="width:100%;font-size:11px;border-collapse:collapse">
+            <tr><td style="padding:2px 6px">Hak Manfaat</td><td style="text-align:right">Rp ${p.hak.toLocaleString('id-ID')}</td></tr>
+            <tr><td style="padding:2px 6px;color:#c00">Potongan</td><td style="text-align:right;color:#c00">- Rp ${p.potongan.toLocaleString('id-ID')}</td></tr>
+            <tr style="border-top:1px solid #ccc"><td style="padding:4px 6px;font-weight:bold">Sub Total Program</td><td style="text-align:right;font-weight:bold">Rp ${p.netto.toLocaleString('id-ID')}</td></tr>
+          </table>
+        </div>`).join('');
+
+      return `<div style="font-family:Arial,sans-serif;font-size:12px;max-width:680px;margin:0 auto;padding:24px;background:#ffffff;border:1px solid #ccc">
+        <div style="text-align:center;border-bottom:2px solid #003580;padding-bottom:12px;margin-bottom:16px">
+          <strong style="font-size:14px;color:#003580">LEMBAR PERHITUNGAN KLAIM (LPK GABUNGAN)</strong><br>
+          <span style="font-size:11px">PT ASABRI (PERSERO) — ${ctx.namaKancab}</span>
+        </div>
+        <table style="width:100%;font-size:11px;margin-bottom:12px">
+          <tr><td><b>Tanggal Proses</b></td><td>: ${ctx.tglProses}</td>
+              <td><b>Nomor Agenda LPK</b></td><td>: ${ctx.noAgendaLPK}</td></tr>
+          <tr><td><b>Nomor Registrasi</b></td><td>: ${ctx.noAgenda}</td>
+              <td><b>Regulasi</b></td><td>: ${ctx.regulasi}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">A. PESERTA</div>
+        <table style="width:100%;font-size:11px;margin-bottom:12px">
+          <tr><td>Nomor KTPA</td><td>: ${ctx.ktpa}</td><td>Tgl Lahir</td><td>: ${ctx.tglLahir}</td></tr>
+          <tr><td>NRP/NIP</td><td>: ${ctx.nrp}</td><td>TMT Peserta</td><td>: ${ctx.tmtPeserta}</td></tr>
+          <tr><td>Nama Peserta</td><td colspan="3">: <strong>${ctx.nama}</strong></td></tr>
+          <tr><td>Jns Kelamin</td><td>: ${ctx.jnsKelamin}</td><td>Pkt/Gol Pertama</td><td>: ${ctx.pangkatPertama}</td></tr>
+          <tr><td>Satker Pertama</td><td>: ${ctx.satkerPertama}</td><td>Satker Akhir</td><td>: ${ctx.satkerAkhir}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">B. LAYANAN</div>
+        <table style="width:100%;font-size:11px;margin-bottom:12px">
+          <tr><td>Jns Layanan</td><td>: ${ctx.jnsLayanan}</td><td>Tanggal Kejadian</td><td>: ${ctx.tanggalKejadian}</td></tr>
+          <tr><td>Pkt/Gol Akhir</td><td>: ${ctx.pangkatAkhir}</td><td>Nomor SKEP</td><td>: ${ctx.noSkep}</td></tr>
+          <tr><td>Masa Kerja Gaji</td><td>: ${ctx.masaKerjaGaji}</td><td>Kode Jiwa</td><td>: ${ctx.kodeJiwa}</td></tr>
+          <tr><td>Gaji Pokok Pertama</td><td>: ${ctx.gajiPokokPertama}</td><td>Gaji Pokok Akhir</td><td>: ${ctx.gajiPokokAkhir}</td></tr>
+          <tr><td>Jenis Hutang</td><td>: ${ctx.jnsHutang}</td><td>Besar Hutang</td><td>: ${ctx.besarHutang}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">C. PERHITUNGAN (Per Program — Terpisah)</div>
+        <div style="margin-bottom:12px">${prodHtml}</div>
+        <table style="width:100%;font-size:11px;border-top:2px solid #003580;margin-bottom:12px">
+          <tr><td><b>Total Hak</b></td><td style="text-align:right"><b>Rp ${ctx.totalHak.toLocaleString('id-ID')}</b></td></tr>
+          <tr><td style="color:#c00">Total Potongan</td><td style="text-align:right;color:#c00">- Rp ${ctx.totalPot.toLocaleString('id-ID')}</td></tr>
+          <tr style="background:#003580;color:white"><td style="padding:4px 6px"><b>Jumlah Diterima</b></td><td style="text-align:right;padding:4px 6px"><b>Rp ${ctx.totalNetto.toLocaleString('id-ID')}</b></td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">D. PEMBAYARAN</div>
+        <table style="width:100%;font-size:11px;margin-bottom:16px">
+          <tr><td>Nama Penerima</td><td>: ${ctx.namaPenerima}</td></tr>
+          <tr><td>Hubungan Keluarga</td><td>: ${ctx.hubKeluarga}</td></tr>
+          <tr><td>Identitas Diri</td><td>: ${ctx.identitas}</td></tr>
+          <tr><td>Alamat (KTP)</td><td>: ${ctx.alamat}</td></tr>
+          <tr><td>Sarana Bayar</td><td>: Rekening No. ${ctx.noRek} a/n ${ctx.anRek} (${ctx.saranaBayar})</td></tr>
+          <tr><td>Kancab ASABRI</td><td>: ${ctx.namaKancab}</td></tr>
+        </table>
+
+        <div style="text-align:center;border-top:1px solid #ccc;padding-top:12px;font-size:10px;color:#666">
+          Generate: ${ctx.tglGenerate} &nbsp;|&nbsp; Dokumen ini digenerate oleh Sistem YANDU ASABRI
+        </div>
+      </div>`;
+    }
+
+    function generateLPKSatuanHtml(ctx, productCode) {
+      const targetCode = productCode || (ctx.products[0] ? ctx.products[0].nama : 'TA');
+      const prods = ctx.products.filter(p => (p.nama || '').toUpperCase() === targetCode.toUpperCase());
+      const p = prods[0] || ctx.products[0] || { nama: targetCode, hak: 57822900, potongan: 0, netto: 57822900 };
+
+      return `<div style="font-family:Arial,sans-serif;font-size:12px;max-width:680px;margin:0 auto;padding:24px;background:#ffffff;border:1px solid #ccc">
+        <div style="text-align:center;border-bottom:2px solid #003580;padding-bottom:12px;margin-bottom:16px">
+          <strong style="font-size:13px;color:#003580">LEMBAR PERHITUNGAN KLAIM (LPK SATUAN — MANFAAT ${p.nama.toUpperCase()})</strong><br>
+          <span style="font-size:11px">PT ASABRI (PERSERO) — ${ctx.namaKancab}</span>
+        </div>
+        <table style="width:100%;font-size:11px;margin-bottom:8px">
+          <tr><td>Nomor Agenda LPK</td><td>: ${ctx.noAgendaLPK}</td><td>KTPA</td><td>: ${ctx.ktpa}</td></tr>
+          <tr><td>Jenis Manfaat</td><td>: <strong>${p.nama.toUpperCase()}</strong></td><td>Regulasi</td><td>: ${ctx.regulasi}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin:10px 0 6px">A. DATA PESERTA</div>
+        <table style="width:100%;font-size:11px;margin-bottom:10px">
+          <tr><td>1. NRP/NIP</td><td>: ${ctx.nrp}</td></tr>
+          <tr><td>2. Nama Penerima</td><td>: ${ctx.namaPenerima}</td></tr>
+          <tr><td>3. Jenis Kelamin</td><td>: ${ctx.jnsKelamin}</td></tr>
+          <tr><td>4. Tanggal Lahir</td><td>: ${ctx.tglLahir}</td></tr>
+          <tr><td>5. Pangkat/Gol Akhir</td><td>: ${ctx.pangkatAkhir}</td></tr>
+          <tr><td>6. Satker Akhir</td><td>: ${ctx.satkerAkhir}</td></tr>
+          <tr><td>7. Tanggal Kejadian</td><td>: ${ctx.tanggalKejadian}</td></tr>
+          <tr><td>8. Masa Kerja Gaji</td><td>: ${ctx.masaKerjaGaji}</td></tr>
+          <tr><td>9. Kode Jiwa</td><td>: ${ctx.kodeJiwa}</td></tr>
+          <tr><td>10. Gaji Pokok</td><td>: ${ctx.gajiPokokAkhir}</td></tr>
+          <tr><td>11. Jenis Hutang</td><td>: ${ctx.jnsHutang}</td></tr>
+          <tr><td>12. Besar Hutang</td><td>: ${ctx.besarHutang}</td></tr>
+          <tr><td>13. No. Rekening</td><td>: ${ctx.noRek} a/n ${ctx.anRek} (${ctx.saranaBayar})</td></tr>
+          <tr><td>14. Alamat (KTP)</td><td>: ${ctx.alamat}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin:10px 0 6px">B. PERHITUNGAN MANFAAT ${p.nama.toUpperCase()}</div>
+        <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:16px">
+          <tr style="background:#f5f5f5"><td style="padding:4px 6px">Hak Manfaat ${p.nama}</td><td style="text-align:right;padding:4px 6px">Rp ${p.hak.toLocaleString('id-ID')}</td></tr>
+          <tr style="color:#c00"><td style="padding:4px 6px">Potongan Hutang</td><td style="text-align:right;padding:4px 6px">- Rp ${p.potongan.toLocaleString('id-ID')}</td></tr>
+          <tr style="background:#003580;color:white"><td style="padding:6px"><b>Jumlah Diterima (${p.nama})</b></td><td style="text-align:right;padding:6px"><b>Rp ${p.netto.toLocaleString('id-ID')}</b></td></tr>
+        </table>
+
+        <div style="text-align:right;font-size:11px;margin-top:24px">
+          ${ctx.namaKancab}, ${ctx.tglProses}<br><br><br>
+          <strong>${ctx.namaKakancab}</strong>
+        </div>
+        <div style="text-align:center;border-top:1px solid #ccc;padding-top:8px;font-size:10px;color:#666;margin-top:16px">
+          Generate: ${ctx.tglGenerate} &nbsp;|&nbsp; Sistem YANDU ASABRI
+        </div>
+      </div>`;
+    }
+
+    function cetakLPKGabungan(noAgenda) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const ctx = buildLPKContext(targetAgenda);
+      const html = generateLPKGabunganHtml(ctx);
+      const title = `LPK Gabungan - ${ctx.noAgenda}`;
+      
+      const w = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
+      if (w) {
+        w.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{body{margin:0}}</style></head><body style="margin:0;padding:16px;background:#f8fafc;">
+          <div style="text-align:center;margin-bottom:12px;">
+            <button onclick="window.print()" style="background:#003580;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🖨️ Cetak / Simpan PDF</button>
+          </div>
+          ${html}
+        </body></html>`);
+        w.document.close();
+      }
+      showToast("LPK Gabungan", `Dokumen LPK Gabungan untuk ${ctx.nama} berhasil disiapkan.`, "success");
+    }
+
+    function cetakLPKSatuan(noAgenda, namaProduk) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const targetProd = namaProduk || activeNamaProduk || 'TA';
+      const ctx = buildLPKContext(targetAgenda, targetProd);
+      const html = generateLPKSatuanHtml(ctx, targetProd);
+      const title = `LPK Satuan ${targetProd} - ${ctx.noAgenda}`;
+      
+      const w = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
+      if (w) {
+        w.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{body{margin:0}}</style></head><body style="margin:0;padding:16px;background:#f8fafc;">
+          <div style="text-align:center;margin-bottom:12px;">
+            <button onclick="window.print()" style="background:#003580;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🖨️ Cetak / Simpan PDF</button>
+          </div>
+          ${html}
+        </body></html>`);
+        w.document.close();
+      }
+      showToast("LPK Satuan", `Dokumen LPK Satuan (${targetProd}) untuk ${ctx.nama} berhasil disiapkan.`, "success");
     }
   </script>
 </body>

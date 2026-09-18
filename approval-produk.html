@@ -45,13 +45,36 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #94a3b8;
     }
+    .print-only {
+      display: none;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .printable-area, .printable-area * {
+        visibility: visible;
+      }
+      .printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .print-only {
+        display: block !important;
+      }
+    }
   </style>
   <link rel="stylesheet" href="theme.css">
 </head>
 <body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
 
   <!-- TOPBAR / HEADER BAR -->
-  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50">
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50 no-print">
     <div class="flex items-center gap-5">
       <div class="flex items-center gap-3">
         <div class="flex items-center">
@@ -90,7 +113,7 @@
   <div class="flex flex-1 overflow-hidden">
 
     <!-- SIDEBAR: Navigation Panel -->
-    <div id="sidebar"></div>
+    <div id="sidebar" class="no-print"></div>
     <script>
       renderSidebar('approval-produk');
     </script>
@@ -99,19 +122,29 @@
     <main class="flex-1 flex flex-col overflow-hidden">
       
       <!-- BREADCRUMB BAR -->
-      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
-        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
+      <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0 no-print">
+        <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500" id="breadcrumb-container">
           <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
           <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
-          <span class="font-bold text-asabri-blue">7. List Request Approval Produk</span>
+          <span class="font-bold text-asabri-blue cursor-pointer" onclick="showLevel(1)">7. List Request Approval Produk</span>
+          <span id="breadcrumb-level2" class="hidden flex items-center gap-2">
+            <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+            <span class="font-bold text-slate-700 cursor-pointer hover:text-asabri-blue transition-colors" onclick="showLevel(2)" id="bc-level2-text">Detail Approval</span>
+          </span>
+          <span id="breadcrumb-level3" class="hidden flex items-center gap-2">
+            <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
+            <span class="font-bold text-slate-700" id="bc-level3-text">Rincian Produk</span>
+          </span>
         </div>
       </div>
 
-      <!-- WORKSPACE PANELS -->
+      <!-- WORKSPACE PANELS CONTAINER -->
       <div class="flex-1 overflow-y-auto p-8 space-y-6">
 
-        <!-- MAIN CARD -->
-        <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+        <!-- ========================================================================= -->
+        <!-- LEVEL 1: LIST REQUEST APPROVAL PRODUK (KAKANCAB) -->
+        <!-- ========================================================================= -->
+        <div id="level-1-container" class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
           
           <!-- Card Header & Quick Metrics -->
           <div class="p-6 border-b border-slate-100 bg-gradient-to-r from-slate-50/80 via-white to-blue-50/30 flex flex-wrap items-center justify-between gap-4">
@@ -120,12 +153,15 @@
                 <i class="fas fa-file-circle-check"></i>
               </div>
               <div>
-                <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">List Request Approval Produk (KAKANCAB)</h1>
-                <p class="text-xs font-medium text-slate-500">Antrian persetujuan produk klaim oleh KAKANCAB dan pencetakan dokumen resmi (SP & LPK).</p>
+                <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">List Request Approval Produk (Level 1)</h1>
+                <p class="text-xs font-medium text-slate-500">Antrian persetujuan produk klaim oleh KAKANCAB dan penerbitan dokumen resmi (SP & LPK).</p>
               </div>
             </div>
 
             <div class="flex items-center gap-3">
+              <button onclick="cetakListApproval()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2">
+                <i class="fas fa-print text-asabri-blue"></i> Cetak List
+              </button>
               <div class="bg-white border border-slate-200 px-4 py-2 rounded-2xl shadow-sm flex items-center gap-3">
                 <div class="w-3 h-3 rounded-full bg-asabri-blue"></div>
                 <div class="flex flex-col">
@@ -136,15 +172,23 @@
             </div>
           </div>
 
-          <!-- Filter Section -->
-          <div class="bg-slate-50/50 p-6 border-b border-slate-200/60 space-y-4">
-            <div class="flex items-center justify-between">
+          <!-- Filter Section Level 1 -->
+          <div id="filter-container-box" class="bg-slate-50/50 p-6 border-b border-slate-200/60 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <i class="fas fa-filter text-asabri-blue"></i> Filter Approval Produk
               </span>
-              <button onclick="resetFilters()" class="text-xs font-bold text-asabri-blue hover:text-asabri-blueDark transition-colors flex items-center gap-1">
-                <i class="fas fa-undo text-[10px]"></i> Reset Filter
-              </button>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="resetFilters()" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition-colors flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 shadow-2xs active:scale-95">
+                  <i class="fas fa-undo text-[10px]"></i> Reset Filter
+                </button>
+                <button type="button" onclick="cetakListApproval()" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 transition-colors flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 shadow-2xs active:scale-95">
+                  <i class="fas fa-print text-xs"></i> Cetak
+                </button>
+                <button type="button" onclick="applyFilters()" class="text-xs font-bold text-white transition-colors flex items-center gap-1.5 px-5 py-2 rounded-xl bg-asabri-blue hover:bg-asabri-blueDark shadow-sm active:scale-95">
+                  <i class="fas fa-search text-xs"></i> Cari
+                </button>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -172,8 +216,43 @@
                 <input type="text" id="filter-nokunjungan" oninput="applyFilters()" placeholder="REG/..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
               </div>
               <div>
-                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Kantor Cabang</label>
-                <input type="text" id="filter-kantorcabang" oninput="applyFilters()" placeholder="Cari cabang..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Kantor Cabang ASABRI</label>
+                <select id="filter-kantorcabang" onchange="applyFilters()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700 shadow-inner">
+                  <option value="">Semua Kantor Cabang (33 Kancab)</option>
+                  <option value="KCU Jakarta">KCU Jakarta</option>
+                  <option value="KC Medan">KC Medan</option>
+                  <option value="KC Surabaya">KC Surabaya</option>
+                  <option value="KC Bandung">KC Bandung</option>
+                  <option value="KC Semarang">KC Semarang</option>
+                  <option value="KC Makassar">KC Makassar</option>
+                  <option value="KC Palembang">KC Palembang</option>
+                  <option value="KC Balikpapan">KC Balikpapan</option>
+                  <option value="KC Ambon">KC Ambon</option>
+                  <option value="KC Jayapura">KC Jayapura</option>
+                  <option value="KC Banda Aceh">KC Banda Aceh</option>
+                  <option value="KC Padang">KC Padang</option>
+                  <option value="KC Pekanbaru">KC Pekanbaru</option>
+                  <option value="KC Jambi">KC Jambi</option>
+                  <option value="KC Bengkulu">KC Bengkulu</option>
+                  <option value="KC Bandar Lampung">KC Bandar Lampung</option>
+                  <option value="KC Pangkal Pinang">KC Pangkal Pinang</option>
+                  <option value="KC Serang">KC Serang</option>
+                  <option value="KC Yogyakarta">KC Yogyakarta</option>
+                  <option value="KC Denpasar">KC Denpasar</option>
+                  <option value="KC Mataram">KC Mataram</option>
+                  <option value="KC Kupang">KC Kupang</option>
+                  <option value="KC Pontianak">KC Pontianak</option>
+                  <option value="KC Banjarmasin">KC Banjarmasin</option>
+                  <option value="KC Palangkaraya">KC Palangkaraya</option>
+                  <option value="KC Samarinda">KC Samarinda</option>
+                  <option value="KC Manado">KC Manado</option>
+                  <option value="KC Palu">KC Palu</option>
+                  <option value="KC Kendari">KC Kendari</option>
+                  <option value="KC Gorontalo">KC Gorontalo</option>
+                  <option value="KC Mamuju">KC Mamuju</option>
+                  <option value="KC Ternate">KC Ternate</option>
+                  <option value="KC Manokwari">KC Manokwari</option>
+                </select>
               </div>
               <div>
                 <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tgl Mulai Pengajuan</label>
@@ -188,7 +267,19 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
               <div>
                 <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Manfaat / Produk</label>
-                <input type="text" id="filter-manfaat" oninput="applyFilters()" placeholder="Cari manfaat/produk..." class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue shadow-inner">
+                <select id="filter-manfaat" onchange="applyFilters()" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700 shadow-inner">
+                  <option value="">Semua Manfaat / Produk</option>
+                  <option value="TA">TA (Tabungan Asuransi)</option>
+                  <option value="NTTA">NTTA (Nilai Tunai Tabungan Asuransi)</option>
+                  <option value="PP">PP (Pensiun Pertama)</option>
+                  <option value="NTIP">NTIP (Nilai Tunai Iuran Pasti)</option>
+                  <option value="SRKK">SRKK (Santunan Risiko Kecelakaan Kerja)</option>
+                  <option value="Santunan Kematian">Santunan Kematian (JKm)</option>
+                  <option value="BPIS">BPIS (Biaya Pemakaman Istri/Suami)</option>
+                  <option value="BPA">BPA (Biaya Pemakaman Anak)</option>
+                  <option value="BPPP">BPPP (Biaya Pemakaman Peserta Pensiun)</option>
+                  <option value="UDW">UDW (Uang Duka Wafat)</option>
+                </select>
               </div>
               <div>
                 <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Tgl Mulai Approve</label>
@@ -201,8 +292,8 @@
             </div>
           </div>
 
-          <!-- Table Container -->
-          <div class="overflow-x-auto">
+          <!-- Table Container Level 1 -->
+          <div class="overflow-x-auto printable-area">
             <table class="w-full text-left text-xs border-collapse">
               <thead>
                 <tr class="bg-slate-100/80 text-slate-600 font-extrabold text-[11px] uppercase tracking-wider border-b border-slate-200">
@@ -220,7 +311,7 @@
                   <th class="py-3.5 px-4">Waktu Kunjungan</th>
                   <th class="py-3.5 px-4">Waktu Approval</th>
                   <th class="py-3.5 px-4 text-center">Waktu Berjalan</th>
-                  <th class="py-3.5 px-4 text-center">Aksi</th>
+                  <th class="py-3.5 px-4 text-center no-print">Aksi</th>
                 </tr>
               </thead>
               <tbody id="approval-table-body" class="divide-y divide-slate-100 font-medium">
@@ -229,7 +320,7 @@
             </table>
           </div>
 
-          <!-- Empty State -->
+          <!-- Empty State Level 1 -->
           <div id="empty-state" class="hidden p-12 text-center space-y-3">
             <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto text-2xl">
               <i class="fas fa-folder-check"></i>
@@ -240,14 +331,682 @@
 
         </div>
 
+        <!-- ========================================================================= -->
+        <!-- LEVEL 2: DETAIL APPROVAL (PER KLAIM, BARU) -->
+        <!-- ========================================================================= -->
+        <div id="level-2-container" class="hidden space-y-6">
+          
+          <!-- Level 2 Navigation & Action Topbar -->
+          <div class="flex items-center justify-between bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+            <button onclick="showLevel(1)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-slate-300 active:scale-95">
+              <i class="fas fa-arrow-left text-[10px]"></i> Kembali ke List Antrian (Level 1)
+            </button>
+
+            <div class="flex items-center gap-3">
+              <button onclick="previewSPGabunganDraft(activeNoAgenda)" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95" title="Preview Draft Dokumen SP Gabungan sebelum Approve">
+                <i class="fas fa-eye text-amber-600"></i> Preview SP Gabungan (Draft)
+              </button>
+              <button onclick="cetakLPKGabungan(activeNoAgenda)" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95" title="Cetak Dokumen LPK Gabungan (Semua Produk)">
+                <i class="fas fa-file-pdf text-indigo-600"></i> Cetak LPK Gabungan
+              </button>
+              <button onclick="cetakSP(activeNoAgenda)" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95" title="Cetak Surat Perintah (SP) jika sudah disetujui">
+                <i class="fas fa-print text-emerald-600"></i> Cetak SP
+              </button>
+            </div>
+          </div>
+
+          <!-- Info Header Card -->
+          <div class="bg-gradient-to-br from-asabri-blueDark via-asabri-blue to-blue-900 text-white rounded-3xl p-6 shadow-md relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 opacity-10 text-white text-9xl">
+              <i class="fas fa-stamp"></i>
+            </div>
+            
+            <div class="relative z-10 flex flex-wrap items-start justify-between gap-6">
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-semibold mb-3">
+                  <i class="fas fa-folder-open text-amber-300"></i> <span id="l2-header-noagenda">REG/000084/0123/IX/2025</span>
+                </div>
+                <h2 class="text-xl font-black tracking-tight flex items-center gap-3" id="l2-header-nama">
+                  ADM. WIRATA ATMAJA
+                </h2>
+                <p class="text-xs text-blue-100 mt-1 flex items-center gap-2" id="l2-header-sub">
+                  <span>Pensiun / TNI AD</span> • <span class="font-mono" id="l2-header-nik">31750012345678</span>
+                </p>
+              </div>
+
+              <!-- Header Badges Info Grid -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-white/10 border border-white/15 p-4 rounded-2xl backdrop-blur-md text-xs">
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">KTPA</span>
+                  <span class="font-mono font-extrabold text-white" id="l2-info-ktpa">ASB-2024-001234</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Nopens</span>
+                  <span class="font-mono font-extrabold text-white" id="l2-info-nopens">NOP-998822</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">NRP / NIP</span>
+                  <span class="font-mono font-extrabold text-white" id="l2-info-nrpnip">198904211101</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Jenis Kejadian</span>
+                  <span class="font-extrabold text-amber-300" id="l2-info-kejadian">Pensiun</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Tgl Kunjungan</span>
+                  <span class="font-semibold text-white" id="l2-info-tglkunjungan">14 Mei 2025</span>
+                </div>
+                <div>
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Pengunjung</span>
+                  <span class="font-semibold text-white" id="l2-info-pengunjung">Diri Sendiri (YBS)</span>
+                </div>
+                <div class="col-span-2">
+                  <span class="block text-[10px] uppercase font-bold text-blue-200">Kantor Cabang</span>
+                  <span class="font-semibold text-white" id="l2-info-cabang">KCU Jakarta</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Filter Section Level 2 -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                <i class="fas fa-filter text-asabri-blue"></i> Filter Daftar Request Approval Produk (Level 2)
+              </span>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="resetLevel2Filters()" class="text-xs font-bold text-slate-600 hover:text-slate-800 transition-colors flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 shadow-2xs active:scale-95">
+                  <i class="fas fa-undo text-[10px]"></i> Reset
+                </button>
+                <button type="button" onclick="applyLevel2Filters()" class="text-xs font-bold text-white transition-colors flex items-center gap-1.5 px-5 py-1.5 rounded-xl bg-asabri-blue hover:bg-asabri-blueDark shadow-sm active:scale-95">
+                  <i class="fas fa-search text-xs"></i> Cari
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Nama Peserta</label>
+                <input type="text" id="l2-filter-nama" oninput="applyLevel2Filters()" placeholder="Nama..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">KTPA</label>
+                <input type="text" id="l2-filter-ktpa" oninput="applyLevel2Filters()" placeholder="KTPA..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">NRP / NIP</label>
+                <input type="text" id="l2-filter-nrp" oninput="applyLevel2Filters()" placeholder="NRP/NIP..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">NOPENS</label>
+                <input type="text" id="l2-filter-nopens" oninput="applyLevel2Filters()" placeholder="Nopens..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium outline-none focus:border-asabri-blue">
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Kejadian</label>
+                <select id="l2-filter-kejadian" onchange="applyLevel2Filters()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700">
+                  <option value="">Semua Kejadian</option>
+                  <option value="Pensiun">Pensiun</option>
+                  <option value="JKK">JKK</option>
+                  <option value="JKm">JKm</option>
+                  <option value="THT">THT</option>
+                  <option value="Berhenti">Berhenti</option>
+                  <option value="Meninggal Dunia">Meninggal Dunia</option>
+                  <option value="Kecelakaan Kerja">Kecelakaan Kerja</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[10px] font-extrabold uppercase text-slate-500 mb-1">Produk</label>
+                <select id="l2-filter-produk" onchange="applyLevel2Filters()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700">
+                  <option value="">Semua Produk</option>
+                  <option value="TA">TA (Tabungan Asuransi)</option>
+                  <option value="PP">PP (Pensiun Pertama)</option>
+                  <option value="NTTA">NTTA (Nilai Tunai TA)</option>
+                  <option value="NTIP">NTIP (Nilai Tunai IP)</option>
+                  <option value="SRKK">SRKK</option>
+                  <option value="Santunan Kematian">Santunan Kematian</option>
+                  <option value="BPIS">BPIS</option>
+                  <option value="BPA">BPA</option>
+                  <option value="BPPP">BPPP</option>
+                  <option value="UDW">UDW</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabel — Daftar Request Approval Produk (Level 2) -->
+          <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <h3 class="text-base font-extrabold text-slate-800">Tabel — Daftar Request Approval Produk (Level 2)</h3>
+                <p class="text-xs text-slate-500 font-medium">Persetujuan dan penerbitan SP dilakukan untuk seluruh produk terverifikasi dalam klaim ini sekaligus.</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button id="btn-approve-semua-level2" onclick="approveSemuaProduk(activeNoAgenda)" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-5 py-2.5 rounded-2xl shadow-md transition-all flex items-center gap-2 active:scale-95">
+                  <i class="fas fa-check-double"></i> Approve Semua Produk
+                </button>
+                <span class="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5">
+                  <i class="fas fa-shield-halved text-emerald-600"></i> Hak Otoritas KAKANCAB
+                </span>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="bg-slate-100/80 text-slate-600 font-extrabold text-[11px] uppercase tracking-wider border-b border-slate-200">
+                    <th class="py-3.5 px-4">Tanggal Request</th>
+                    <th class="py-3.5 px-4">KTPA</th>
+                    <th class="py-3.5 px-4">NRP/NIP</th>
+                    <th class="py-3.5 px-4">Nopens</th>
+                    <th class="py-3.5 px-4">Nama</th>
+                    <th class="py-3.5 px-4">Kejadian</th>
+                    <th class="py-3.5 px-4">Produk</th>
+                    <th class="py-3.5 px-4 text-right">Bruto (Sebelum Hutang)</th>
+                    <th class="py-3.5 px-4 text-right">Pot Hutang</th>
+                    <th class="py-3.5 px-4 text-right">Netto</th>
+                    <th class="py-3.5 px-4">Nomor SP</th>
+                    <th class="py-3.5 px-4 text-center">Status</th>
+                    <th class="py-3.5 px-4 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="l2-products-table-body" class="divide-y divide-slate-100 font-medium">
+                  <!-- Dynamic Rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- LEVEL 3: RINCIAN PESERTA PER PRODUK (SAMA SEPERTI VERIFIKASI) -->
+        <!-- ========================================================================= -->
+        <div id="level-3-container" class="hidden space-y-6">
+          
+          <!-- Navigation Topbar Level 3 -->
+          <div class="flex items-center justify-between bg-white border border-slate-200 p-4 rounded-2xl shadow-sm">
+            <button onclick="showLevel(2)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 border border-slate-300 active:scale-95">
+              <i class="fas fa-arrow-left text-[10px]"></i> Kembali ke Detail Request (Level 2)
+            </button>
+
+            <div class="flex items-center gap-3">
+              <span class="text-xs font-bold text-slate-500">Produk Aktif: <b class="text-asabri-blue text-sm uppercase" id="l3-current-produk-title">TA (Tabungan Asuransi)</b></span>
+              <button onclick="previewSPDraft(activeNoAgenda, activeNamaProduk)" class="bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95" title="Preview Draft Surat Perintah untuk produk ini sebelum Approve">
+                <i class="fas fa-eye text-amber-600"></i> Preview SP (Draft)
+              </button>
+              <button onclick="cetakLPKSatuan(activeNoAgenda, activeNamaProduk)" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95" title="Cetak Lembar Perhitungan Klaim Satuan untuk produk ini">
+                <i class="fas fa-file-pdf text-indigo-600"></i> Cetak LPK Satuan
+              </button>
+              <button onclick="cetakSP(activeNoAgenda, activeNamaProduk)" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shadow-sm active:scale-95" title="Cetak Surat Perintah (SP) Produk">
+                <i class="fas fa-print text-emerald-600"></i> Cetak SP
+              </button>
+            </div>
+          </div>
+
+          <!-- BLOK 1: Rincian Peserta (Data Personal, Read-only) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-user-check text-asabri-blue"></i> Blok 1: Rincian Peserta (Data Personal)
+              </h4>
+              <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 text-xs">
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nama Lengkap Peserta</span>
+                <span class="font-extrabold text-slate-800 text-sm" id="l3-b1-nama">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">KTPA</span>
+                <span class="font-bold text-slate-700 font-mono" id="l3-b1-ktpa">ASB-2024-001234</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">NRP / NIP</span>
+                <span class="font-bold text-slate-700 font-mono" id="l3-b1-nrpnip">198904211101</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">NOPENS</span>
+                <span class="font-bold text-slate-700 font-mono" id="l3-b1-nopens">NOP-998822</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Pangkat / Golongan</span>
+                <span class="font-bold text-slate-700" id="l3-b1-pangkat">Mayor Inf / III/d</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Kesatuan / Instansi</span>
+                <span class="font-bold text-slate-700" id="l3-b1-kesatuan">Kodam Jaya (TNI AD)</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">NIK Peserta</span>
+                <span class="font-bold text-slate-700 font-mono" id="l3-b1-nik">31750012345678</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Gaji Pokok Terakhir</span>
+                <span class="font-extrabold text-emerald-600 font-mono" id="l3-b1-gaji">Rp 4.750.000</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Tanggal Lahir</span>
+                <span class="font-bold text-slate-700" id="l3-b1-tgllahir">12 Mei 1980</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Status Peserta</span>
+                <span class="font-bold text-blue-700" id="l3-b1-statuspensiun">Pensiunan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOK 2: Data Kejadian (Read-only) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-calendar-check text-asabri-blue"></i> Blok 2: Data Kejadian
+              </h4>
+              <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Jenis Kejadian</span>
+                <span class="font-extrabold text-slate-800" id="l3-b2-kejadian">Pensiun Pertama</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Tanggal Kejadian / TMT</span>
+                <span class="font-bold text-slate-700" id="l3-b2-tglkejadian">01 Mei 2025</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nomor SKEP</span>
+                <span class="font-bold text-slate-700 font-mono" id="l3-b2-skep">SKEP/092/V/2025</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Masa Kerja Golongan (MKG)</span>
+                <span class="font-bold text-slate-700" id="l3-b2-mkg">28 Tahun 02 Bulan</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nama Pengunjung</span>
+                <span class="font-bold text-slate-700" id="l3-b2-namapengunjung">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Objek Kejadian</span>
+                <span class="font-bold text-slate-700" id="l3-b2-objekkejadian">Peserta Sendiri</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Penerima Manfaat</span>
+                <span class="font-bold text-slate-700" id="l3-b2-namapenerima">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Catatan Kejadian</span>
+                <span class="font-bold text-slate-700" id="l3-b2-catatankejadian">-</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOK 3: Data Rekening Pembayaran (Read-only) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-credit-card text-asabri-blue"></i> Blok 3: Data Rekening Pembayaran
+              </h4>
+              <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Mitra Bayar / Bank</span>
+                <span class="font-extrabold text-slate-800" id="l3-b3-bank">Bank Mandiri Taspen (Mantap)</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Nomor Rekening</span>
+                <span class="font-mono font-bold text-slate-700" id="l3-b3-norek">124000876123</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Atas Nama Rekening</span>
+                <span class="font-bold text-slate-700" id="l3-b3-namarek">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Cabang Mitra Bayar</span>
+                <span class="font-bold text-slate-700" id="l3-b3-cabang">KCU Jakarta</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOK 4: Data Produk & Rincian Perhitungan Nominal (Read-only) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fas fa-calculator text-asabri-blue"></i> Blok 4: Data Produk &amp; Rincian Perhitungan Nominal
+              </h4>
+              <div class="flex items-center gap-2">
+                <button type="button" onclick="refreshPotHutang(currentParticipantNik)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-xl text-[11px] font-bold transition-all border border-slate-200 flex items-center gap-1.5 shadow-2xs active:scale-95" title="Sinkronisasi ulang potongan hutang dari modul Manajemen Piutang">
+                  <i class="fas fa-rotate text-asabri-blue"></i> Refresh Pot Hutang
+                </button>
+                <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Jenis Produk</span>
+                <span class="font-extrabold text-asabri-blue text-sm uppercase" id="l3-b4-jenisproduk">TA - Tabungan Asuransi</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Bruto (Sebelum Hutang)</span>
+                <span class="font-extrabold text-slate-800 font-mono text-sm" id="l3-b4-kotor">Rp 57.822.900</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Potongan Hutang</span>
+                <span class="font-extrabold text-rose-600 font-mono text-sm" id="l3-b4-potongan">Rp 0</span>
+              </div>
+              <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
+                <span class="block text-[10px] font-bold text-slate-400 uppercase">Netto (Yang Diterima)</span>
+                <span class="font-black text-emerald-600 font-mono text-base" id="l3-b4-bersih">Rp 57.822.900</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOK 5: Dokumen Persyaratan (Read-only Checklist) -->
+          <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h4 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                  <i class="fas fa-folder-open text-asabri-blue"></i> Blok 5: Dokumen Persyaratan
+                </h4>
+                <p class="text-xs text-slate-500 font-medium">Seluruh berkas persyaratan klaim (mandatory & non-mandatory) dari Tab 3.</p>
+              </div>
+              <span class="text-[10px] uppercase font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Read-Only / Verifikasi</span>
+            </div>
+
+            <!-- Table of Documents -->
+            <div class="overflow-x-auto rounded-2xl border border-slate-200 shadow-xs">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-50 text-slate-600 uppercase font-bold text-[10px] border-b border-slate-200">
+                  <tr>
+                    <th class="py-3 px-4 w-12 text-center">No.</th>
+                    <th class="py-3 px-4">Nama Dokumen</th>
+                    <th class="py-3 px-4">Nomor Dokumen</th>
+                    <th class="py-3 px-4">Tanggal Dokumen</th>
+                    <th class="py-3 px-4 text-center">Status Upload</th>
+                    <th class="py-3 px-4 text-center w-36">Pratinjau</th>
+                  </tr>
+                </thead>
+                <tbody id="l3-b5-dokumen-tbody" class="divide-y divide-slate-100 font-medium">
+                  <!-- Rendered dynamically by renderBlok5Dokumen() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TOMBOL LIHAT DATA PESERTA -->
+          <div class="flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-blue-50/80 to-indigo-50/80 border border-blue-100 p-4 rounded-2xl shadow-sm">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-base">
+                <i class="fas fa-id-card"></i>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-slate-800 block">Profil Lengkap & Master Data Peserta</span>
+                <span class="text-[11px] text-slate-500">Buka Master Data Peserta untuk melihat riwayat mutasi, anggota keluarga, dan rincian data historis.</span>
+              </div>
+            </div>
+            <button id="btn-lihat-data-peserta" onclick="lihatDataPeserta()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-2 border border-indigo-500 hover:shadow-indigo-500/20 active:scale-95">
+              <i class="fas fa-user-circle text-sm"></i> Lihat Data Peserta
+            </button>
+          </div>
+
+          <!-- ========================================================================= -->
+          <!-- LEVEL 4: PANEL AKSI KAKANCAB (BAGIAN BAWAH LEVEL 3) -->
+          <!-- ========================================================================= -->
+          <div class="bg-slate-900 text-white border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div>
+                <span class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                  <i class="fas fa-gavel"></i> LEVEL 4 — PANEL AKSI KAKANCAB
+                </span>
+                <h4 class="text-base font-extrabold text-white mt-1">Keputusan Approval Produk: <span class="text-amber-300 uppercase" id="l4-produk-target-title">TA</span></h4>
+              </div>
+
+              <!-- Real-time Status Badge -->
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-slate-400">Status Saat Ini:</span>
+                <span id="l4-current-status-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  Menunggu Approval
+                </span>
+              </div>
+            </div>
+
+            <!-- Approved SP Info Banner -->
+            <div id="l4-sp-terbit-box" class="hidden bg-emerald-950/60 border border-emerald-700/80 p-4 rounded-2xl text-xs space-y-1">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+                  <i class="fas fa-check-circle"></i> Surat Persetujuan (SP) Resmi Telah Diterbitkan:
+                </span>
+                <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold border border-emerald-500/30">
+                  APPROVED
+                </span>
+              </div>
+              <p class="text-white font-mono font-extrabold text-sm" id="l4-nomor-sp-text">SP/TA/KCU-JKT/09/2026/0042</p>
+            </div>
+
+            <!-- Cancellation Note Box if Cancelled / Pending Reject -->
+            <div id="l4-cancel-note-box" class="hidden bg-rose-950/60 border border-rose-800 p-4 rounded-2xl text-xs space-y-1">
+              <span class="font-bold text-rose-400 flex items-center gap-1.5">
+                <i class="fas fa-ban"></i> Catatan Alasan Pembatalan:
+              </span>
+              <p class="text-slate-200 italic font-medium" id="l4-cancel-note-text">-</p>
+            </div>
+
+            <!-- Action Buttons Row -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+              <button onclick="showLevel(2)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all border border-slate-700 flex items-center gap-2 active:scale-95">
+                <i class="fas fa-arrow-left"></i> Kembali ke List Produk (Level 2)
+              </button>
+
+              <div id="l4-action-buttons-group" class="flex items-center gap-3">
+                <!-- Dynamically populated via renderLevel3Rincian -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL DIALOGS -->
+  <!-- ========================================================================= -->
+
+  <!-- Modal Pop Up Alasan Pembatalan KAKANCAB (Langkah 1 - Input Alasan) -->
+  <div id="modal-cancel-kakancab" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-fade-in">
+      <div class="flex items-center gap-3 text-rose-600 border-b border-slate-100 pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center text-lg">
+          <i class="fas fa-ban"></i>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-slate-800 text-sm">Pembatalan Surat Perintah (Langkah 1)</h3>
+          <p class="text-[11px] text-slate-500">Masukkan alasan pembatalan produk yang sudah diterbitkan SP.</p>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700">Alasan Pembatalan <span class="text-rose-500 font-extrabold">* (Wajib Diisi)</span>:</label>
+        <textarea id="modal-cancel-alasan" rows="4" placeholder="Tuliskan alasan pembatalan secara jelas dan rinci..." class="w-full bg-slate-50 border border-slate-300 rounded-2xl p-3 text-xs outline-none focus:border-rose-500 font-medium"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button type="button" onclick="closeModal('modal-cancel-kakancab')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-700">Batal</button>
+        <button type="button" onclick="submitCancelKakancab()" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm active:scale-95 flex items-center gap-1.5">
+          <i class="fas fa-arrow-right"></i> Simpan Alasan &amp; Lanjut
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Konfirmasi Reject KAKANCAB (Langkah 2 - Double Check & Finalisasi) -->
+  <div id="modal-reject-konfirmasi" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-fade-in">
+      <div class="flex items-center gap-3 text-rose-700 border-b border-slate-100 pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center text-lg text-rose-600">
+          <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-slate-800 text-sm">Konfirmasi Akhir Pembatalan (Reject)</h3>
+          <p class="text-[11px] text-slate-500">Langkah 2: Konfirmasi permanen pembatalan Surat Perintah (SP).</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs space-y-2">
+        <div class="flex justify-between">
+          <span class="text-slate-500 font-semibold">Produk:</span>
+          <strong id="modal-reject-nama-produk" class="text-slate-800 font-extrabold uppercase">TA</strong>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500 font-semibold">Nomor SP:</span>
+          <strong id="modal-reject-nomor-sp" class="font-mono text-slate-700 font-bold">SP/TA/KCU-JKT/09/2026/0042</strong>
+        </div>
+        <div class="border-t border-slate-200/80 pt-2 mt-2">
+          <span class="text-slate-500 font-semibold block mb-1">Alasan Pembatalan:</span>
+          <p id="modal-reject-alasan" class="text-rose-700 font-medium italic bg-rose-50 p-2.5 rounded-xl border border-rose-100 text-[11px]">-</p>
+        </div>
+      </div>
+
+      <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 font-medium leading-relaxed">
+        <i class="fas fa-info-circle text-amber-600 mr-1"></i> Setelah dikonfirmasi, produk ini akan berstatus <strong>Dibatalkan</strong> (Final) dan tercatat di riwayat Pembatalan SP.
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button type="button" onclick="closeModal('modal-reject-konfirmasi')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-700">Batal</button>
+        <button type="button" onclick="submitRejectKakancab()" class="bg-rose-700 hover:bg-rose-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md active:scale-95 flex items-center gap-1.5">
+          <i class="fas fa-ban"></i> Ya, Konfirmasi Reject
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Preview Dokumen Persyaratan -->
+  <div id="modal-preview-dokumen-persyaratan" class="hidden fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-5 animate-fade-in max-h-[90vh] flex flex-col">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-asabri-blue flex items-center justify-center text-lg border border-blue-100">
+            <i class="fas fa-file-invoice text-asabri-blue" id="mdl-doc-icon"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-slate-800 text-sm flex items-center gap-2">
+              <span id="mdl-doc-title">Preview Dokumen Persyaratan</span>
+            </h3>
+            <p class="text-[11px] text-slate-500 font-medium" id="mdl-doc-subtitle">Berkas resmi terverifikasi dari pengajuan klaim.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-preview-dokumen-persyaratan')" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition-colors">
+          <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body / Document Preview Container -->
+      <div class="flex-1 overflow-y-auto space-y-4 pr-1">
+        <!-- Metadata Info Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Nomor Dokumen</span>
+            <span class="text-xs font-bold text-slate-800 font-mono" id="mdl-doc-nomor">SKEP/092/V/2025</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Tanggal Dokumen</span>
+            <span class="text-xs font-bold text-slate-800" id="mdl-doc-tanggal">14 Mei 2025</span>
+          </div>
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Status Berkas</span>
+            <span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-600" id="mdl-doc-status">
+              <i class="fas fa-check-circle text-emerald-500"></i> Sudah Diupload
+            </span>
+          </div>
+        </div>
+
+        <!-- Simulated Document Paper / Visual Preview -->
+        <div id="mdl-doc-content-container" class="relative rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-6 shadow-inner text-slate-800 space-y-4">
+          <!-- Watermark / Stamp -->
+          <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
+            <i class="fas fa-shield-alt text-9xl text-slate-900"></i>
+          </div>
+
+          <!-- Document Header Preview -->
+          <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-asabri-blue text-white flex items-center justify-center text-xs font-bold">A</div>
+              <div>
+                <span class="text-[11px] font-black tracking-wide uppercase text-slate-800 block">PT ASABRI (PERSERO)</span>
+                <span class="text-[9px] text-slate-400 font-semibold">ARSIP ELEKTRONIK DOKUMEN KLAIM</span>
+              </div>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px] border border-emerald-200">
+              E-DOCUMENT VERIFIED
+            </span>
+          </div>
+
+          <!-- Document Inner Content Body -->
+          <div id="mdl-doc-visual-box" class="space-y-3">
+            <div class="text-center py-2">
+              <h4 class="text-xs font-black uppercase text-slate-800 tracking-wider" id="mdl-doc-paper-heading">SURAT KEPUTUSAN PENSIUN</h4>
+              <span class="text-[10px] font-mono text-slate-500 block" id="mdl-doc-paper-subheading">Nomor: SKEP/092/V/2025</span>
+            </div>
+
+            <div class="bg-white/90 border border-slate-200/80 rounded-xl p-4 text-xs space-y-2 font-mono">
+              <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                <span class="text-slate-400 text-[11px]">Nama Dokumen:</span>
+                <span class="font-bold text-slate-800 text-right" id="mdl-doc-detail-name">Asli Salinan Keputusan Pensiun</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                <span class="text-slate-400 text-[11px]">Nama Peserta:</span>
+                <span class="font-bold text-slate-800 text-right" id="mdl-doc-detail-peserta">ADM. WIRATA ATMAJA</span>
+              </div>
+              <div class="flex justify-between border-b border-slate-100 pb-1.5">
+                <span class="text-slate-400 text-[11px]">No. KTPA / NIK:</span>
+                <span class="font-bold text-slate-800 text-right" id="mdl-doc-detail-id">ASB-2024-001234 / 31750012345678</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400 text-[11px]">Waktu Validasi:</span>
+                <span class="font-bold text-slate-700 text-right" id="mdl-doc-detail-waktu">14 Mei 2025 • 09:30 WIB</span>
+              </div>
+            </div>
+
+            <!-- Authentic Seal & Signature Section -->
+            <div class="flex items-center justify-between pt-2">
+              <div class="flex items-center gap-2 text-[10px] text-slate-500">
+                <i class="fas fa-qrcode text-2xl text-slate-700"></i>
+                <div>
+                  <span class="font-bold block text-slate-700">DIGITAL SIGNATURE ID</span>
+                  <span class="font-mono text-[9px] text-slate-400">SHA256: 8f9b2c4e1d09aa17...</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-[9px] text-slate-400 block">Status Verifikasi</span>
+                <span class="text-[10px] font-bold text-emerald-600 flex items-center gap-1 justify-end">
+                  <i class="fas fa-check-double text-xs"></i> Sah & Terlampir
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+        <span class="text-[11px] text-slate-400 italic">Pratinjau dokumen untuk verifikasi keabsahan data klaim.</span>
+        <button onclick="closeModal('modal-preview-dokumen-persyaratan')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2 rounded-xl text-xs font-bold transition-colors shadow-2xs">
+          Tutup
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Scripts -->
   <script src="data.js"></script>
   <script src="shared.js"></script>
   <script>
+    // State Filter Level 1
     let FILTER_LIST_APPROVAL = {
       ktpa: '',
       nrpNip: '',
@@ -262,6 +1021,22 @@
       tanggalSelesaiApprove: '',
     };
 
+    // State Filter Level 2
+    let FILTER_LEVEL2_APPROVAL = {
+      namaPeserta: '',
+      ktpa: '',
+      nrp: '',
+      nopens: '',
+      kejadian: '',
+      produk: ''
+    };
+
+    let activeNoAgenda = null;
+    let activeNamaProduk = null;
+    let currentParticipantNik = '';
+    let currentBlok5Docs = [];
+    let liveTimerInterval = null;
+
     document.addEventListener("DOMContentLoaded", () => {
       // Toggle sidebar functionality
       document.getElementById("sidebar-toggle")?.addEventListener("click", () => {
@@ -272,40 +1047,310 @@
         }
       });
 
-      renderTable();
+      // Ensure storage structures initialized
+      initApprovalStatuses();
+
+      // Multi-tab sync
+      window.addEventListener("storage", () => {
+        initApprovalStatuses();
+        const activeLevel1 = !document.getElementById("level-1-container").classList.contains("hidden");
+        if (activeLevel1) {
+          renderTable();
+        }
+      });
+
+      // Check URL parameters for direct navigation
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetAgenda = urlParams.get('noAgenda');
+      const targetProduk = urlParams.get('produk');
+      
+      if (targetAgenda && targetProduk) {
+        openLevel3Rincian(targetAgenda, targetProduk);
+      } else if (targetAgenda) {
+        openLevel2Detail(targetAgenda);
+      } else {
+        showLevel(1);
+      }
+
+      startLiveTimers();
     });
 
+    // =========================================================================
+    // STORAGE & DATA ACCESS HELPERS
+    // =========================================================================
+    function getApprovalProductStatuses() {
+      return JSON.parse(localStorage.getItem("asabri_product_verifications") || "{}");
+    }
+
+    function saveApprovalProductStatuses(data) {
+      localStorage.setItem("asabri_product_verifications", JSON.stringify(data));
+    }
+
+    function initApprovalStatuses() {
+      const claims = getClaims();
+      const verifData = getApprovalProductStatuses();
+      let updated = false;
+
+      claims.forEach(c => {
+        const noAgenda = c.noRegistrasi || c.noAgenda || c.noReg;
+        const currentStored = verifData[noAgenda];
+        const hasValidStored = Array.isArray(currentStored) && currentStored.length > 0;
+        const claimHasProds = Array.isArray(c.products) && c.products.length > 0;
+
+        if (noAgenda && (!hasValidStored || (claimHasProds && currentStored.length !== c.products.length))) {
+          const prods = getProductListForClaim(c);
+          verifData[noAgenda] = prods.map(p => {
+            const existing = (currentStored || []).find(e => e.nama === p.nama);
+            return {
+              nama: p.nama,
+              status: existing?.status || 'Menunggu Approval',
+              catatanPenolakan: existing?.catatanPenolakan || '',
+              alasanCancel: existing?.alasanCancel || '',
+              nomorSP: existing?.nomorSP || '',
+              tanggalRequest: c.tanggalRegistrasi || c.tanggal || '14 Mei 2025',
+              nominalKotor: p.nominalKotor || 57822900,
+              potongan: p.potongan || 0,
+              nominalBersih: p.nominalBersih !== undefined ? p.nominalBersih : (p.nominalKotor || 57822900) - (p.potongan || 0)
+            };
+          });
+          updated = true;
+        }
+      });
+
+      if (updated) saveApprovalProductStatuses(verifData);
+    }
+
+    function getProductListForClaim(c) {
+      let claimObj = c;
+      if (typeof c === 'string') {
+        const claims = getClaims();
+        claimObj = claims.find(x => x.noRegistrasi === c || x.noAgenda === c || x.noReg === c);
+        if (!claimObj) {
+          try {
+            const reg = JSON.parse(localStorage.getItem("registrasiKlaim") || "{}");
+            if (reg.noAgenda === c || reg.noRegistrasi === c || reg.noReg === c) {
+              claimObj = reg;
+            }
+          } catch(e) {}
+        }
+      }
+      if (!claimObj) {
+        try {
+          claimObj = JSON.parse(localStorage.getItem("registrasiKlaim") || "{}");
+        } catch(e) {}
+      }
+      claimObj = claimObj || {};
+
+      // 1. Check if claim has products / productsDetail array attached
+      const prods = (Array.isArray(claimObj.products) && claimObj.products.length > 0)
+        ? claimObj.products
+        : ((Array.isArray(claimObj.productsDetail) && claimObj.productsDetail.length > 0) ? claimObj.productsDetail : null);
+
+      if (prods && prods.length > 0) {
+        return prods.map(p => ({
+          nama: p.nama || p.type || 'TA',
+          nominalKotor: p.nominalKotor || p.besar || 57822900,
+          potongan: p.potongan || 0,
+          nominalBersih: p.nominalBersih !== undefined ? p.nominalBersih : (p.nominalKotor || p.besar || 57822900) - (p.potongan || 0)
+        }));
+      }
+
+      // 2. Parse from manfaatKlaim / klaimDidapatkan string if plus separated (e.g., "TA + PP")
+      const str = claimObj.manfaatKlaim || claimObj.klaimDidapatkan || claimObj.jenisKejadian || "Pensiun";
+      
+      let rawNames = [];
+      if (str.includes('(') && str.includes(')')) {
+        const inside = str.substring(str.indexOf('(') + 1, str.indexOf(')'));
+        rawNames = inside.split('+').map(s => s.trim()).filter(Boolean);
+      } else {
+        rawNames = str.split('+').map(s => s.trim()).filter(Boolean);
+      }
+
+      const mapDefaultNominal = {
+        'TA': 57822900,
+        'PP': 4250000,
+        'NTTA': 15000000,
+        'SRKK': 25000000,
+        'NTIP': 12000000,
+        'Santunan Kematian': 42000000,
+        'Pensiun': 57822900
+      };
+
+      const mapKejadian = {
+        'Pensiun': [{ nama: 'TA', nominalKotor: 57822900, potongan: 0, nominalBersih: 57822900 }, { nama: 'PP', nominalKotor: 4250000, potongan: 0, nominalBersih: 4250000 }],
+        'Pensiun Pertama': [{ nama: 'TA', nominalKotor: 57822900, potongan: 0, nominalBersih: 57822900 }, { nama: 'PP', nominalKotor: 4250000, potongan: 0, nominalBersih: 4250000 }],
+        'THT': [{ nama: 'TA', nominalKotor: 57822900, potongan: 0, nominalBersih: 57822900 }, { nama: 'NTTA', nominalKotor: 15000000, potongan: 0, nominalBersih: 15000000 }],
+        'JKK': [{ nama: 'SRKK', nominalKotor: 25000000, potongan: 0, nominalBersih: 25000000 }],
+        'JKm': [{ nama: 'Santunan Kematian', nominalKotor: 42000000, potongan: 0, nominalBersih: 42000000 }]
+      };
+
+      if (rawNames.length > 1) {
+        return rawNames.map(name => {
+          const kotor = mapDefaultNominal[name] || 30000000;
+          return {
+            nama: name,
+            nominalKotor: kotor,
+            potongan: 0,
+            nominalBersih: kotor
+          };
+        });
+      }
+
+      const mainType = rawNames[0] || 'Pensiun';
+      return mapKejadian[mainType] || [{ nama: mainType, nominalKotor: mapDefaultNominal[mainType] || 57822900, potongan: 0, nominalBersih: mapDefaultNominal[mainType] || 57822900 }];
+    }
+
+    // View Navigation Controller
+    function showLevel(levelNum) {
+      const l1 = document.getElementById("level-1-container");
+      const l2 = document.getElementById("level-2-container");
+      const l3 = document.getElementById("level-3-container");
+      
+      const bc2 = document.getElementById("breadcrumb-level2");
+      const bc3 = document.getElementById("breadcrumb-level3");
+
+      l1.classList.add("hidden");
+      l2.classList.add("hidden");
+      l3.classList.add("hidden");
+
+      bc2.classList.add("hidden");
+      bc3.classList.add("hidden");
+
+      if (levelNum === 1) {
+        l1.classList.remove("hidden");
+        renderTable();
+      } else if (levelNum === 2) {
+        l2.classList.remove("hidden");
+        bc2.classList.remove("hidden");
+        renderLevel2Detail();
+      } else if (levelNum === 3 || levelNum === 4) {
+        l3.classList.remove("hidden");
+        bc2.classList.remove("hidden");
+        bc3.classList.remove("hidden");
+        renderLevel3Rincian();
+      }
+    }
+
+    // =========================================================================
+    // LEVEL 1 FUNCTIONS
+    // =========================================================================
     function getApprovalClaims() {
       const claims = getClaims();
-      // Filter claims for Approval Queue and Completed History for document re-printing
+      const verifData = getApprovalProductStatuses();
+
       return claims.filter(c => {
+        const noAgenda = c.noRegistrasi || c.noAgenda || c.noReg;
+        const prods = verifData[noAgenda] || [];
+
+        // Has at least one product that is verified and ready for approval or already approved/cancelled
+        const hasVerifiedProduct = prods.some(p => 
+          p.status === 'Terverifikasi' || 
+          p.status === 'Menunggu Approval' || 
+          p.status === 'SP Terbit' || 
+          p.status === 'Selesai' || 
+          p.status === 'Disetujui' ||
+          p.status === 'Dibatalkan'
+        );
+
         const status = (c.status || '').toLowerCase();
-        return status.includes('approval') || status.includes('menunggu approval') || status === 'selesai' || status === 'sp terbit' || status === 'proses pembayaran';
+        const isClaimInApprovalState = 
+          status.includes('approval') || 
+          status.includes('menunggu approval') || 
+          status === 'selesai' || 
+          status === 'sp terbit' || 
+          status === 'proses pembayaran' || 
+          status === 'terverifikasi';
+
+        if (prods.length > 0) {
+          return hasVerifiedProduct;
+        }
+        return isClaimInApprovalState;
       });
     }
 
     function calculateTotalProduk(claim) {
-      if (claim.manfaatKlaim) {
-        return claim.manfaatKlaim.split('+').length;
+      const noAgenda = claim.noRegistrasi || claim.noAgenda || claim.noReg;
+      const verifData = getApprovalProductStatuses();
+      if (verifData[noAgenda]) {
+        const validProds = verifData[noAgenda].filter(p => p.status !== 'Ditolak' && p.status !== 'Menunggu Verifikasi');
+        return validProds.length;
       }
-      if (claim.klaimDidapatkan) {
-        return claim.klaimDidapatkan.split('+').length;
+      return getProductListForClaim(claim).length;
+    }
+
+    function formatWaktuLengkap(timestamp) {
+      if (!timestamp) return "-";
+      const date = new Date(timestamp);
+      if (isNaN(date.getTime())) return timestamp;
+      const tanggal = date.toLocaleDateString('id-ID', {
+        day: '2-digit', month: 'short', year: 'numeric'
+      });
+      const jam = date.toLocaleTimeString('id-ID', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+        hour12: false
+      });
+      return `${tanggal} - ${jam}`; // contoh: '16 Sep 2026 - 10:16:35'
+    }
+
+    function formatWaktuBerjalan(mulaiTimestamp, sekarangTimestamp) {
+      const diffMs = Math.max(0, (sekarangTimestamp || Date.now()) - mulaiTimestamp);
+      const jam = String(Math.floor(diffMs / 3600000)).padStart(2, '0');
+      const menit = String(Math.floor((diffMs % 3600000) / 60000)).padStart(2, '0');
+      const detik = String(Math.floor((diffMs % 60000) / 1000)).padStart(2, '0');
+      return `${jam}:${menit}:${detik}`; // contoh: '00:47:34'
+    }
+
+    function getClaimTimestamp(claim, type, idx) {
+      if (type === 'kunjungan') {
+        if (claim.waktuKunjunganTimestamp) return new Date(claim.waktuKunjunganTimestamp);
+        if (claim.createdTime && !isNaN(new Date(claim.createdTime).getTime())) return new Date(claim.createdTime);
+        if (claim.timestamp && !isNaN(new Date(claim.timestamp).getTime())) return new Date(claim.timestamp);
+        const base = new Date();
+        base.setTime(Date.now() - (idx * 2400000 + 47 * 60000 + 34000));
+        return base;
       }
-      return 1;
+      if (type === 'approval') {
+        const isApproved = (claim.status === 'Selesai' || claim.status === 'SP Terbit' || claim.status === 'Proses Pembayaran');
+        if (!isApproved) return null;
+        if (claim.waktuApprovalTimestamp) return new Date(claim.waktuApprovalTimestamp);
+        if (claim.tanggalApproval && !isNaN(new Date(claim.tanggalApproval).getTime())) return new Date(claim.tanggalApproval);
+        const kunjungan = getClaimTimestamp(claim, 'kunjungan', idx);
+        return new Date(kunjungan.getTime() + 45 * 60000 + 12000);
+      }
+      return null;
+    }
+
+    function startLiveTimers() {
+      if (liveTimerInterval) clearInterval(liveTimerInterval);
+      liveTimerInterval = setInterval(() => {
+        const now = Date.now();
+        document.querySelectorAll(".waktu-berjalan-badge").forEach(badge => {
+          const isApproved = badge.getAttribute("data-approved") === "true";
+          if (!isApproved) {
+            const startTs = parseInt(badge.getAttribute("data-start-ts"), 10);
+            if (startTs && !isNaN(startTs)) {
+              const textEl = badge.querySelector(".timer-text");
+              if (textEl) {
+                textEl.textContent = formatWaktuBerjalan(startTs, now);
+              }
+            }
+          }
+        });
+      }, 1000);
     }
 
     function applyFilters() {
-      FILTER_LIST_APPROVAL.ktpa = document.getElementById("filter-ktpa").value.trim().toLowerCase();
-      FILTER_LIST_APPROVAL.nrpNip = document.getElementById("filter-nrpnip").value.trim().toLowerCase();
-      FILTER_LIST_APPROVAL.nopensPeserta = document.getElementById("filter-nopens").value.trim().toLowerCase();
-      FILTER_LIST_APPROVAL.nama = document.getElementById("filter-nama").value.trim().toLowerCase();
-      FILTER_LIST_APPROVAL.noKunjungan = document.getElementById("filter-nokunjungan").value.trim().toLowerCase();
-      FILTER_LIST_APPROVAL.kantorCabang = document.getElementById("filter-kantorcabang").value.trim().toLowerCase();
-      FILTER_LIST_APPROVAL.tanggalMulaiPengajuan = document.getElementById("filter-tgl-mulai-pengajuan").value;
-      FILTER_LIST_APPROVAL.tanggalSelesaiPengajuan = document.getElementById("filter-tgl-selesai-pengajuan").value;
-      FILTER_LIST_APPROVAL.manfaat = document.getElementById("filter-manfaat").value.trim().toLowerCase();
-      FILTER_LIST_APPROVAL.tanggalMulaiApprove = document.getElementById("filter-tgl-mulai-approve").value;
-      FILTER_LIST_APPROVAL.tanggalSelesaiApprove = document.getElementById("filter-tgl-selesai-approve").value;
+      FILTER_LIST_APPROVAL.ktpa = (document.getElementById("filter-ktpa")?.value || "").trim().toLowerCase();
+      FILTER_LIST_APPROVAL.nrpNip = (document.getElementById("filter-nrpnip")?.value || "").trim().toLowerCase();
+      FILTER_LIST_APPROVAL.nopensPeserta = (document.getElementById("filter-nopens")?.value || "").trim().toLowerCase();
+      FILTER_LIST_APPROVAL.nama = (document.getElementById("filter-nama")?.value || "").trim().toLowerCase();
+      FILTER_LIST_APPROVAL.noKunjungan = (document.getElementById("filter-nokunjungan")?.value || "").trim().toLowerCase();
+      FILTER_LIST_APPROVAL.kantorCabang = (document.getElementById("filter-kantorcabang")?.value || "").trim().toLowerCase();
+      FILTER_LIST_APPROVAL.tanggalMulaiPengajuan = document.getElementById("filter-tgl-mulai-pengajuan")?.value || "";
+      FILTER_LIST_APPROVAL.tanggalSelesaiPengajuan = document.getElementById("filter-tgl-selesai-pengajuan")?.value || "";
+      FILTER_LIST_APPROVAL.manfaat = (document.getElementById("filter-manfaat")?.value || "").trim().toLowerCase();
+      FILTER_LIST_APPROVAL.tanggalMulaiApprove = document.getElementById("filter-tgl-mulai-approve")?.value || "";
+      FILTER_LIST_APPROVAL.tanggalSelesaiApprove = document.getElementById("filter-tgl-selesai-approve")?.value || "";
 
       renderTable();
     }
@@ -326,6 +1371,10 @@
       applyFilters();
     }
 
+    function cetakListApproval() {
+      window.print();
+    }
+
     function renderTable() {
       const tbody = document.getElementById("approval-table-body");
       const emptyState = document.getElementById("empty-state");
@@ -334,15 +1383,18 @@
       let claims = getApprovalClaims();
 
       // Apply Filters
-      claims = claims.filter(c => {
+      claims = claims.filter((c, idx) => {
         const participant = c.participant || {};
         const ktpa = (participant.ktpa || c.ktpa || '').toLowerCase();
         const nrpNip = (participant.nrp_nip || participant.nip || c.nik || '').toLowerCase();
         const nopens = (participant.nopens || c.nopens || '').toLowerCase();
         const nama = (participant.nama || c.namaPeserta || '').toLowerCase();
         const noKunjungan = (c.noRegistrasi || c.noAgenda || '').toLowerCase();
-        const kantorCabang = (c.kantorCabang || '').toLowerCase();
-        const manfaat = (c.manfaatKlaim || c.klaimDidapatkan || '').toLowerCase();
+        const kantorCabang = (c.kantorCabang || 'KCU Jakarta').toLowerCase();
+        const manfaat = (c.manfaatKlaim || c.klaimDidapatkan || c.jenisKejadian || '').toLowerCase();
+
+        const kunjunganTs = getClaimTimestamp(c, 'kunjungan', idx);
+        const approvalTs = getClaimTimestamp(c, 'approval', idx);
 
         if (FILTER_LIST_APPROVAL.ktpa && !ktpa.includes(FILTER_LIST_APPROVAL.ktpa)) return false;
         if (FILTER_LIST_APPROVAL.nrpNip && !nrpNip.includes(FILTER_LIST_APPROVAL.nrpNip)) return false;
@@ -351,6 +1403,29 @@
         if (FILTER_LIST_APPROVAL.noKunjungan && !noKunjungan.includes(FILTER_LIST_APPROVAL.noKunjungan)) return false;
         if (FILTER_LIST_APPROVAL.kantorCabang && !kantorCabang.includes(FILTER_LIST_APPROVAL.kantorCabang)) return false;
         if (FILTER_LIST_APPROVAL.manfaat && !manfaat.includes(FILTER_LIST_APPROVAL.manfaat)) return false;
+
+        if (FILTER_LIST_APPROVAL.tanggalMulaiPengajuan) {
+          const tglMulai = new Date(FILTER_LIST_APPROVAL.tanggalMulaiPengajuan);
+          tglMulai.setHours(0, 0, 0, 0);
+          if (kunjunganTs < tglMulai) return false;
+        }
+        if (FILTER_LIST_APPROVAL.tanggalSelesaiPengajuan) {
+          const tglSelesai = new Date(FILTER_LIST_APPROVAL.tanggalSelesaiPengajuan);
+          tglSelesai.setHours(23, 59, 59, 999);
+          if (kunjunganTs > tglSelesai) return false;
+        }
+        if (FILTER_LIST_APPROVAL.tanggalMulaiApprove) {
+          if (!approvalTs) return false;
+          const tglMulaiApp = new Date(FILTER_LIST_APPROVAL.tanggalMulaiApprove);
+          tglMulaiApp.setHours(0, 0, 0, 0);
+          if (approvalTs < tglMulaiApp) return false;
+        }
+        if (FILTER_LIST_APPROVAL.tanggalSelesaiApprove) {
+          if (!approvalTs) return false;
+          const tglSelesaiApp = new Date(FILTER_LIST_APPROVAL.tanggalSelesaiApprove);
+          tglSelesaiApp.setHours(23, 59, 59, 999);
+          if (approvalTs > tglSelesaiApp) return false;
+        }
 
         return true;
       });
@@ -365,20 +1440,27 @@
 
       emptyState.classList.add("hidden");
 
-      tbody.innerHTML = claims.map(c => {
+      tbody.innerHTML = claims.map((c, idx) => {
         const p = c.participant || {};
         const totalProduk = calculateTotalProduk(c);
-        const tglKunjungan = c.tanggalRegistrasi || c.tanggal || "11 Mei 2025";
         const noAgenda = c.noRegistrasi || c.noAgenda || "REG/000084/0123/IX/2025";
-        const userVerifikator = "Bambang Verifikator";
+        const userVerifikator = c.userVerifikator || "Bambang Verifikator";
         const isApproved = (c.status === 'Selesai' || c.status === 'SP Terbit' || c.status === 'Proses Pembayaran');
-        const waktuApproval = isApproved ? (c.tanggalApproval || "14 Mei 2025 15:30") : "-";
+
+        const kunjunganTs = getClaimTimestamp(c, 'kunjungan', idx);
+        const approvalTs = getClaimTimestamp(c, 'approval', idx);
+
+        const waktuKunjunganFormatted = formatWaktuLengkap(kunjunganTs);
+        const waktuApprovalFormatted = isApproved ? formatWaktuLengkap(approvalTs) : "-";
+        const waktuBerjalanFormatted = isApproved
+          ? formatWaktuBerjalan(kunjunganTs.getTime(), approvalTs.getTime())
+          : formatWaktuBerjalan(kunjunganTs.getTime(), Date.now());
 
         return `
           <tr class="hover:bg-blue-50/30 transition-colors">
             <td class="py-3 px-4 font-mono font-bold text-asabri-blue whitespace-nowrap text-[11px]">${noAgenda}</td>
             <td class="py-3 px-4 font-bold text-slate-800">${c.jenisKejadian || c.jenisKlaim || 'Pensiun'}</td>
-            <td class="py-3 px-4 text-slate-600">${c.kantorCabang || 'KC Utama Jakarta'}</td>
+            <td class="py-3 px-4 text-slate-600">${c.kantorCabang || 'KCU Jakarta'}</td>
             <td class="py-3 px-4 text-slate-600">${userVerifikator}</td>
             <td class="py-3 px-4 font-bold text-slate-800">${p.nama || c.namaPeserta || '-'}</td>
             <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.ktpa || 'ASB-2024-001234'}</td>
@@ -387,24 +1469,27 @@
             <td class="py-3 px-4 text-slate-600">${p.matra_angkatan || 'TNI AD'}</td>
             <td class="py-3 px-4 font-mono text-slate-700 text-[11px]">${p.nik || c.nik || '-'}</td>
             <td class="py-3 px-4 text-center">
-              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-asabri-blue/10 text-asabri-blue font-bold text-xs">${totalProduk}</span>
+              <button onclick="openLevel2Detail('${noAgenda}')" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-100 text-asabri-blue hover:bg-asabri-blue hover:text-white font-bold text-xs transition-all shadow-sm">
+                <span>${totalProduk} Produk</span> <i class="fas fa-chevron-right text-[9px]"></i>
+              </button>
             </td>
-            <td class="py-3 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${tglKunjungan}</td>
-            <td class="py-3 px-4 text-slate-600 whitespace-nowrap font-mono text-[11px]">${waktuApproval}</td>
-            <td class="py-3 px-4 text-center">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full ${isApproved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-asabri-blue border border-blue-200'} font-extrabold text-[10px]">
-                <i class="fas ${isApproved ? 'fa-check-circle' : 'fa-clock'} text-[9px]"></i> ${isApproved ? 'Selesai' : (c.sla ? c.sla.waktu : '50 menit')}
+            <td class="py-3 px-4 text-slate-700 whitespace-nowrap font-mono text-[11px] font-semibold">${waktuKunjunganFormatted}</td>
+            <td class="py-3 px-4 text-slate-700 whitespace-nowrap font-mono text-[11px] font-semibold">${waktuApprovalFormatted}</td>
+            <td class="py-3 px-4 text-center whitespace-nowrap">
+              <span class="waktu-berjalan-badge inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${isApproved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-blue-50 text-asabri-blue border border-blue-200'} font-extrabold text-[11px] font-mono shadow-2xs" data-start-ts="${kunjunganTs.getTime()}" data-approved="${isApproved}" data-end-ts="${isApproved && approvalTs ? approvalTs.getTime() : ''}">
+                <i class="fas ${isApproved ? 'fa-check-circle text-emerald-500' : 'fa-clock text-asabri-blue animate-pulse'} text-[10px]"></i>
+                <span class="timer-text">${waktuBerjalanFormatted}</span>
               </span>
             </td>
-            <td class="py-3 px-4 text-center whitespace-nowrap">
+            <td class="py-3 px-4 text-center whitespace-nowrap no-print">
               <div class="flex items-center justify-center gap-1.5">
-                <button onclick="goToApproval('${noAgenda}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1">
+                <button onclick="openLevel2Detail('${noAgenda}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1 active:scale-95" title="Buka Detail Approval (Level 2)">
                   <i class="fas fa-file-circle-check text-[10px]"></i> Detail Approval
                 </button>
-                <button onclick="cetakDokumen('SP', '${noAgenda}')" class="${isApproved ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-100 text-slate-400 cursor-not-allowed'} px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1" ${!isApproved ? 'disabled' : ''}>
+                <button onclick="cetakSP('${noAgenda}')" class="${isApproved ? 'bg-emerald-600 hover:bg-emerald-700 text-white active:scale-95 cursor-pointer shadow-sm' : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'} px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all flex items-center gap-1" ${!isApproved ? 'disabled title="Surat Perintah (SP) hanya dapat dicetak setelah status SP Terbit / Selesai"' : 'title="Cetak Dokumen Surat Perintah (SP)"'}>
                   <i class="fas fa-print text-[10px]"></i> Cetak SP
                 </button>
-                <button onclick="cetakDokumen('LPK', '${noAgenda}')" class="${isApproved ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-slate-100 text-slate-400 cursor-not-allowed'} px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1" ${!isApproved ? 'disabled' : ''}>
+                <button onclick="cetakLPK('${noAgenda}')" class="bg-indigo-600 hover:bg-indigo-700 text-white active:scale-95 cursor-pointer px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition-all shadow-sm flex items-center gap-1" title="Cetak Dokumen Lembar Perhitungan Klaim (LPK)">
                   <i class="fas fa-file-pdf text-[10px]"></i> Cetak LPK
                 </button>
               </div>
@@ -414,27 +1499,1517 @@
       }).join('');
     }
 
-    function goToApproval(noAgenda) {
-      const claims = getClaims();
-      let claim = claims.find(c => c.noRegistrasi === noAgenda || c.noAgenda === noAgenda);
-      if (claim) {
-        // Ensure status is 'Menunggu Approval KAKANCAB' if it's awaiting approval
-        if (!claim.status || claim.status === 'Menunggu Approval' || claim.status === 'Terverifikasi') {
-          claim.status = 'Menunggu Approval KAKANCAB';
-        }
-        localStorage.setItem("detailKlaim", JSON.stringify(claim));
-        localStorage.setItem("registrasiKlaim", JSON.stringify(claim));
-        localStorage.setItem("selectedNoAgenda", noAgenda);
-      }
-      // Set active role to KAKANCAB automatically
-      localStorage.setItem("YANDU_ROLE", "kakancab");
-      localStorage.setItem("currentRole", "KAKANCAB");
-
-      window.location.href = `kejadian.html?noAgenda=${encodeURIComponent(noAgenda)}&startTab=5`;
+    // =========================================================================
+    // LEVEL 2 FUNCTIONS: DETAIL APPROVAL (PER KLAIM)
+    // =========================================================================
+    function openLevel2Detail(noAgenda) {
+      activeNoAgenda = noAgenda;
+      showLevel(2);
     }
 
-    function cetakDokumen(jenis, noAgenda) {
-      alert(`[DOWNLOAD] Mendownload dokumen ${jenis} untuk No Kunjungan/Registrasi ${noAgenda} dalam format PDF.`);
+    function applyLevel2Filters() {
+      FILTER_LEVEL2_APPROVAL.namaPeserta = (document.getElementById("l2-filter-nama")?.value || "").trim().toLowerCase();
+      FILTER_LEVEL2_APPROVAL.ktpa = (document.getElementById("l2-filter-ktpa")?.value || "").trim().toLowerCase();
+      FILTER_LEVEL2_APPROVAL.nrp = (document.getElementById("l2-filter-nrp")?.value || "").trim().toLowerCase();
+      FILTER_LEVEL2_APPROVAL.nopens = (document.getElementById("l2-filter-nopens")?.value || "").trim().toLowerCase();
+      FILTER_LEVEL2_APPROVAL.kejadian = (document.getElementById("l2-filter-kejadian")?.value || "").trim().toLowerCase();
+      FILTER_LEVEL2_APPROVAL.produk = (document.getElementById("l2-filter-produk")?.value || "").trim().toLowerCase();
+
+      renderLevel2Detail();
+    }
+
+    function resetLevel2Filters() {
+      document.getElementById("l2-filter-nama").value = "";
+      document.getElementById("l2-filter-ktpa").value = "";
+      document.getElementById("l2-filter-nrp").value = "";
+      document.getElementById("l2-filter-nopens").value = "";
+      document.getElementById("l2-filter-kejadian").value = "";
+      document.getElementById("l2-filter-produk").value = "";
+
+      applyLevel2Filters();
+    }
+
+    function renderLevel2Detail() {
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+
+      if (!claim) {
+        claim = claims[0] || {
+          noRegistrasi: activeNoAgenda,
+          jenisKejadian: 'Pensiun',
+          kantorCabang: 'KCU Jakarta',
+          participant: { nama: 'ADM. WIRATA ATMAJA', ktpa: 'ASB-2024-001234', nopens: 'NOP-998822', nrp_nip: '198904211101', nik: '31750012345678' }
+        };
+      }
+
+      const p = claim.participant || {};
+
+      const elNoAgenda = document.getElementById("l2-header-noagenda");
+      if (elNoAgenda) elNoAgenda.innerText = activeNoAgenda;
+      
+      const elNama = document.getElementById("l2-header-nama");
+      if (elNama) elNama.innerText = p.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+      
+      const elSub = document.getElementById("l2-header-sub");
+      if (elSub) {
+        elSub.innerHTML = `<span>${claim.jenisKejadian || 'Pensiun'} / ${p.matra_angkatan || 'TNI AD'}</span> • <span class="font-mono" id="l2-header-nik">${p.nik || claim.nik || "31750012345678"}</span>`;
+      }
+
+      const elKtpa = document.getElementById("l2-info-ktpa");
+      if (elKtpa) elKtpa.innerText = p.ktpa || "ASB-2024-001234";
+      
+      const elNopens = document.getElementById("l2-info-nopens");
+      if (elNopens) elNopens.innerText = p.nopens || "NOP-998822";
+      
+      const elNrpnip = document.getElementById("l2-info-nrpnip");
+      if (elNrpnip) elNrpnip.innerText = p.nrp_nip || claim.nik || "198904211101";
+      
+      const elKejadian = document.getElementById("l2-info-kejadian");
+      if (elKejadian) elKejadian.innerText = claim.jenisKejadian || "Pensiun";
+      
+      const elTgl = document.getElementById("l2-info-tglkunjungan");
+      if (elTgl) elTgl.innerText = claim.tanggalRegistrasi || claim.tanggal || "14 Mei 2025";
+      
+      const elPengunjung = document.getElementById("l2-info-pengunjung");
+      if (elPengunjung) elPengunjung.innerText = getNamaPengunjung(claim, p);
+      
+      const elCabang = document.getElementById("l2-info-cabang");
+      if (elCabang) elCabang.innerText = claim.kantorCabang || "KCU Jakarta";
+
+      const elBc = document.getElementById("bc-level2-text");
+      if (elBc) elBc.innerText = `Detail ${activeNoAgenda}`;
+
+      // Render Produk List Table
+      const verifData = getApprovalProductStatuses();
+      let prodList = (verifData[activeNoAgenda] && verifData[activeNoAgenda].length > 0)
+        ? verifData[activeNoAgenda]
+        : getProductListForClaim(claim || activeNoAgenda);
+
+      if (!prodList || prodList.length === 0) {
+        prodList = getProductListForClaim(claim || activeNoAgenda);
+      }
+
+      // Filter OUT products that are rejected (Ditolak) or still waiting for verifikasi (Menunggu Verifikasi)
+      // Level 2 KAKANCAB ONLY shows products that are Terverifikasi, Menunggu Approval, SP Terbit, Selesai, Disetujui, or Dibatalkan
+      prodList = prodList.filter(item => item.status !== 'Ditolak' && item.status !== 'Menunggu Verifikasi');
+
+      // Toggle Approve Semua Produk button at Level 2 Header
+      const hasUnapprovedProds = prodList.some(p => p.status === 'Terverifikasi' || p.status === 'Menunggu Approval');
+      const btnApproveAll = document.getElementById("btn-approve-semua-level2");
+      if (btnApproveAll) {
+        if (hasUnapprovedProds) {
+          btnApproveAll.classList.remove("hidden");
+        } else {
+          btnApproveAll.classList.add("hidden");
+        }
+      }
+
+      // Apply Level 2 Filters
+      const filteredProds = prodList.filter(item => {
+        const itemNamaPeserta = (p.nama || claim.namaPeserta || '').toLowerCase();
+        const itemKtpa = (p.ktpa || 'ASB-2024-001234').toLowerCase();
+        const itemNrp = (p.nrp_nip || claim.nik || '').toLowerCase();
+        const itemNopens = (p.nopens || 'NOP-998822').toLowerCase();
+        const itemKejadian = (claim.jenisKejadian || 'Pensiun').toLowerCase();
+        const itemProduk = (item.nama || '').toLowerCase();
+
+        if (FILTER_LEVEL2_APPROVAL.namaPeserta && !itemNamaPeserta.includes(FILTER_LEVEL2_APPROVAL.namaPeserta)) return false;
+        if (FILTER_LEVEL2_APPROVAL.ktpa && !itemKtpa.includes(FILTER_LEVEL2_APPROVAL.ktpa)) return false;
+        if (FILTER_LEVEL2_APPROVAL.nrp && !itemNrp.includes(FILTER_LEVEL2_APPROVAL.nrp)) return false;
+        if (FILTER_LEVEL2_APPROVAL.nopens && !itemNopens.includes(FILTER_LEVEL2_APPROVAL.nopens)) return false;
+        if (FILTER_LEVEL2_APPROVAL.kejadian && !itemKejadian.includes(FILTER_LEVEL2_APPROVAL.kejadian)) return false;
+        if (FILTER_LEVEL2_APPROVAL.produk && !itemProduk.includes(FILTER_LEVEL2_APPROVAL.produk)) return false;
+
+        return true;
+      });
+
+      const tbody = document.getElementById("l2-products-table-body");
+      if (filteredProds.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="13" class="py-8 text-center text-slate-400 italic">
+              Tidak ada request approval produk yang sesuai filter Level 2.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filteredProds.map(item => {
+        const isApproved = item.status === 'SP Terbit' || item.status === 'Selesai' || item.status === 'Disetujui';
+        const isCancelled = item.status === 'Dibatalkan';
+        const isCancelPending = (isApproved && item.tahapPembatalan === 'cancel');
+        const tglReq = item.tanggalRequest || claim.tanggalRegistrasi || claim.tanggal || "14 Mei 2025";
+        const spNumber = item.nomorSP || (isApproved ? generateNomorSP(item.nama) : "-");
+
+        let badgeClass = "bg-blue-100 text-blue-800 border-blue-300";
+        let statusLabel = item.status || 'Terverifikasi';
+
+        if (isCancelled) {
+          badgeClass = "bg-rose-100 text-rose-800 border-rose-300";
+          statusLabel = "Dibatalkan";
+        } else if (isCancelPending) {
+          badgeClass = "bg-amber-100 text-amber-800 border-amber-300";
+          statusLabel = "Proses Cancel (Siap Reject)";
+        } else if (isApproved) {
+          badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+          statusLabel = "SP Terbit";
+        } else {
+          badgeClass = "bg-blue-100 text-blue-800 border-blue-300";
+          statusLabel = "Terverifikasi";
+        }
+
+        let actionHtml = '';
+        if (isCancelled) {
+          actionHtml = `
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="bg-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 active:scale-95">
+                <i class="fas fa-search text-[10px]"></i> Detail
+              </button>
+              <span class="text-rose-600 font-extrabold text-[11px] inline-flex items-center gap-1 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-lg">
+                <i class="fas fa-ban"></i> Dibatalkan
+              </span>
+            </div>
+          `;
+        } else if (isCancelPending) {
+          // Stage 2: Reject button
+          actionHtml = `
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 active:scale-95">
+                <i class="fas fa-search text-[10px]"></i> Detail
+              </button>
+              <button onclick="triggerRejectFromLevel2('${activeNoAgenda}', '${item.nama}')" class="bg-rose-700 hover:bg-rose-800 text-white px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all shadow-md inline-flex items-center gap-1 active:scale-95 animate-pulse" title="Langkah 2: Konfirmasi Reject (Pembatalan Final)">
+                <i class="fas fa-ban text-[10px]"></i> Reject
+              </button>
+            </div>
+          `;
+        } else if (isApproved) {
+          // Stage 1: Cancel button
+          actionHtml = `
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 active:scale-95">
+                <i class="fas fa-search text-[10px]"></i> Detail
+              </button>
+              <button onclick="triggerCancelFromLevel2('${activeNoAgenda}', '${item.nama}')" class="bg-rose-600 hover:bg-rose-700 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 active:scale-95" title="Langkah 1: Ajukan Pembatalan (Cancel)">
+                <i class="fas fa-times-circle text-[10px]"></i> Cancel
+              </button>
+            </div>
+          `;
+        } else {
+          // Before approve: Only Detail button
+          actionHtml = `
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 active:scale-95">
+                <i class="fas fa-search text-[10px]"></i> Detail
+              </button>
+            </div>
+          `;
+        }
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3.5 px-4 font-mono text-slate-600 text-[11px] whitespace-nowrap">${tglReq}</td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-[11px]">${p.ktpa || 'ASB-2024-001234'}</td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-[11px]">${p.nrp_nip || claim.nik || '-'}</td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-[11px]">${p.nopens || 'NOP-998822'}</td>
+            <td class="py-3.5 px-4 font-bold text-slate-800">${p.nama || claim.namaPeserta || '-'}</td>
+            <td class="py-3.5 px-4 text-slate-700">${claim.jenisKejadian || 'Pensiun'}</td>
+            <td class="py-3.5 px-4 font-extrabold text-asabri-blue uppercase">${item.nama}</td>
+            <td class="py-3.5 px-4 text-right font-mono font-bold text-slate-700">${formatRupiah(item.nominalKotor)}</td>
+            <td class="py-3.5 px-4 text-right font-mono font-semibold text-rose-600">${formatRupiah(item.potongan)}</td>
+            <td class="py-3.5 px-4 text-right font-mono font-black text-emerald-600 text-sm">${formatRupiah(item.nominalBersih)}</td>
+            <td class="py-3.5 px-4 font-mono text-[11px] ${isApproved ? 'font-bold text-emerald-700' : 'text-slate-400'}">${spNumber}</td>
+            <td class="py-3.5 px-4 text-center">
+              <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold border ${badgeClass}">
+                ${statusLabel}
+              </span>
+            </td>
+            <td class="py-3.5 px-4 text-center whitespace-nowrap">
+              ${actionHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // =========================================================================
+    // LEVEL 3 FUNCTIONS: RINCIAN PESERTA PER PRODUK (SAMA SEPERTI VERIFIKASI)
+    // =========================================================================
+    function getNamaPengunjung(claim, participant) {
+      if (!claim) claim = {};
+      if (!participant) participant = claim.participant || {};
+
+      let tp = claim.tipePengunjung || claim.pengaju || null;
+
+      if (!tp) {
+        try {
+          const rawReg = localStorage.getItem("registrasiKlaim");
+          if (rawReg) {
+            const parsed = JSON.parse(rawReg);
+            const noAgenda = claim.noRegistrasi || claim.noAgenda || claim.noReg;
+            if (parsed.noAgenda === noAgenda || !noAgenda || (typeof activeNoAgenda !== 'undefined' && activeNoAgenda === parsed.noAgenda)) {
+              tp = parsed.tipePengunjung || parsed.pengaju;
+            } else if (parsed.tipePengunjung) {
+              tp = parsed.tipePengunjung;
+            }
+          }
+        } catch(e) {}
+      }
+
+      if (typeof tp === 'string') {
+        if (tp === 'Peserta' || tp === 'Diri Sendiri' || tp === 'Peserta Sendiri') {
+          return participant.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+        }
+        return tp;
+      }
+
+      if (tp && typeof tp === 'object') {
+        const jenis = tp.jenis || tp.tipe || '';
+        const nama = tp.nama || '';
+        const hubungan = tp.hubungan ? ` (${tp.hubungan})` : '';
+
+        if (jenis === 'Peserta') {
+          return nama || participant.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+        }
+        if (jenis === 'Keluarga' || jenis === 'Keluarga Terdaftar') {
+          if (nama) return `${nama}${hubungan}`;
+          return hubungan ? `Keluarga${hubungan}` : (participant.pasangan?.nama || "Keluarga Peserta");
+        }
+        if (jenis === 'Lainnya' || jenis === 'Belum Terdaftar') {
+          if (nama) return `${nama}${hubungan}`;
+          return "Penerima Kuasa / Lainnya";
+        }
+        if (nama) return `${nama}${hubungan}`;
+      }
+
+      if (claim.namaPengunjung) return claim.namaPengunjung;
+      if (claim.pengunjung) return claim.pengunjung;
+
+      return participant.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+    }
+
+    const PERSYARATAN_CONFIG = {
+      'Pensiun': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Formulir SP3R', mandatory: false },
+        { nama: 'Asli Salinan Keputusan Pensiun', mandatory: true },
+        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
+        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: true },
+        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
+        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah usia 21-25 tahun)', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
+        { nama: 'Fotokopi NPWP', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
+        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false }
+      ],
+      'Pensiun Pertama': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Formulir SP3R', mandatory: false },
+        { nama: 'Asli Salinan Keputusan Pensiun', mandatory: true },
+        { nama: 'Fotokopi Keputusan Pengangkatan Pertama/CPNS', mandatory: false },
+        { nama: 'Asli SKPP dari KPPN/e-SKPP', mandatory: true },
+        { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
+        { nama: 'Asli Surat Keterangan Kuliah (bagi anak yang kuliah usia 21-25 tahun)', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
+        { nama: 'Fotokopi NPWP', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
+        { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)', mandatory: false }
+      ],
+      'THT': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Asli Salinan Keputusan Pensiun / Pemberhentian', mandatory: true },
+        { nama: 'Asli SKPP dari KPPN / e-SKPP', mandatory: true },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false }
+      ],
+      'JKK': [
+        { nama: 'Formulir Pengajuan JKK', mandatory: false },
+        { nama: 'Surat Laporan Kecelakaan Kerja dari Satker', mandatory: true },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Resume Medis / Surat Keterangan Dokter', mandatory: true },
+        { nama: 'Kwitansi Asli Biaya Perawatan & Pengobatan', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false }
+      ],
+      'JKm': [
+        { nama: 'Formulir Pengajuan JKm', mandatory: false },
+        { nama: 'Surat Keterangan Kematian dari Rumah Sakit / Kelurahan', mandatory: true },
+        { nama: 'Akta Kematian dari Dukcapil', mandatory: true },
+        { nama: 'Surat Keterangan Ahli Waris', mandatory: false },
+        { nama: 'Fotokopi e-KTP Ahli Waris & KK', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Penerima', mandatory: false }
+      ]
+    };
+
+    const ALIAS_DOKUMEN_MANDATORY = {
+      'Pensiun Pertama': 'Pensiun',
+      'Pensiun Sendiri — Meninggal Dunia': 'JKm',
+      'Meninggal Dunia dalam Dinas Aktif': 'JKm',
+      'Kecelakaan Kerja — Dirawat': 'JKK',
+      'Kecelakaan Kerja — Cacat': 'JKK',
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas': 'JKK',
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur': 'JKK',
+      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': 'JKK'
+    };
+
+    function formatTanggalIndo(dateStr) {
+      if (!dateStr || dateStr === '-') return '-';
+      if (/[a-zA-Z]/.test(dateStr)) return dateStr;
+      try {
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return dateStr;
+        const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+      } catch(e) {
+        return dateStr;
+      }
+    }
+
+    function getFullPersyaratanList(jenisKejadian) {
+      if (!jenisKejadian) return PERSYARATAN_CONFIG['Pensiun'];
+      if (PERSYARATAN_CONFIG[jenisKejadian]) return PERSYARATAN_CONFIG[jenisKejadian];
+      const alias = ALIAS_DOKUMEN_MANDATORY[jenisKejadian];
+      if (alias && PERSYARATAN_CONFIG[alias]) return PERSYARATAN_CONFIG[alias];
+      
+      const keys = Object.keys(PERSYARATAN_CONFIG);
+      const matched = keys.find(k => jenisKejadian.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(jenisKejadian.toLowerCase()));
+      return matched ? PERSYARATAN_CONFIG[matched] : PERSYARATAN_CONFIG['Pensiun'];
+    }
+
+    function getDokumenPersyaratanForClaim(claim) {
+      if (!claim) claim = {};
+      const jenis = claim.jenisKejadian || claim.jenisKlaim || "Pensiun";
+      const noAgenda = claim.noRegistrasi || claim.noAgenda || claim.noReg || activeNoAgenda;
+      
+      // 1. Check if claim object itself has dokumenPersyaratan
+      if (claim.dokumenPersyaratan && Array.isArray(claim.dokumenPersyaratan) && claim.dokumenPersyaratan.length > 0) {
+        console.log(`[Approval Blok 5] Loaded ${claim.dokumenPersyaratan.length} documents from claim.dokumenPersyaratan:`, claim.dokumenPersyaratan);
+        return claim.dokumenPersyaratan.map(d => ({
+          ...d,
+          fileUrl: d.fileUrl || (d.statusUpload === 'Sudah Diupload' ? 'uploaded_doc.pdf' : null)
+        }));
+      }
+
+      // 2. Check localStorage 'registrasiKlaim' if it matches active claim
+      try {
+        const rawReg = localStorage.getItem("registrasiKlaim");
+        if (rawReg) {
+          const parsed = JSON.parse(rawReg);
+          if (parsed.noAgenda === noAgenda || parsed.noRegistrasi === noAgenda || activeNoAgenda === (parsed.noAgenda || parsed.noRegistrasi)) {
+            if (parsed.dokumenPersyaratan && Array.isArray(parsed.dokumenPersyaratan) && parsed.dokumenPersyaratan.length > 0) {
+              console.log(`[Approval Blok 5] Loaded ${parsed.dokumenPersyaratan.length} documents from localStorage.registrasiKlaim:`, parsed.dokumenPersyaratan);
+              return parsed.dokumenPersyaratan.map(d => ({
+                ...d,
+                fileUrl: d.fileUrl || (d.statusUpload === 'Sudah Diupload' ? 'uploaded_doc.pdf' : null)
+              }));
+            }
+          }
+        }
+      } catch(e) {
+        console.warn("[Approval Blok 5] Error reading registrasiKlaim:", e);
+      }
+      
+      // 3. Fallback to comprehensive full doc list based on jenis kejadian
+      const fullDocList = getFullPersyaratanList(jenis);
+      const sampleNumbers = {
+        'Asli Salinan Keputusan Pensiun': claim.skepPensiun || claim.kejadianDetails?.nomorSkep || 'SKEP/092/V/2025',
+        'Asli Salinan Keputusan Pensiun / Pemberhentian': claim.skepPensiun || 'SKEP/092/V/2025',
+        'Asli SKPP dari KPPN/e-SKPP': 'SKPP-2025-0892',
+        'Asli SKPP dari KPPN / e-SKPP': 'SKPP-2025-0892',
+        'Fotokopi e-KTP Pengaju': claim.participant?.nik || claim.nik || '31750012345678',
+        'Fotokopi e-KTP yang masih berlaku': claim.participant?.nik || claim.nik || '31750012345678',
+        'Fotokopi e-KTP Ahli Waris': '31750098765432',
+        'Fotokopi e-KTP Ahli Waris & KK': '31750098765432',
+        'Fotokopi Kartu Keluarga (KK)': '3175001122334455',
+        'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU': 'NIKAH/124/IX/2012',
+        'Fotokopi NPWP': '09.876.543.2-012.000',
+        'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)': claim.noRekening || '124000876123',
+        'Fotokopi Buku Rekening Tabungan Pengaju': claim.noRekening || '124000876123',
+        'Fotokopi Buku Rekening Tabungan Penerima': claim.noRekening || '124000876123',
+        'Formulir Pengajuan': claim.noRegistrasi || claim.noAgenda || 'REG/000084/0123/IX/2025',
+        'Formulir Pengajuan JKK': claim.noRegistrasi || 'REG/000084/0123/IX/2025',
+        'Formulir Pengajuan JKm': claim.noRegistrasi || 'REG/000084/0123/IX/2025',
+        'Formulir SP3R': 'SP3R-2025-00129',
+        'Fotokopi Keputusan Pengangkatan Pertama/CPNS': 'SKEP/001/I/1997',
+        'Asli Riwayat Hidup Singkat (RHS)': 'RHS-2025-08',
+        'Akta Kematian dari Dukcapil': 'KM-2025/098/DKCP',
+        'Surat Keterangan Kematian dari Rumah Sakit / Kelurahan': 'SKK-RS/045/V/2025',
+        'Surat Laporan Kecelakaan Kerja dari Satker': 'LAKA/088/V/2025',
+        'Resume Medis / Surat Keterangan Dokter': 'RM-9901/2025',
+        'Kwitansi Asli Biaya Perawatan & Pengobatan': 'KWT-4412/2025',
+        'Pas Foto Ukuran 4x6 sebanyak 2 lembar (suami, istri)': 'DOK-FOTO-01'
+      };
+
+      const defaultTgl = claim.tanggalRegistrasi || claim.tanggal || '14 Mei 2025';
+
+      const generatedDocs = fullDocList.map((item, idx) => {
+        const isMandatory = item.mandatory !== false;
+        const isUploaded = isMandatory ? true : (idx % 2 === 0);
+        return {
+          namaDokumen: item.nama,
+          nomor: isUploaded ? (sampleNumbers[item.nama] || `DOC-00${idx + 1}/ASB/2025`) : '-',
+          tanggal: isUploaded ? defaultTgl : '-',
+          statusUpload: isUploaded ? 'Sudah Diupload' : 'Belum Diupload',
+          fileUrl: isUploaded ? (item.fileUrl || `mock_doc_${idx + 1}.pdf`) : null,
+          isMandatory: isMandatory
+        };
+      });
+
+      console.log(`[Approval Blok 5] Generated ${generatedDocs.length} standard requirement documents for ${jenis}:`, generatedDocs);
+      return generatedDocs;
+    }
+
+    function renderBlok5Dokumen(claim) {
+      const tbody = document.getElementById("l3-b5-dokumen-tbody");
+      if (!tbody) {
+        console.error("[Approval Blok 5] Element #l3-b5-dokumen-tbody NOT found in DOM!");
+        return;
+      }
+
+      currentBlok5Docs = getDokumenPersyaratanForClaim(claim);
+      console.log(`[Approval Blok 5] Rendering ${currentBlok5Docs.length} documents in Blok 5 table:`, currentBlok5Docs);
+      
+      if (currentBlok5Docs.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="py-6 px-4 text-center text-slate-400 italic bg-slate-50">
+              Tidak ada dokumen persyaratan yang terdaftar untuk kejadian ini.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = currentBlok5Docs.map((doc, idx) => {
+        const isUploaded = doc.statusUpload === 'Sudah Diupload';
+        const statusBadge = isUploaded
+          ? `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+               <i class="fas fa-check-circle text-emerald-500"></i> Sudah Diupload
+             </span>`
+          : `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+               <i class="fas fa-times-circle text-slate-400"></i> Belum Diupload
+             </span>`;
+
+        const actionBtn = isUploaded
+          ? `<button type="button" onclick="previewDokumenPersyaratanByIndex(${idx})" title="Lihat Pratinjau Dokumen" class="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-asabri-blue border border-blue-200 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center justify-center gap-1.5 active:scale-95 mx-auto">
+               <i class="fas fa-eye text-xs"></i> <span>Lihat Dokumen</span>
+             </button>`
+          : `<button type="button" disabled class="px-3 py-1 bg-slate-100 text-slate-400 border border-slate-200 rounded-xl text-xs font-semibold cursor-not-allowed flex items-center justify-center gap-1.5 opacity-50 mx-auto" title="Dokumen belum diupload">
+               <i class="fas fa-eye-slash text-xs"></i> <span>Lihat Dokumen</span>
+             </button>`;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-3.5 px-4 text-center font-mono text-slate-400 text-xs">${idx + 1}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-800 text-xs">
+              ${doc.namaDokumen}
+              ${doc.isMandatory ? '<span class="text-rose-500 font-bold ml-1 text-xs" title="Dokumen Mandatory / Wajib">*</span>' : ''}
+            </td>
+            <td class="py-3.5 px-4 font-mono text-slate-700 text-xs">${doc.nomor || '-'}</td>
+            <td class="py-3.5 px-4 text-slate-600 text-xs">${doc.tanggal || '-'}</td>
+            <td class="py-3.5 px-4 text-center whitespace-nowrap">${statusBadge}</td>
+            <td class="py-3.5 px-4 text-center whitespace-nowrap">${actionBtn}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function previewDokumenPersyaratanByIndex(idx) {
+      const doc = currentBlok5Docs[idx];
+      if (!doc) return;
+      previewDokumenPersyaratan(doc.namaDokumen, doc.nomor, doc.tanggal, doc.fileUrl);
+    }
+
+    function previewDokumenPersyaratan(namaDokumen, nomor, tanggal, fileUrl) {
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+      if (!claim) claim = claims[0] || {};
+      const p = claim.participant || {};
+      const namaPeserta = p.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+      const ktpa = p.ktpa || p.noPeserta || p.no_ktpa || "ASB-2024-001234";
+      const nik = p.nik || claim.nik || "31750012345678";
+
+      document.getElementById("mdl-doc-title").innerText = `Preview: ${namaDokumen}`;
+      document.getElementById("mdl-doc-subtitle").innerText = `Berkas resmi untuk ${namaPeserta} (${ktpa})`;
+      document.getElementById("mdl-doc-nomor").innerText = nomor || "-";
+      document.getElementById("mdl-doc-tanggal").innerText = tanggal || "-";
+      document.getElementById("mdl-doc-paper-heading").innerText = (namaDokumen || "DOKUMEN PERSYARATAN").toUpperCase();
+      document.getElementById("mdl-doc-paper-subheading").innerText = `Nomor: ${nomor || '-'}`;
+      document.getElementById("mdl-doc-detail-name").innerText = namaDokumen;
+      document.getElementById("mdl-doc-detail-peserta").innerText = namaPeserta;
+      document.getElementById("mdl-doc-detail-id").innerText = `${ktpa} / ${nik}`;
+      document.getElementById("mdl-doc-detail-waktu").innerText = `${tanggal || '14 Mei 2025'} • Terverifikasi Sistem`;
+
+      const iconEl = document.getElementById("mdl-doc-icon");
+      if (iconEl) {
+        const lower = (namaDokumen || '').toLowerCase();
+        if (lower.includes('ktp') || lower.includes('kk')) {
+          iconEl.className = "fas fa-id-card text-asabri-blue";
+        } else if (lower.includes('rekening')) {
+          iconEl.className = "fas fa-credit-card text-asabri-blue";
+        } else if (lower.includes('foto')) {
+          iconEl.className = "fas fa-image text-asabri-blue";
+        } else if (lower.includes('skep') || lower.includes('keputusan')) {
+          iconEl.className = "fas fa-file-contract text-asabri-blue";
+        } else {
+          iconEl.className = "fas fa-file-alt text-asabri-blue";
+        }
+      }
+
+      openModal('modal-preview-dokumen-persyaratan');
+    }
+
+    function lihatDataPeserta(nikAtauKtpa) {
+      const targetNik = nikAtauKtpa || currentParticipantNik;
+      const claims = getClaims();
+      const claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda)) || claims[0] || {};
+      const p = claim.participant || {};
+      const nik = targetNik || p.nik || claim.nik || '3171092801890001';
+      const ktpa = p.ktpa || p.noPeserta || p.no_ktpa || '';
+
+      if (ktpa) {
+        window.location.href = `data-peserta.html?nik=${encodeURIComponent(nik)}&ktpa=${encodeURIComponent(ktpa)}`;
+      } else {
+        window.location.href = `data-peserta.html?nik=${encodeURIComponent(nik)}`;
+      }
+    }
+
+    function openLevel3Rincian(noAgenda, namaProduk) {
+      activeNoAgenda = noAgenda;
+      activeNamaProduk = namaProduk;
+      showLevel(3);
+    }
+
+    function renderLevel3Rincian() {
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+
+      if (!claim) {
+        claim = claims[0] || {};
+      }
+
+      const p = claim.participant || {};
+      currentParticipantNik = p.nik || claim.nik || '';
+
+      const verifData = getApprovalProductStatuses();
+      const prodList = verifData[activeNoAgenda] || [];
+      const currentProd = prodList.find(item => item.nama === activeNamaProduk) || {
+        nama: activeNamaProduk,
+        status: 'Menunggu Approval',
+        catatanPenolakan: '',
+        alasanCancel: '',
+        nomorSP: '',
+        nominalKotor: 57822900,
+        potongan: 0,
+        nominalBersih: 57822900
+      };
+
+      document.getElementById("bc-level3-text").innerText = `Produk ${activeNamaProduk}`;
+      document.getElementById("l3-current-produk-title").innerText = `${activeNamaProduk} (${getNamaPanjangProduk(activeNamaProduk)})`;
+
+      // Blok 1: Rincian Peserta (Data Personal)
+      document.getElementById("l3-b1-nama").innerText = p.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+      document.getElementById("l3-b1-ktpa").innerText = p.ktpa || p.noPeserta || p.no_ktpa || "ASB-2024-001234";
+      document.getElementById("l3-b1-nrpnip").innerText = p.nrp_nip || p.nip || claim.nik || "198904211101";
+      document.getElementById("l3-b1-nopens").innerText = p.nopens || "NOP-998822";
+      document.getElementById("l3-b1-pangkat").innerText = p.pangkat || (p.golongan_pangkat ? (p.pangkat + ' / ' + p.golongan_pangkat) : "Mayor Inf / III/d");
+      document.getElementById("l3-b1-kesatuan").innerText = p.unitKerja || p.kesatuan || "Kodam Jaya (TNI AD)";
+      document.getElementById("l3-b1-nik").innerText = p.nik || claim.nik || "31750012345678";
+      document.getElementById("l3-b1-gaji").innerText = formatRupiah(p.gaji_pokok_terakhir || p.gajiPokok || 4750000);
+      document.getElementById("l3-b1-tgllahir").innerText = formatTanggalIndo(p.tanggal_lahir || p.tglLahir || "1980-05-12");
+      document.getElementById("l3-b1-statuspensiun").innerText = p.statusKepesertaan || p.status_kepesertaan || (claim.jenisKejadian === 'Pensiun' ? 'Pensiunan' : 'Aktif') || "-";
+
+      // Blok 2: Data Kejadian
+      const kejadianType = claim.jenisKejadian || claim.jenisKlaim || "Pensiun";
+      document.getElementById("l3-b2-kejadian").innerText = kejadianType;
+      document.getElementById("l3-b2-tglkejadian").innerText = formatTanggalIndo(claim.tanggalKejadian || claim.kejadianDetails?.tanggalKejadian || claim.tanggalRegistrasi || claim.tanggal || "01 Mei 2025");
+      document.getElementById("l3-b2-skep").innerText = claim.kejadianDetails?.nomorSkep || claim.skepPensiun || "SKEP/092/V/2025";
+      document.getElementById("l3-b2-mkg").innerText = claim.mkg || "28 Tahun 02 Bulan";
+      document.getElementById("l3-b2-catatankejadian").innerText = claim.kejadianDetails?.catatan || claim.catatanKejadian || claim.catatan || "-";
+      document.getElementById("l3-b2-namapengunjung").innerText = getNamaPengunjung(claim, p);
+      document.getElementById("l3-b2-namapenerima").innerText = claim.kejadianDetails?.ahliWarisMeninggal?.nama || claim.kejadianDetails?.atasNama || claim.ahliWaris || claim.namaPenerima || p.nama || claim.namaPeserta || "-";
+      
+      let objekKejadianText = "Peserta Sendiri";
+      if (claim.objekKejadian) {
+        objekKejadianText = claim.objekKejadian;
+      } else if (kejadianType.includes('Istri') || kejadianType.includes('Suami')) {
+        objekKejadianText = p.pasangan?.nama ? `${p.pasangan.nama} (Pasangan)` : "Istri/Suami";
+      } else if (kejadianType.includes('Anak')) {
+        objekKejadianText = (p.anak && p.anak[0]) ? `${p.anak[0].nama} (Anak)` : "Anak Peserta";
+      } else {
+        objekKejadianText = p.nama || claim.namaPeserta || "Peserta Sendiri";
+      }
+      document.getElementById("l3-b2-objekkejadian").innerText = objekKejadianText;
+
+      // Blok 3: Data Rekening Pembayaran
+      document.getElementById("l3-b3-bank").innerText = claim.kejadianDetails?.mitraBayar || claim.bankPembayar || (p.kantor_bayar ? p.kantor_bayar.bank : "Bank Mandiri Taspen (Mantap)");
+      document.getElementById("l3-b3-norek").innerText = claim.kejadianDetails?.nomorRekening || claim.noRekening || (p.kantor_bayar ? p.kantor_bayar.no_rekening : "124000876123");
+      document.getElementById("l3-b3-namarek").innerText = claim.kejadianDetails?.atasNama || p.nama || claim.namaPeserta || "ADM. WIRATA ATMAJA";
+      document.getElementById("l3-b3-cabang").innerText = claim.kejadianDetails?.cabangMitra || claim.cabangMitraBayar || claim.cabangMitra || claim.kantorCabang || "KCU Jakarta";
+
+      // Blok 4: Data Produk & Rincian Perhitungan Nominal
+      document.getElementById("l3-b4-jenisproduk").innerText = `${activeNamaProduk} - ${getNamaPanjangProduk(activeNamaProduk)}`;
+      document.getElementById("l3-b4-kotor").innerText = formatRupiah(currentProd.nominalKotor);
+      document.getElementById("l3-b4-potongan").innerText = formatRupiah(currentProd.potongan);
+      document.getElementById("l3-b4-bersih").innerText = formatRupiah(currentProd.nominalBersih);
+
+      // Blok 5: Dokumen Persyaratan
+      renderBlok5Dokumen(claim);
+
+      // Level 4 Panel Aksi Update
+      document.getElementById("l4-produk-target-title").innerText = `${currentProd.nama}`;
+      
+      const badge = document.getElementById("l4-current-status-badge");
+      const isApproved = (currentProd.status === 'SP Terbit' || currentProd.status === 'Selesai' || currentProd.status === 'Disetujui');
+      const isCancelled = (currentProd.status === 'Dibatalkan');
+      const isCancelPending = (isApproved && currentProd.tahapPembatalan === 'cancel');
+
+      badge.className = "px-3 py-1 rounded-full text-xs font-bold border ";
+      if (isCancelled) {
+        badge.className += "bg-rose-500/20 text-rose-300 border-rose-500/40";
+        badge.innerText = "Dibatalkan";
+      } else if (isCancelPending) {
+        badge.className += "bg-amber-500/20 text-amber-300 border-amber-500/40";
+        badge.innerText = "Proses Cancel (Siap Reject)";
+      } else if (isApproved) {
+        badge.className += "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+        badge.innerText = "SP Terbit";
+      } else {
+        badge.className += "bg-blue-500/20 text-blue-300 border-blue-500/40";
+        badge.innerText = "Terverifikasi (Siap Approve)";
+      }
+
+      const spBox = document.getElementById("l4-sp-terbit-box");
+      const cancelBox = document.getElementById("l4-cancel-note-box");
+
+      if (isApproved || isCancelled) {
+        if (currentProd.nomorSP) {
+          spBox.classList.remove("hidden");
+          document.getElementById("l4-nomor-sp-text").innerText = currentProd.nomorSP;
+        } else {
+          spBox.classList.add("hidden");
+        }
+      } else {
+        spBox.classList.add("hidden");
+      }
+
+      if ((isCancelled || isCancelPending) && currentProd.alasanCancel) {
+        cancelBox.classList.remove("hidden");
+        document.getElementById("l4-cancel-note-text").innerText = currentProd.alasanCancel;
+      } else {
+        cancelBox.classList.add("hidden");
+      }
+
+      // Dynamic Action Buttons in Level 4 Action Group
+      const actionsGroup = document.getElementById("l4-action-buttons-group");
+      if (actionsGroup) {
+        if (isCancelled) {
+          actionsGroup.innerHTML = `
+            <span class="text-rose-400 font-extrabold text-xs inline-flex items-center gap-1.5 bg-rose-950/60 border border-rose-800 px-4 py-2.5 rounded-2xl">
+              <i class="fas fa-ban"></i> Produk Dibatalkan (Final)
+            </span>
+          `;
+        } else if (isCancelPending) {
+          actionsGroup.innerHTML = `
+            <button onclick="triggerRejectFromLevel2('${activeNoAgenda}', '${currentProd.nama}')" class="bg-rose-700 hover:bg-rose-800 text-white px-5 py-2.5 rounded-2xl text-xs font-extrabold transition-all shadow-md flex items-center gap-2 active:scale-95 animate-pulse" title="Langkah 2: Konfirmasi Reject (Pembatalan Final)">
+              <i class="fas fa-ban"></i> Reject (Konfirmasi Akhir)
+            </button>
+          `;
+        } else if (isApproved) {
+          actionsGroup.innerHTML = `
+            <button onclick="triggerCancelFromLevel2('${activeNoAgenda}', '${currentProd.nama}')" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-2 active:scale-95" title="Langkah 1: Ajukan Pembatalan (Cancel)">
+              <i class="fas fa-times-circle"></i> Cancel Produk Ini
+            </button>
+          `;
+        } else {
+          // Before approval: Approve & Preview Draft SP buttons
+          actionsGroup.innerHTML = `
+            <button onclick="previewSPDraft('${activeNoAgenda}', '${currentProd.nama}')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 px-5 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-2 active:scale-95" title="Review Draft Dokumen SP sebelum Approve">
+              <i class="fas fa-eye"></i> Preview SP (Draft)
+            </button>
+            <button onclick="approveSemuaProduk('${activeNoAgenda}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-2xl text-xs font-black transition-all shadow-lg flex items-center gap-2 active:scale-95" title="Approve SEMUA produk terverifikasi sekaligus">
+              <i class="fas fa-check-double"></i> Approve Semua Produk
+            </button>
+          `;
+        }
+      }
+    }
+
+    function getNamaPanjangProduk(code) {
+      const names = {
+        'TA': 'Tabungan Asuransi',
+        'PP': 'Pensiun Pertama',
+        'NTTA': 'Nilai Tunai Tabungan Asuransi',
+        'SRKK': 'Santunan Risiko Kecelakaan Kerja',
+        'NTIP': 'Nilai Tunai Iuran Pasti',
+        'Santunan Kematian': 'Santunan Kematian (JKm)',
+        'BPIS': 'Biaya Pemakaman Istri/Suami',
+        'BPA': 'Biaya Pemakaman Anak',
+        'BPPP': 'Biaya Pemakaman Peserta Pensiun',
+        'UDW': 'Uang Duka Wafat'
+      };
+      return names[code] || 'Produk Klaim';
+    }
+
+    function generateNomorSP(namaProduk) {
+      const randomId = String(Math.floor(1000 + Math.random() * 9000));
+      return `SP/${namaProduk || 'TA'}/KCU-JKT/09/2026/${randomId}`;
+    }
+
+    // =========================================================================
+    // LEVEL 4 LOGIC & ACTION CONTROLLER (KAKANCAB)
+    // TAHAP 1: APPROVAL AWAL (1x UNTUK SEMUA PRODUK TERVERIFIKASI)
+    // TAHAP 2: CANCEL -> REJECT SETELAH SP TERBIT (PER PRODUK)
+    // =========================================================================
+    function approveSemuaProduk(noAgenda) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      if (!targetAgenda) return;
+
+      const verifData = getApprovalProductStatuses();
+      let prodList = verifData[targetAgenda];
+      
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === targetAgenda || c.noAgenda === targetAgenda || c.noReg === targetAgenda));
+      if (!claim) claim = claims[0] || {};
+
+      if (!prodList || prodList.length === 0) {
+        prodList = getProductListForClaim(claim || targetAgenda);
+      }
+
+      // Filter products that are Terverifikasi or Menunggu Approval (exclude Ditolak and Menunggu Verifikasi)
+      const unapprovedProds = prodList.filter(p => p.status === 'Terverifikasi' || p.status === 'Menunggu Approval');
+
+      if (unapprovedProds.length === 0) {
+        showToast("Info", "Tidak ada produk terverifikasi yang memerlukan approval.", "info");
+        return;
+      }
+
+      // Approve ALL verified products simultaneously
+      unapprovedProds.forEach(prod => {
+        prod.status = 'SP Terbit';
+        if (!prod.nomorSP) {
+          prod.nomorSP = generateNomorSP(prod.nama);
+        }
+        prod.tahapPembatalan = null;
+        prod.alasanCancel = '';
+      });
+
+      verifData[targetAgenda] = prodList;
+      saveApprovalProductStatuses(verifData);
+
+      // Update claim status in asabri_claims
+      if (claim) {
+        claim.status = 'SP Terbit';
+        claim.waktuApprovalTimestamp = Date.now();
+        claim.tanggalApproval = new Date().toISOString();
+        saveClaims(claims);
+      }
+
+      const totalApproved = unapprovedProds.length;
+      showToast("Approval Berhasil", `Semua produk terverifikasi (${totalApproved} produk) berhasil DISETUJUI sekaligus dan Surat Perintah (SP) resmi telah diterbitkan!`, "success");
+
+      const isLevel3Open = !document.getElementById("level-3-container").classList.contains("hidden");
+      if (isLevel3Open) {
+        renderLevel3Rincian();
+      } else {
+        renderLevel2Detail();
+      }
+      renderTable();
+    }
+
+    function triggerCancelFromLevel2(noAgenda, namaProduk) {
+      activeNoAgenda = noAgenda;
+      activeNamaProduk = namaProduk;
+      document.getElementById("modal-cancel-alasan").value = '';
+      openModal('modal-cancel-kakancab');
+    }
+
+    function submitCancelKakancab() {
+      const alasan = document.getElementById("modal-cancel-alasan").value.trim();
+      if (!alasan) {
+        showToast("Peringatan", "Alasan Pembatalan WAJIB diisi sebelum disimpan!", "warning");
+        return;
+      }
+      aksiCancelReject(activeNoAgenda, activeNamaProduk, 'cancel', alasan);
+      closeModal('modal-cancel-kakancab');
+    }
+
+    function triggerRejectFromLevel2(noAgenda, namaProduk) {
+      activeNoAgenda = noAgenda;
+      activeNamaProduk = namaProduk;
+      const verifData = getApprovalProductStatuses();
+      const prodList = verifData[noAgenda] || [];
+      const prod = prodList.find(p => p.nama === namaProduk) || {};
+
+      document.getElementById("modal-reject-nama-produk").innerText = namaProduk;
+      document.getElementById("modal-reject-nomor-sp").innerText = prod.nomorSP || '-';
+      document.getElementById("modal-reject-alasan").innerText = prod.alasanCancel || '-';
+
+      openModal('modal-reject-konfirmasi');
+    }
+
+    function submitRejectKakancab() {
+      aksiCancelReject(activeNoAgenda, activeNamaProduk, 'reject', '');
+      closeModal('modal-reject-konfirmasi');
+    }
+
+    function aksiCancelReject(noAgenda, namaProduk, tahap, alasan) {
+      const verifData = getApprovalProductStatuses();
+      if (!verifData[noAgenda]) return;
+
+      const prod = verifData[noAgenda].find(p => p.nama === namaProduk);
+      if (!prod) return;
+
+      if (tahap === 'cancel') {
+        // Step 1: Cancel clicked & reason saved
+        // Product stays 'SP Terbit', but tahapPembatalan = 'cancel', alasan is recorded
+        // UI button changes from [Cancel] to [Reject]
+        prod.tahapPembatalan = 'cancel';
+        prod.alasanCancel = alasan;
+        saveApprovalProductStatuses(verifData);
+
+        showToast("Langkah 1 Disimpan", `Alasan pembatalan produk ${namaProduk} tersimpan. Silakan klik tombol [Reject] untuk konfirmasi akhir pembatalan.`, "warning");
+
+        const isLevel3Open = !document.getElementById("level-3-container").classList.contains("hidden");
+        if (isLevel3Open) {
+          renderLevel3Rincian();
+        } else {
+          renderLevel2Detail();
+        }
+        renderTable();
+      }
+
+      if (tahap === 'reject') {
+        // Step 2: Reject clicked & confirmed
+        // Product status becomes 'Dibatalkan' (FINAL)
+        prod.status = 'Dibatalkan';
+        prod.tahapPembatalan = 'final';
+        saveApprovalProductStatuses(verifData);
+
+        // Sync directly to asabri_pembatalan_sp for pembatalan-sp.html
+        try {
+          const pembatalanList = JSON.parse(localStorage.getItem("asabri_pembatalan_sp") || "[]");
+          const existingIdx = pembatalanList.findIndex(x => x.noRegistrasi === noAgenda && x.manfaatDibatalkan === namaProduk);
+          const claims = getClaims();
+          const claim = claims.find(c => c.noRegistrasi === noAgenda || c.noAgenda === noAgenda || c.noReg === noAgenda) || {};
+          const p = claim.participant || {};
+          const now = new Date();
+          const formattedDate = `${now.getDate()} Sep ${now.getFullYear()} - ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
+          const pembatalanItem = {
+            id: `PEMB-${Date.now()}`,
+            noRegistrasi: noAgenda,
+            namaPeserta: p.nama || claim.namaPeserta || "Peserta ASABRI",
+            ktpa: p.ktpa || claim.ktpa || 'ASB-2024-001234',
+            nrpNip: p.nrp_nip || claim.nik || '-',
+            nopens: p.nopens || claim.nopens || 'NOP-998822',
+            nik: p.nik || claim.nik || '-',
+            kejadian: claim.jenisKejadian || 'Pensiun',
+            manfaatDibatalkan: prod.nama,
+            nominalKotor: prod.nominalKotor || 57822900,
+            potongan: prod.potongan || 0,
+            nominalBersih: prod.nominalBersih || 57822900,
+            statusBayarSaatDibatalkan: 'Belum Terbayar',
+            tanggalPembatalan: formattedDate,
+            tanggalPembatalanIso: now.toISOString(),
+            dibatalkanOleh: 'KC | Kakancab Utama - KAKANCAB',
+            roleDibatalkan: 'KAKANCAB',
+            alasanPembatalan: prod.alasanCancel || 'Pembatalan permohonan produk atas keputusan resmi KAKANCAB.',
+            nomorSP: prod.nomorSP || '-'
+          };
+
+          if (existingIdx >= 0) {
+            pembatalanList[existingIdx] = pembatalanItem;
+          } else {
+            pembatalanList.unshift(pembatalanItem);
+          }
+          localStorage.setItem("asabri_pembatalan_sp", JSON.stringify(pembatalanList));
+        } catch(e) {
+          console.error("Error saving to asabri_pembatalan_sp", e);
+        }
+
+        // Update main claim status
+        const claims = getClaims();
+        let claim = claims.find(c => (c.noRegistrasi === noAgenda || c.noAgenda === noAgenda || c.noReg === noAgenda));
+        if (claim) {
+          const allProds = verifData[noAgenda] || [];
+          const activeProds = allProds.filter(p => p.status !== 'Ditolak' && p.status !== 'Menunggu Verifikasi');
+          const allCancelled = activeProds.length > 0 && activeProds.every(p => p.status === 'Dibatalkan');
+          if (allCancelled) {
+            claim.status = 'Dibatalkan';
+          } else {
+            // If other products are still SP Terbit, claim status remains SP Terbit
+            const hasSPTerbit = activeProds.some(p => p.status === 'SP Terbit' || p.status === 'Selesai' || p.status === 'Disetujui');
+            if (hasSPTerbit) {
+              claim.status = 'SP Terbit';
+            }
+          }
+          saveClaims(claims);
+        }
+
+        showToast("Produk Dibatalkan", `Produk ${namaProduk} telah resmi DIBATALKAN (Final) dan tercatat di riwayat Pembatalan SP.`, "danger");
+
+        const isLevel3Open = !document.getElementById("level-3-container").classList.contains("hidden");
+        if (isLevel3Open) {
+          renderLevel3Rincian();
+        } else {
+          renderLevel2Detail();
+        }
+        renderTable();
+      }
+    }
+
+    function triggerKakancabAction(aksi) {
+      if (aksi === 'Approval') {
+        approveSemuaProduk(activeNoAgenda);
+      } else if (aksi === 'Cancel') {
+        triggerCancelFromLevel2(activeNoAgenda, activeNamaProduk);
+      } else if (aksi === 'Reject') {
+        triggerRejectFromLevel2(activeNoAgenda, activeNamaProduk);
+      }
+    }
+
+    // =========================================================================
+    // REFRESH POTONGAN HUTANG (MANAJEMEN PIUTANG)
+    // =========================================================================
+    function getSisaHutangDariManajemenPiutang(nikPeserta) {
+      let nik = nikPeserta;
+      if (!nik) {
+        const claims = getClaims();
+        let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+        if (!claim) claim = claims[0] || {};
+        nik = claim.participant?.nik || claim.nik || currentParticipantNik;
+      }
+      if (!nik) return 0;
+
+      let raw = localStorage.getItem("hutangData_" + nik);
+      if (!raw) {
+        const claims = getClaims();
+        let claim = claims.find(c => c.nik === nik || c.participant?.nik === nik) || {};
+        const ktpa = claim.participant?.ktpa || claim.participant?.noPeserta || claim.participant?.no_ktpa || claim.ktpa;
+        if (ktpa) raw = localStorage.getItem("hutangData_" + ktpa);
+      }
+
+      if (raw) {
+        try {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) {
+            return list.reduce((total, h) => {
+              const status = (h.status || '').toLowerCase();
+              if (status === 'belum lunas' || status === 'dalam cicilan' || status === 'aktif' || status === 'pending') {
+                const jumlah = parseFloat(h.jumlah || h.plafon || 0);
+                const dibayar = parseFloat(h.dibayar !== undefined ? h.dibayar : (h.jumlahDibayar || 0));
+                const sisa = (h.sisaHutang !== undefined && h.sisaHutang !== null)
+                  ? parseFloat(h.sisaHutang)
+                  : Math.max(0, jumlah - dibayar);
+                return total + sisa;
+              }
+              return total;
+            }, 0);
+          }
+        } catch(e) {
+          console.error("Error reading hutangData:", e);
+        }
+      }
+      return 0;
+    }
+
+    function refreshPotHutang(nikPeserta) {
+      let nik = nikPeserta || currentParticipantNik;
+      if (!nik) {
+        const claims = getClaims();
+        let claim = claims.find(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda || c.noReg === activeNoAgenda));
+        if (!claim) claim = claims[0] || {};
+        nik = claim.participant?.nik || claim.nik;
+      }
+
+      const icon1 = document.getElementById("pot-hutang-refresh-icon");
+      const icon2 = document.getElementById("pot-hutang-header-icon");
+      if (icon1) icon1.classList.add("fa-spin");
+      if (icon2) icon2.classList.add("fa-spin");
+
+      const hutangTerbaru = getSisaHutangDariManajemenPiutang(nik);
+
+      const verifData = getApprovalProductStatuses();
+      if (verifData[activeNoAgenda]) {
+        const item = verifData[activeNoAgenda].find(p => p.nama === activeNamaProduk);
+        if (item) {
+          item.potongan = hutangTerbaru;
+          item.nominalBersih = Math.max(0, item.nominalKotor - item.potongan);
+          saveApprovalProductStatuses(verifData);
+        }
+      }
+
+      const potEl = document.getElementById("l3-b4-potongan");
+      if (potEl) potEl.innerText = formatRupiah(hutangTerbaru);
+
+      const prodList = verifData[activeNoAgenda] || [];
+      const currentProd = prodList.find(item => item.nama === activeNamaProduk) || {
+        nominalKotor: 57822900,
+        potongan: hutangTerbaru,
+        nominalBersih: Math.max(0, 57822900 - hutangTerbaru)
+      };
+
+      const bersihEl = document.getElementById("l3-b4-bersih");
+      if (bersihEl) bersihEl.innerText = formatRupiah(currentProd.nominalBersih);
+
+      setTimeout(() => {
+        if (icon1) icon1.classList.remove("fa-spin");
+        if (icon2) icon2.classList.remove("fa-spin");
+        showToast(
+          "Data Hutang Disinkronisasi",
+          `Potongan hutang terbaru (${formatRupiah(hutangTerbaru)}) berhasil ditarik dari Manajemen Piutang. Jumlah bersih telah dihitung ulang.`,
+          "success"
+        );
+      }, 350);
+    }
+
+    // Modal Control Helpers
+    function openModal(id) {
+      document.getElementById(id)?.classList.remove("hidden");
+    }
+
+    function closeModal(id) {
+      document.getElementById(id)?.classList.add("hidden");
+    }
+
+    // =========================================================================
+    // LPK & SP GENERATION ENGINE (FULL PRINT & PREVIEW)
+    // =========================================================================
+    function buildLPKContext(targetNoAgenda, targetNamaProduk) {
+      const targetAgenda = targetNoAgenda || activeNoAgenda;
+      const claims = getClaims();
+      let claim = claims.find(c => (c.noRegistrasi === targetAgenda || c.noAgenda === targetAgenda || c.noReg === targetAgenda)) || claims[0] || {};
+      const pes = claim.participant || {};
+      const verifData = getApprovalProductStatuses();
+      
+      let prodList = verifData[targetAgenda];
+      if (!prodList || prodList.length === 0) {
+        prodList = getProductListForClaim(claim || targetAgenda);
+      }
+
+      const now = new Date();
+      const tglProses = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+      const pad = (n, len) => String(n).padStart(len, '0');
+      const noAgendaLPK = `${pad(now.getDate(),2)}${pad(now.getMonth()+1,2)}${now.getFullYear()}/${pad(Math.floor(Math.random()*999999)+1, 6)}`;
+
+      // Hutang
+      let jnsHutang = '-';
+      let besarHutang = 'Rp 0';
+      const nik = pes.nik || claim.nik || '';
+      if (nik) {
+        try {
+          const lh = JSON.parse(localStorage.getItem('hutangData_' + nik) || '[]');
+          const unpaid = Array.isArray(lh) ? lh.filter(h => h.status !== 'Lunas') : [];
+          if (unpaid.length > 0) {
+            jnsHutang = unpaid.map(h => h.jenis || 'Lainnya').join(', ');
+            const total = unpaid.reduce((s, h) => s + parseFloat(h.nominal || h.jumlah || 0), 0);
+            besarHutang = formatRupiah(total);
+          }
+        } catch(e) {}
+      }
+
+      // Filter products
+      let filteredProducts = (prodList || []).filter(p => p.status !== 'Ditolak');
+      if (filteredProducts.length === 0) {
+        filteredProducts = prodList || [];
+      }
+
+      const products = filteredProducts.map(prod => {
+        const kotor = prod.nominalKotor || prod.hak || 57822900;
+        const pot = prod.potongan || 0;
+        const netto = prod.nominalBersih !== undefined ? prod.nominalBersih : Math.max(0, kotor - pot);
+        return {
+          nama: prod.nama || prod.type || 'TA',
+          type: prod.nama || prod.type || 'TA',
+          hak: kotor,
+          potongan: pot,
+          netto: netto,
+          status: prod.status || 'Terverifikasi',
+          nomorSP: prod.nomorSP || '-'
+        };
+      });
+
+      const totalHak = products.reduce((s, p) => s + p.hak, 0);
+      const totalPot = products.reduce((s, p) => s + p.potongan, 0);
+      const totalNetto = Math.max(0, totalHak - totalPot);
+
+      return {
+        tglProses,
+        noAgendaLPK,
+        noAgenda: targetAgenda,
+        namaKancab: claim.kantorCabang || pes.kantorCabang || 'KC JAKARTA UTAMA',
+        namaKakancab: 'Kepala Kantor Cabang Utama',
+        ktpa: pes.ktpa || pes.noKTPA || pes.noPeserta || 'ASB-2024-001234',
+        nrp: pes.nrp_nip || pes.nrp || pes.nip || claim.nik || '-',
+        nama: pes.nama || claim.namaPeserta || 'ADM. WIRATA ATMAJA',
+        jnsKelamin: pes.jenisKelamin || pes.gender || 'Laki-Laki',
+        tglLahir: pes.tanggalLahir || pes.tglLahir || '12 Mei 1980',
+        tmtPeserta: pes.tmtPeserta || pes.tmt || '01 Maret 2002',
+        pangkatPertama: pes.pangkatPertama || pes.pangkat || 'Letda Inf',
+        satkerPertama: pes.satkerPertama || pes.satker || 'Yonif 201/Jaya Yudha',
+        pangkatAkhir: pes.pangkat || 'Mayor Inf / III/d',
+        satkerAkhir: pes.unitKerja || pes.kesatuan || pes.satker || 'Kodam Jaya (TNI AD)',
+        jnsLayanan: claim.jenisKejadian || claim.jenisKlaim || 'Pensiun',
+        tanggalKejadian: claim.tanggalKejadian || claim.kejadianDetails?.tanggalKejadian || claim.tanggalRegistrasi || claim.tanggal || '01 Mei 2025',
+        noSkep: claim.skepPensiun || claim.kejadianDetails?.nomorSkep || 'SKEP/092/V/2025',
+        tglSkep: claim.tglSkep || claim.tanggalRegistrasi || '14 Mei 2025',
+        masaKerjaGaji: claim.mkg || pes.masaKerja || '28 Tahun 02 Bulan',
+        kodeJiwa: pes.kodeJiwa || '1100',
+        gajiPokokPertama: formatRupiah(pes.gajiPokokPertama || 1850000),
+        gajiPokokAkhir: formatRupiah(pes.gaji_pokok_terakhir || pes.gajiPokok || 4750000),
+        jnsHutang,
+        besarHutang,
+        namaPenerima: claim.kejadianDetails?.atasNama || claim.namaPenerima || pes.nama || claim.namaPeserta || 'ADM. WIRATA ATMAJA',
+        hubKeluarga: 'Diri Sendiri',
+        identitas: `KTP: ${pes.nik || claim.nik || '31750012345678'}`,
+        alamat: pes.alamatKTP || pes.alamat || 'Jl. Raya Cawang No. 12, Jakarta Timur',
+        saranaBayar: claim.kejadianDetails?.mitraBayar || claim.bankPembayar || 'Bank Mandiri Taspen (Mantap)',
+        noRek: claim.kejadianDetails?.nomorRekening || claim.noRekening || '124000876123',
+        anRek: claim.kejadianDetails?.atasNama || pes.nama || claim.namaPeserta || 'ADM. WIRATA ATMAJA',
+        mediaBayar: claim.kejadianDetails?.cabangMitra || claim.kantorCabang || 'KCU Jakarta',
+        products,
+        totalHak,
+        totalPot,
+        totalNetto,
+        regulasi: claim.regulasi || 'PP 54/2020 & UU No. 11/1969',
+        tglGenerate: tglProses + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB'
+      };
+    }
+
+    function generateLPKGabunganHtml(ctx) {
+      const prodHtml = ctx.products.map((p, i) => `
+        <div style="margin-bottom:8px">
+          <strong>PROGRAM ${p.nama.toUpperCase()}</strong><br>
+          <table style="width:100%;font-size:11px;border-collapse:collapse">
+            <tr><td style="padding:2px 6px">Hak Manfaat</td><td style="text-align:right">Rp ${p.hak.toLocaleString('id-ID')}</td></tr>
+            <tr><td style="padding:2px 6px;color:#c00">Potongan</td><td style="text-align:right;color:#c00">- Rp ${p.potongan.toLocaleString('id-ID')}</td></tr>
+            <tr style="border-top:1px solid #ccc"><td style="padding:4px 6px;font-weight:bold">Sub Total Program</td><td style="text-align:right;font-weight:bold">Rp ${p.netto.toLocaleString('id-ID')}</td></tr>
+          </table>
+        </div>`).join('');
+
+      return `<div style="font-family:Arial,sans-serif;font-size:12px;max-width:680px;margin:0 auto;padding:24px;background:#ffffff;border:1px solid #ccc">
+        <div style="text-align:center;border-bottom:2px solid #003580;padding-bottom:12px;margin-bottom:16px">
+          <strong style="font-size:14px;color:#003580">LEMBAR PERHITUNGAN KLAIM (LPK GABUNGAN)</strong><br>
+          <span style="font-size:11px">PT ASABRI (PERSERO) — ${ctx.namaKancab}</span>
+        </div>
+        <table style="width:100%;font-size:11px;margin-bottom:12px">
+          <tr><td><b>Tanggal Proses</b></td><td>: ${ctx.tglProses}</td>
+              <td><b>Nomor Agenda LPK</b></td><td>: ${ctx.noAgendaLPK}</td></tr>
+          <tr><td><b>Nomor Registrasi</b></td><td>: ${ctx.noAgenda}</td>
+              <td><b>Regulasi</b></td><td>: ${ctx.regulasi}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">A. PESERTA</div>
+        <table style="width:100%;font-size:11px;margin-bottom:12px">
+          <tr><td>Nomor KTPA</td><td>: ${ctx.ktpa}</td><td>Tgl Lahir</td><td>: ${ctx.tglLahir}</td></tr>
+          <tr><td>NRP/NIP</td><td>: ${ctx.nrp}</td><td>TMT Peserta</td><td>: ${ctx.tmtPeserta}</td></tr>
+          <tr><td>Nama Peserta</td><td colspan="3">: <strong>${ctx.nama}</strong></td></tr>
+          <tr><td>Jns Kelamin</td><td>: ${ctx.jnsKelamin}</td><td>Pkt/Gol Pertama</td><td>: ${ctx.pangkatPertama}</td></tr>
+          <tr><td>Satker Pertama</td><td>: ${ctx.satkerPertama}</td><td>Satker Akhir</td><td>: ${ctx.satkerAkhir}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">B. LAYANAN</div>
+        <table style="width:100%;font-size:11px;margin-bottom:12px">
+          <tr><td>Jns Layanan</td><td>: ${ctx.jnsLayanan}</td><td>Tanggal Kejadian</td><td>: ${ctx.tanggalKejadian}</td></tr>
+          <tr><td>Pkt/Gol Akhir</td><td>: ${ctx.pangkatAkhir}</td><td>Nomor SKEP</td><td>: ${ctx.noSkep}</td></tr>
+          <tr><td>Masa Kerja Gaji</td><td>: ${ctx.masaKerjaGaji}</td><td>Kode Jiwa</td><td>: ${ctx.kodeJiwa}</td></tr>
+          <tr><td>Gaji Pokok Pertama</td><td>: ${ctx.gajiPokokPertama}</td><td>Gaji Pokok Akhir</td><td>: ${ctx.gajiPokokAkhir}</td></tr>
+          <tr><td>Jenis Hutang</td><td>: ${ctx.jnsHutang}</td><td>Besar Hutang</td><td>: ${ctx.besarHutang}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">C. PERHITUNGAN (Per Program — Terpisah)</div>
+        <div style="margin-bottom:12px">${prodHtml}</div>
+        <table style="width:100%;font-size:11px;border-top:2px solid #003580;margin-bottom:12px">
+          <tr><td><b>Total Hak</b></td><td style="text-align:right"><b>Rp ${ctx.totalHak.toLocaleString('id-ID')}</b></td></tr>
+          <tr><td style="color:#c00">Total Potongan</td><td style="text-align:right;color:#c00">- Rp ${ctx.totalPot.toLocaleString('id-ID')}</td></tr>
+          <tr style="background:#003580;color:white"><td style="padding:4px 6px"><b>Jumlah Diterima</b></td><td style="text-align:right;padding:4px 6px"><b>Rp ${ctx.totalNetto.toLocaleString('id-ID')}</b></td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin-bottom:6px">D. PEMBAYARAN</div>
+        <table style="width:100%;font-size:11px;margin-bottom:16px">
+          <tr><td>Nama Penerima</td><td>: ${ctx.namaPenerima}</td></tr>
+          <tr><td>Hubungan Keluarga</td><td>: ${ctx.hubKeluarga}</td></tr>
+          <tr><td>Identitas Diri</td><td>: ${ctx.identitas}</td></tr>
+          <tr><td>Alamat (KTP)</td><td>: ${ctx.alamat}</td></tr>
+          <tr><td>Sarana Bayar</td><td>: Rekening No. ${ctx.noRek} a/n ${ctx.anRek} (${ctx.saranaBayar})</td></tr>
+          <tr><td>Kancab ASABRI</td><td>: ${ctx.namaKancab}</td></tr>
+        </table>
+
+        <div style="text-align:center;border-top:1px solid #ccc;padding-top:12px;font-size:10px;color:#666">
+          Generate: ${ctx.tglGenerate} &nbsp;|&nbsp; Dokumen ini digenerate oleh Sistem YANDU ASABRI
+        </div>
+      </div>`;
+    }
+
+    function generateLPKSatuanHtml(ctx, productCode) {
+      const targetCode = productCode || (ctx.products[0] ? ctx.products[0].nama : 'TA');
+      const prods = ctx.products.filter(p => (p.nama || '').toUpperCase() === targetCode.toUpperCase());
+      const p = prods[0] || ctx.products[0] || { nama: targetCode, hak: 57822900, potongan: 0, netto: 57822900 };
+
+      return `<div style="font-family:Arial,sans-serif;font-size:12px;max-width:680px;margin:0 auto;padding:24px;background:#ffffff;border:1px solid #ccc">
+        <div style="text-align:center;border-bottom:2px solid #003580;padding-bottom:12px;margin-bottom:16px">
+          <strong style="font-size:13px;color:#003580">LEMBAR PERHITUNGAN KLAIM (LPK SATUAN — MANFAAT ${p.nama.toUpperCase()})</strong><br>
+          <span style="font-size:11px">PT ASABRI (PERSERO) — ${ctx.namaKancab}</span>
+        </div>
+        <table style="width:100%;font-size:11px;margin-bottom:8px">
+          <tr><td>Nomor Agenda LPK</td><td>: ${ctx.noAgendaLPK}</td><td>KTPA</td><td>: ${ctx.ktpa}</td></tr>
+          <tr><td>Jenis Manfaat</td><td>: <strong>${p.nama.toUpperCase()}</strong></td><td>Regulasi</td><td>: ${ctx.regulasi}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin:10px 0 6px">A. DATA PESERTA</div>
+        <table style="width:100%;font-size:11px;margin-bottom:10px">
+          <tr><td>1. NRP/NIP</td><td>: ${ctx.nrp}</td></tr>
+          <tr><td>2. Nama Penerima</td><td>: ${ctx.namaPenerima}</td></tr>
+          <tr><td>3. Jenis Kelamin</td><td>: ${ctx.jnsKelamin}</td></tr>
+          <tr><td>4. Tanggal Lahir</td><td>: ${ctx.tglLahir}</td></tr>
+          <tr><td>5. Pangkat/Gol Akhir</td><td>: ${ctx.pangkatAkhir}</td></tr>
+          <tr><td>6. Satker Akhir</td><td>: ${ctx.satkerAkhir}</td></tr>
+          <tr><td>7. Tanggal Kejadian</td><td>: ${ctx.tanggalKejadian}</td></tr>
+          <tr><td>8. Masa Kerja Gaji</td><td>: ${ctx.masaKerjaGaji}</td></tr>
+          <tr><td>9. Kode Jiwa</td><td>: ${ctx.kodeJiwa}</td></tr>
+          <tr><td>10. Gaji Pokok</td><td>: ${ctx.gajiPokokAkhir}</td></tr>
+          <tr><td>11. Jenis Hutang</td><td>: ${ctx.jnsHutang}</td></tr>
+          <tr><td>12. Besar Hutang</td><td>: ${ctx.besarHutang}</td></tr>
+          <tr><td>13. No. Rekening</td><td>: ${ctx.noRek} a/n ${ctx.anRek} (${ctx.saranaBayar})</td></tr>
+          <tr><td>14. Alamat (KTP)</td><td>: ${ctx.alamat}</td></tr>
+        </table>
+
+        <div style="background:#003580;color:white;padding:4px 8px;font-weight:bold;font-size:11px;margin:10px 0 6px">B. PERHITUNGAN MANFAAT ${p.nama.toUpperCase()}</div>
+        <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:16px">
+          <tr style="background:#f5f5f5"><td style="padding:4px 6px">Hak Manfaat ${p.nama}</td><td style="text-align:right;padding:4px 6px">Rp ${p.hak.toLocaleString('id-ID')}</td></tr>
+          <tr style="color:#c00"><td style="padding:4px 6px">Potongan Hutang</td><td style="text-align:right;padding:4px 6px">- Rp ${p.potongan.toLocaleString('id-ID')}</td></tr>
+          <tr style="background:#003580;color:white"><td style="padding:6px"><b>Jumlah Diterima (${p.nama})</b></td><td style="text-align:right;padding:6px"><b>Rp ${p.netto.toLocaleString('id-ID')}</b></td></tr>
+        </table>
+
+        <div style="text-align:right;font-size:11px;margin-top:24px">
+          ${ctx.namaKancab}, ${ctx.tglProses}<br><br><br>
+          <strong>${ctx.namaKakancab}</strong>
+        </div>
+        <div style="text-align:center;border-top:1px solid #ccc;padding-top:8px;font-size:10px;color:#666;margin-top:16px">
+          Generate: ${ctx.tglGenerate} &nbsp;|&nbsp; Sistem YANDU ASABRI
+        </div>
+      </div>`;
+    }
+
+    function generateSPHtml(ctx, productCode = null, isDraft = false) {
+      const roman = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"];
+      const now = new Date();
+      const romanMonth = roman[now.getMonth()];
+      const yr = now.getFullYear();
+
+      let targetProds = ctx.products;
+      if (productCode) {
+        targetProds = ctx.products.filter(p => (p.nama || '').toUpperCase() === productCode.toUpperCase());
+        if (targetProds.length === 0) targetProds = ctx.products;
+      }
+
+      const prodRows = targetProds.map(p => {
+        return `<tr>
+          <td style="padding:6px 8px;border-bottom:1px solid #eee;"><strong>${p.nama}</strong> - ${getNamaPanjangProduk(p.nama)}</td>
+          <td style="padding:6px 8px;text-align:right;border-bottom:1px solid #eee;">Rp ${p.hak.toLocaleString('id-ID')}</td>
+          <td style="padding:6px 8px;text-align:right;border-bottom:1px solid #eee;color:#c00;">- Rp ${p.potongan.toLocaleString('id-ID')}</td>
+          <td style="padding:6px 8px;text-align:right;border-bottom:1px solid #eee;font-weight:bold;">Rp ${p.netto.toLocaleString('id-ID')}</td>
+        </tr>`;
+      }).join('');
+
+      const totalNetto = targetProds.reduce((s, p) => s + p.netto, 0);
+
+      const spNum = isDraft 
+        ? `DRAFT/SP/${productCode || 'ALL'}/KCU-JKT/${romanMonth}/${yr} (Belum Terbit)`
+        : (targetProds.length === 1 && targetProds[0].nomorSP && targetProds[0].nomorSP !== '-' ? targetProds[0].nomorSP : `SP/${productCode || 'ALL'}/KCU-JKT/${romanMonth}/${yr}/${Math.floor(1000 + Math.random() * 9000)}`);
+
+      const headerBanner = isDraft ? `
+        <div style="text-align:center;margin-bottom:16px;background:#fffbeb;border:1px solid #f59e0b;padding:10px;border-radius:8px;">
+          <strong style="font-size:14px;color:#b45309;">DRAFT — SURAT PERINTAH (SP)</strong><br>
+          <span style="font-size:11px;color:#92400e;font-style:italic;">⚠ Dokumen ini berstatus DRAFT untuk review KAKANCAB. Surat Perintah resmi akan terbit setelah KAKANCAB klik Approve.</span>
+        </div>
+      ` : `
+        <div style="text-align:center;border-bottom:2px solid #003580;padding-bottom:12px;margin-bottom:16px;">
+          <strong style="font-size:14px;color:#003580;">SURAT PERINTAH BAYAR (SP) RESMI</strong><br>
+          <span style="font-size:11px;font-weight:bold;color:#10b981;">DOKUMEN RESMI DISAHKAN OLEH KEPALA KANTOR CABANG UTAMA</span>
+        </div>
+      `;
+
+      return `<div style="font-family:Arial,sans-serif;font-size:12px;max-width:680px;margin:0 auto;padding:24px;background:#ffffff;border:1px solid #ccc;">
+        ${headerBanner}
+        <table style="width:100%;font-size:11px;margin-bottom:12px;">
+          <tr><td><b>Nomor SP</b></td><td>: <strong>${spNum}</strong></td></tr>
+          <tr><td><b>Tanggal</b></td><td>: ${ctx.tglProses}</td></tr>
+          <tr><td><b>No. Agenda Klaim</b></td><td>: ${ctx.noAgenda}</td></tr>
+          <tr><td><b>Sifat</b></td><td>: Penting / Segera</td></tr>
+          <tr><td><b>Hal</b></td><td>: Surat Perintah (SP) Pembayaran Manfaat ${ctx.jnsLayanan}</td></tr>
+        </table>
+        <hr style="border-color:#ccc;margin:12px 0;">
+        
+        <p style="font-size:11px;margin-bottom:4px;"><strong>Kepada Yth. Bagian Keuangan / Kasir Pembayar:</strong></p>
+        <p style="font-size:11px;line-height:1.5;margin-bottom:12px;">
+          Berdasarkan hasil verifikasi berkas dan persetujuan klaim peserta atas nama:
+        </p>
+
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:10px;border-radius:6px;margin-bottom:12px;font-size:11px;">
+          <table style="width:100%;">
+            <tr><td style="width:120px;"><b>Nama Peserta</b></td><td>: <strong>${ctx.nama}</strong></td></tr>
+            <tr><td><b>KTPA / NIK</b></td><td>: ${ctx.ktpa} / ${ctx.nrp}</td></tr>
+            <tr><td><b>Pangkat / Kesatuan</b></td><td>: ${ctx.pangkatAkhir} / ${ctx.satkerAkhir}</td></tr>
+            <tr><td><b>Jenis Kejadian</b></td><td>: ${ctx.jnsLayanan}</td></tr>
+          </table>
+        </div>
+
+        <p style="font-size:11px;margin-bottom:6px;">Diperintahkan untuk melakukan pembayaran atas produk/manfaat berikut:</p>
+        <table style="width:100%;font-size:11px;border-collapse:collapse;margin-bottom:12px;">
+          <tr style="background:#003580;color:white;">
+            <th style="padding:6px 8px;text-align:left;">Program / Manfaat</th>
+            <th style="padding:6px 8px;text-align:right;">Hak Kotor</th>
+            <th style="padding:6px 8px;text-align:right;">Potongan</th>
+            <th style="padding:6px 8px;text-align:right;">Netto Dibayar</th>
+          </tr>
+          ${prodRows}
+          <tr style="background:#f1f5f9;font-weight:bold;">
+            <td colspan="3" style="padding:6px 8px;text-align:right;">TOTAL PEMBAYARAN:</td>
+            <td style="padding:6px 8px;text-align:right;color:#047857;font-size:12px;">Rp ${totalNetto.toLocaleString('id-ID')}</td>
+          </tr>
+        </table>
+
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;padding:10px;border-radius:6px;margin-bottom:16px;font-size:11px;">
+          <strong style="color:#003580;display:block;margin-bottom:4px;">INFORMASI REKENING TUJUAN PEMBAYARAN:</strong>
+          <table style="width:100%;">
+            <tr><td style="width:120px;">Nama Penerima</td><td>: <strong>${ctx.namaPenerima}</strong> (${ctx.hubKeluarga})</td></tr>
+            <tr><td>Bank / Mitra Bayar</td><td>: ${ctx.saranaBayar}</td></tr>
+            <tr><td>Nomor Rekening</td><td>: <strong>${ctx.noRek}</strong> a/n ${ctx.anRek}</td></tr>
+          </table>
+        </div>
+
+        <div style="text-align:right;margin-top:24px;font-size:11px;">
+          ${ctx.namaKancab}, ${ctx.tglProses}<br><br><br>
+          <strong>KEPALA KANTOR CABANG UTAMA</strong><br>
+          PT ASABRI (PERSERO)<br><br><br>
+          <strong>( Kepala Kantor Cabang Utama )</strong>
+        </div>
+
+        <div style="text-align:center;border-top:1px solid #ccc;padding-top:10px;font-size:10px;color:#666;margin-top:16px;">
+          Generate: ${ctx.tglGenerate} &nbsp;|&nbsp; Sistem Pelayanan Terpadu ASABRI
+        </div>
+      </div>`;
+    }
+
+    function previewSPDraft(noAgenda, namaProduk) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const targetProd = namaProduk || activeNamaProduk || 'TA';
+      const ctx = buildLPKContext(targetAgenda, targetProd);
+      const html = generateSPHtml(ctx, targetProd, true);
+      const title = `Preview Draft SP - ${targetProd} (${ctx.noAgenda})`;
+
+      const w = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
+      if (w) {
+        w.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{body{margin:0}}</style></head><body style="margin:0;padding:16px;background:#f8fafc;">
+          <div style="text-align:center;margin-bottom:12px;">
+            <button onclick="window.print()" style="background:#d97706;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🖨️ Cetak / Simpan Draft PDF</button>
+          </div>
+          ${html}
+        </body></html>`);
+        w.document.close();
+      }
+      showToast("Preview Draft SP", `Draft Surat Perintah untuk produk ${targetProd} siap ditinjau.`, "info");
+    }
+
+    function previewSPGabunganDraft(noAgenda) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const ctx = buildLPKContext(targetAgenda);
+      const html = generateSPHtml(ctx, null, true);
+      const title = `Preview Draft SP Gabungan - ${ctx.noAgenda}`;
+
+      const w = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
+      if (w) {
+        w.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{body{margin:0}}</style></head><body style="margin:0;padding:16px;background:#f8fafc;">
+          <div style="text-align:center;margin-bottom:12px;">
+            <button onclick="window.print()" style="background:#d97706;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🖨️ Cetak / Simpan Draft PDF</button>
+          </div>
+          ${html}
+        </body></html>`);
+        w.document.close();
+      }
+      showToast("Preview Draft SP Gabungan", `Draft Surat Perintah Gabungan untuk semua produk siap ditinjau.`, "info");
+    }
+
+    function cetakLPKGabungan(noAgenda) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const ctx = buildLPKContext(targetAgenda);
+      const html = generateLPKGabunganHtml(ctx);
+      const title = `LPK Gabungan - ${ctx.noAgenda}`;
+      
+      const w = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
+      if (w) {
+        w.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{body{margin:0}}</style></head><body style="margin:0;padding:16px;background:#f8fafc;">
+          <div style="text-align:center;margin-bottom:12px;">
+            <button onclick="window.print()" style="background:#003580;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🖨️ Cetak / Simpan PDF</button>
+          </div>
+          ${html}
+        </body></html>`);
+        w.document.close();
+      }
+      showToast("LPK Gabungan", `Dokumen LPK Gabungan untuk ${ctx.nama} berhasil disiapkan.`, "success");
+    }
+
+    function cetakLPKSatuan(noAgenda, namaProduk) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const targetProd = namaProduk || activeNamaProduk || 'TA';
+      const ctx = buildLPKContext(targetAgenda, targetProd);
+      const html = generateLPKSatuanHtml(ctx, targetProd);
+      const title = `LPK Satuan ${targetProd} - ${ctx.noAgenda}`;
+      
+      const w = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
+      if (w) {
+        w.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{body{margin:0}}</style></head><body style="margin:0;padding:16px;background:#f8fafc;">
+          <div style="text-align:center;margin-bottom:12px;">
+            <button onclick="window.print()" style="background:#003580;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🖨️ Cetak / Simpan PDF</button>
+          </div>
+          ${html}
+        </body></html>`);
+        w.document.close();
+      }
+      showToast("LPK Satuan", `Dokumen LPK Satuan (${targetProd}) untuk ${ctx.nama} berhasil disiapkan.`, "success");
+    }
+
+    function cetakLPK(noAgenda, namaProduk) {
+      if (namaProduk) {
+        cetakLPKSatuan(noAgenda, namaProduk);
+      } else {
+        cetakLPKGabungan(noAgenda);
+      }
+    }
+
+    function cetakSP(noAgenda, namaProduk) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const claims = getClaims();
+      const claim = claims.find(c => (c.noRegistrasi === targetAgenda || c.noAgenda === targetAgenda || c.noReg === targetAgenda)) || {};
+      const isApproved = (claim.status === 'Selesai' || claim.status === 'SP Terbit' || claim.status === 'Proses Pembayaran');
+
+      if (!isApproved) {
+        showToast("Peringatan Cetak SP", "Dokumen Surat Perintah (SP) resmi hanya dapat dicetak setelah status klaim 'SP Terbit' / 'Selesai'.", "warning");
+        return;
+      }
+
+      const targetProd = namaProduk || (typeof activeNamaProduk !== 'undefined' ? activeNamaProduk : null);
+      const ctx = buildLPKContext(targetAgenda, targetProd);
+      const html = generateSPHtml(ctx, targetProd, false);
+      const title = `Surat Perintah (SP) Resmi - ${ctx.noAgenda}`;
+
+      const w = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
+      if (w) {
+        w.document.write(`<!DOCTYPE html><html><head><title>${title}</title><style>@media print{body{margin:0}}</style></head><body style="margin:0;padding:16px;background:#f8fafc;">
+          <div style="text-align:center;margin-bottom:12px;">
+            <button onclick="window.print()" style="background:#047857;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🖨️ Cetak / Simpan Dokumen Resmi SP</button>
+          </div>
+          ${html}
+        </body></html>`);
+        w.document.close();
+      }
+      showToast("Surat Perintah (SP)", `Dokumen Surat Perintah resmi untuk ${ctx.nama} berhasil disiapkan.`, "success");
     }
   </script>
 </body>

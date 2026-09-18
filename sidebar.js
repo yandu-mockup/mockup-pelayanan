@@ -65,10 +65,11 @@ function renderSidebar(activePage) {
     },
     { id: 'request-umum', label: '12. Request Umum', icon: 'fas fa-envelope-open-text', href: 'request-umum.html', subMenu: [] },
     { id: 'sejarah-sp', label: '13. Sejarah SP', icon: 'fas fa-clock-rotate-left', href: 'sejarah-sp.html', subMenu: [] },
-    { id: 'rekap-waktu-layanan', label: '14. Rekap Waktu Layanan', icon: 'fas fa-chart-line', href: 'rekap-waktu-layanan.html', subMenu: [] },
+    { id: 'pembatalan-sp', label: '14. List Pembatalan SP', icon: 'fas fa-ban', href: 'pembatalan-sp.html', subMenu: [] },
+    { id: 'rekap-waktu-layanan', label: '15. Rekap Waktu Layanan', icon: 'fas fa-chart-line', href: 'rekap-waktu-layanan.html', subMenu: [] },
     {
       id: 'monitoring-sp3r',
-      label: '15. Monitoring SP3R',
+      label: '16. Monitoring SP3R',
       icon: 'fas fa-chart-pie',
       href: '#',
       subMenu: [
