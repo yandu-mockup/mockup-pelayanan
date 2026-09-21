@@ -545,6 +545,56 @@ const MOCK_PESERTA = [
     statusKepesertaan: "Aktif",
     gaji_pokok_terakhir: 3800000,
     kantor_bayar: { bank: "Bank BNI", jenis_tabungan: "Tabungan", no_rekening: "7766554433" }
+  },
+  {
+    nik: "3201231508990007",
+    nama: "Rian Pratama",
+    noPeserta: "-",
+    no_ktpa: "-",
+    pangkat: "-",
+    golongan_pangkat: "-",
+    gaji_pokok_terakhir: 0,
+    gaji_pokok: 0,
+    gajiPokok: 0,
+    unitKerja: "-",
+    kesatuan: "-",
+    angkatan: "-",
+    statusKepesertaan: "Pending",
+    status_kepesertaan: "Pending",
+    status: "Pending",
+    status_ktpa: "Pending (Belum Terbit)",
+    isManual: true,
+    isPending: true,
+    dataLengkap: false,
+    catatanPending: "Data kepesertaan belum lengkap (Menunggu SK Pengangkatan/Prajurit Asli, Kartu Keluarga, dan Buku Rekening Bank).",
+    dokumenPending: [
+      "SK Pengangkatan / CPNS / Prajurit Asli",
+      "Kartu Keluarga (KK)",
+      "Buku Rekening Bank"
+    ],
+    ikut_tppd: false,
+    jenis_kelamin: "L",
+    tanggal_lahir: "1999-08-15",
+    tempat_lahir: "-",
+    nrp_nip: "3201231508990007",
+    nopens: "-",
+    npwp: "-",
+    alamat: "-",
+    rt_rw: "-",
+    desa: "-",
+    kecamatan: "-",
+    kota: "-",
+    provinsi: "-",
+    kodepos: "-",
+    alamatDomisili: "-",
+    no_telpon: "-",
+    pasangan: null,
+    anak: [],
+    keluarga: [],
+    riwayatPangkat: [],
+    riwayatGaji: [],
+    riwayatSkorsing: [],
+    kantor_bayar: { bank: "-", jenis_tabungan: "-", no_rekening: "-" }
   }
 ];
 
@@ -800,6 +850,27 @@ const MOCK_CLAIMS = [
     catatan: "Review nilai tunai iuran.",
     dokumen: ["KTP.pdf"],
     auditTrail: [{ tanggal: "10 Mei 2025 10:00", user: "Sistem YANDU", aksi: "Registrasi Dibuat", keterangan: "Pendaftaran online" }]
+  },
+  {
+    noRegistrasi: "REG/000089/0123/IX/2026",
+    nik: "3201231508990007",
+    namaPeserta: "Rian Pratama",
+    jenisKlaim: "JKK",
+    manfaatKlaim: "Perawatan",
+    sumber: "Kantor Cabang",
+    tanggalRegistrasi: "21 Sep 2026",
+    status: "Dokumen Terpending",
+    isManual: true,
+    isPending: true,
+    dataLengkap: false,
+    slaStart: 1758425400000,
+    sla: { waktu: "FREEZE", status: "freeze" },
+    kantorCabang: "KC Utama Jakarta",
+    catatan: "Data kepesertaan belum lengkap (Pending verifikasi dokumen fisik & SK).",
+    dokumen: [],
+    auditTrail: [
+      { tanggal: "21 Sep 2026 09:00", user: "Staf Loket", aksi: "Registrasi Pending", keterangan: "Registrasi dibuat dalam status Pending karena data dan dokumen peserta belum lengkap" }
+    ]
   }
 ];
 

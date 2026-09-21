@@ -273,6 +273,27 @@
             <!-- SCROLLABLE TAB PANE CONTENT AREA -->
             <div class="flex-1 overflow-y-auto p-8">
               <div class="max-w-5xl mx-auto space-y-6">
+                
+                <!-- PENDING / INCOMPLETE PARTICIPANT ALERT BANNER -->
+                <div id="pending-participant-alert" class="hidden p-4 bg-amber-50 border border-amber-300 rounded-2xl flex items-start gap-3.5 shadow-sm transition-all animate-fadeIn">
+                  <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-sm">
+                    <i class="fas fa-triangle-exclamation text-base"></i>
+                  </div>
+                  <div class="flex-1 space-y-1.5">
+                    <div class="flex items-center gap-2 flex-wrap">
+                      <h5 class="text-xs font-bold text-amber-950">Status Kepesertaan: PENDING (Data Peserta Belum Lengkap)</h5>
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-200 text-amber-900 border border-amber-300">Menunggu Kelengkapan Dokumen</span>
+                    </div>
+                    <p id="pending-participant-notes" class="text-xs text-amber-800 leading-relaxed">Data kepesertaan peserta ini belum lengkap. Harap lengkapi berkas persyaratan fisik dan administratif untuk menyelesaikan verifikasi kepesertaan.</p>
+                    <div class="pt-1 flex flex-wrap items-center gap-2 text-[11px]">
+                      <span class="text-[11px] font-bold text-amber-900">Dokumen yang Masih Kurang:</span>
+                      <span class="px-2 py-0.5 bg-amber-100/90 border border-amber-300 text-amber-900 font-semibold rounded-lg flex items-center gap-1"><i class="fas fa-file-circle-xmark text-amber-600 text-[10px]"></i> SK Pengangkatan/CPNS Asli</span>
+                      <span class="px-2 py-0.5 bg-amber-100/90 border border-amber-300 text-amber-900 font-semibold rounded-lg flex items-center gap-1"><i class="fas fa-file-circle-xmark text-amber-600 text-[10px]"></i> Kartu Keluarga (KK)</span>
+                      <span class="px-2 py-0.5 bg-amber-100/90 border border-amber-300 text-amber-900 font-semibold rounded-lg flex items-center gap-1"><i class="fas fa-file-circle-xmark text-amber-600 text-[10px]"></i> Rekening Bank Mitra</span>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- TAB 1: Update Data -->
                 <div id="tab-update" class="tab-pane active space-y-6">
                   <!-- Sub-tabs Nav Bar -->
@@ -2593,19 +2614,26 @@
         const tr = document.createElement("tr");
         tr.className = "odd:bg-asabri-softBlue/30 hover:bg-slate-50";
         
+        const isPending = (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending);
         // Setup JSON representation to pass safely
         const pJson = encodeURIComponent(JSON.stringify(p));
 
         tr.innerHTML = `
-          <td class="px-4 py-3 font-semibold">${p.no_ktpa || p.noPeserta || '-'}</td>
+          <td class="px-4 py-3 font-semibold">
+            ${p.no_ktpa || p.noPeserta || '-'}
+            ${isPending ? '<span class="ml-1 px-2 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pending</span>' : ''}
+          </td>
           <td class="px-4 py-3 font-mono">${p.nrp_nip || '-'}</td>
           <td class="px-4 py-3 font-mono">${p.nopens || '-'}</td>
-          <td class="px-4 py-3 font-bold">${p.nama || '-'}</td>
+          <td class="px-4 py-3 font-bold">
+            ${p.nama || '-'}
+            ${isPending ? '<span class="block text-[10px] font-normal text-amber-700 italic">Data belum lengkap</span>' : ''}
+          </td>
           <td class="px-4 py-3">${p.angkatan || p.unitKerja || '-'}</td>
           <td class="px-4 py-3 font-mono">${p.nik || '-'}</td>
           <td class="px-4 py-3 text-center">
-            <button type="button" onclick="openParticipantProfileFromTable('${pJson}')" class="px-3 py-1 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-lg transition-all text-[11px] shadow-sm">
-              <i class="fas fa-folder-open mr-1"></i> Buka Data Peserta
+            <button type="button" onclick="openParticipantProfileFromTable('${pJson}')" class="px-3 py-1 ${isPending ? 'bg-amber-600 hover:bg-amber-700' : 'bg-asabri-blue hover:bg-asabri-blueDark'} text-white font-bold rounded-lg transition-all text-[11px] shadow-sm flex items-center gap-1 mx-auto">
+              <i class="fas fa-folder-open text-[10px]"></i> Buka Data Peserta
             </button>
           </td>
         `;
@@ -2623,6 +2651,20 @@
       activeParticipant = p;
       addAutoVisitRecord();
       
+      const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
+      
+      // Show/hide pending participant alert banner
+      const pendingAlert = document.getElementById('pending-participant-alert');
+      if (pendingAlert) {
+        if (isPending) {
+          pendingAlert.classList.remove('hidden');
+          const notesEl = document.getElementById('pending-participant-notes');
+          if (notesEl && p.catatanPending) notesEl.innerText = p.catatanPending;
+        } else {
+          pendingAlert.classList.add('hidden');
+        }
+      }
+
       // Populate Panel Kiri: Detail Peserta
       document.getElementById('side-nama').innerText = p.nama || '-';
       document.getElementById('side-nip').innerText = p.nrp_nip || p.nik || '-';
@@ -2985,36 +3027,37 @@
     }
 
     function populateProfilSubTab(p) {
+      const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
       const setVal = (id, val) => {
         const el = document.getElementById(id);
-        if (el) el.value = val;
+        if (el) el.value = val !== undefined && val !== null ? val : '-';
       };
 
       setVal('prof-ktpa', p.no_ktpa || p.noPeserta || '-');
       setVal('prof-nama', p.nama || '-');
       setVal('prof-nrp', p.nrp_nip || '-');
       setVal('prof-identitas', p.nik || '-');
-      setVal('prof-npwp', p.npwp || '09.234.567.8-012.000');
-      setVal('prof-tgl-daftar', p.tglDaftar || '12 Jan 2015');
-      setVal('prof-ttl', (p.tempat_lahir || 'Jakarta') + ', ' + (p.tanggal_lahir || '-'));
+      setVal('prof-npwp', p.npwp || (isPending ? '-' : '09.234.567.8-012.000'));
+      setVal('prof-tgl-daftar', p.tglDaftar || (isPending ? '-' : '12 Jan 2015'));
+      setVal('prof-ttl', p.tempat_lahir ? (p.tempat_lahir + ', ' + (p.tanggal_lahir || '-')) : (isPending ? (p.tanggal_lahir ? '- , ' + p.tanggal_lahir : '-') : ('Jakarta, ' + (p.tanggal_lahir || '-'))));
       
       // Populate KTP
-      setVal('prof-alamat', p.alamat || 'Jl. Sudirman No. 45');
-      setVal('prof-rt-rw', p.rt_rw || '002/005');
-      setVal('prof-desa', p.desa || 'Karet Semanggi');
-      setVal('prof-kecamatan', p.kecamatan || 'Setiabudi');
-      setVal('prof-kota', p.kota || 'Jakarta Selatan');
-      setVal('prof-provinsi', p.provinsi || 'DKI Jakarta');
-      setVal('prof-kodepos', p.kodepos || '12930');
+      setVal('prof-alamat', p.alamat || (isPending ? '-' : 'Jl. Sudirman No. 45'));
+      setVal('prof-rt-rw', p.rt_rw || (isPending ? '-' : '002/005'));
+      setVal('prof-desa', p.desa || (isPending ? '-' : 'Karet Semanggi'));
+      setVal('prof-kecamatan', p.kecamatan || (isPending ? '-' : 'Setiabudi'));
+      setVal('prof-kota', p.kota || (isPending ? '-' : 'Jakarta Selatan'));
+      setVal('prof-provinsi', p.provinsi || (isPending ? '-' : 'DKI Jakarta'));
+      setVal('prof-kodepos', p.kodepos || (isPending ? '-' : '12930'));
 
       // Populate Domisili
-      setVal('prof-alamat-domisili', p.alamatDomisili || p.alamat || 'Jl. Sudirman No. 45');
-      setVal('prof-rt-rw-domisili', p.rt_rw_domisili || p.rt_rw || '002/005');
-      setVal('prof-desa-domisili', p.desa_domisili || p.desa || 'Karet Semanggi');
-      setVal('prof-kecamatan-domisili', p.kecamatan_domisili || p.kecamatan || 'Setiabudi');
-      setVal('prof-kota-domisili', p.kota_domisili || p.kota || 'Jakarta Selatan');
-      setVal('prof-provinsi-domisili', p.provinsi_domisili || p.provinsi || 'DKI Jakarta');
-      setVal('prof-kodepos-domisili', p.kodepos_domisili || p.kodepos || '12930');
+      setVal('prof-alamat-domisili', p.alamatDomisili || (isPending ? '-' : (p.alamat || 'Jl. Sudirman No. 45')));
+      setVal('prof-rt-rw-domisili', p.rt_rw_domisili || (isPending ? '-' : (p.rt_rw || '002/005')));
+      setVal('prof-desa-domisili', p.desa_domisili || (isPending ? '-' : (p.desa || 'Karet Semanggi')));
+      setVal('prof-kecamatan-domisili', p.kecamatan_domisili || (isPending ? '-' : (p.kecamatan || 'Setiabudi')));
+      setVal('prof-kota-domisili', p.kota_domisili || (isPending ? '-' : (p.kota || 'Jakarta Selatan')));
+      setVal('prof-provinsi-domisili', p.provinsi_domisili || (isPending ? '-' : (p.provinsi || 'DKI Jakarta')));
+      setVal('prof-kodepos-domisili', p.kodepos_domisili || (isPending ? '-' : (p.kodepos || '12930')));
 
       const isSama = p.alamatDomisili ? (p.alamatDomisili === p.alamat) : true;
       const elSama = document.getElementById('prof-alamat-sama');
@@ -3034,26 +3077,26 @@
         });
       });
 
-      setVal('prof-status-ktpa', 'Aktif / Terverifikasi');
-      setVal('prof-status-pens', p.statusPensiun || 'Aktif');
-      setVal('prof-telp', p.no_telpon || p.noTelp || '0812-3456-7890');
-      setVal('prof-email', 'peserta.asabri@email.com');
-      setVal('prof-ibu', 'Siti Rahmah');
-      setVal('prof-unor', 'DITAD');
-      setVal('prof-pangkat-awal', 'Letda');
-      setVal('prof-pangkat-akhir', p.pangkat || 'Kolonel');
-      setVal('prof-kodejiwa', '10-001');
-      setVal('prof-bintang', 'Bintang Yudha Dharma Nararya');
+      setVal('prof-status-ktpa', p.status_ktpa || (isPending ? 'Pending (Belum Terbit)' : 'Aktif / Terverifikasi'));
+      setVal('prof-status-pens', p.statusKepesertaan || p.statusPensiun || (isPending ? 'Pending' : 'Aktif'));
+      setVal('prof-telp', p.no_telpon || p.noTelp || (isPending ? '-' : '0812-3456-7890'));
+      setVal('prof-email', isPending ? '-' : 'peserta.asabri@email.com');
+      setVal('prof-ibu', isPending ? '-' : 'Siti Rahmah');
+      setVal('prof-unor', isPending ? '-' : (p.kesatuan || 'DITAD'));
+      setVal('prof-pangkat-awal', isPending ? '-' : 'Letda');
+      setVal('prof-pangkat-akhir', p.pangkat || (isPending ? '-' : 'Kolonel'));
+      setVal('prof-kodejiwa', isPending ? '-' : '10-001');
+      setVal('prof-bintang', isPending ? '-' : 'Bintang Yudha Dharma Nararya');
 
       // Kanan
-      setVal('prof-pdw', p.pdw || 'DITAD');
-      setVal('prof-satker-awal', p.satkerAwal || 'KODAM JAYA');
-      setVal('prof-satker-akhir', p.satkerAkhir || 'MABESAD');
-      setVal('prof-skep-pengangkatan', 'SKEP/405/VIII/2012');
-      setVal('prof-tgl-skep', '2012-08-15');
-      setVal('prof-tmt-skep', '01 Sep 2012');
-      setVal('prof-tmt-cpns', p.tmtCpns || '2012-09-01');
-      setVal('prof-tmt-pns', p.tmtPns || '2013-09-01');
+      setVal('prof-pdw', isPending ? '-' : (p.pdw || 'DITAD'));
+      setVal('prof-satker-awal', isPending ? '-' : (p.satkerAwal || 'KODAM JAYA'));
+      setVal('prof-satker-akhir', isPending ? '-' : (p.satkerAkhir || p.unitKerja || 'MABESAD'));
+      setVal('prof-skep-pengangkatan', isPending ? '-' : 'SKEP/405/VIII/2012');
+      setVal('prof-tgl-skep', isPending ? '' : '2012-08-15');
+      setVal('prof-tmt-skep', isPending ? '-' : '01 Sep 2012');
+      setVal('prof-tmt-cpns', p.tmtCpns || (isPending ? '' : '2012-09-01'));
+      setVal('prof-tmt-pns', p.tmtPns || (isPending ? '' : '2013-09-01'));
       
       const statusPersonil = p.statusPersonil || p.status_personil || 'TNI/Polri';
       const cpnsContainer = document.getElementById('prof-tmt-cpns-container');
@@ -3069,24 +3112,24 @@
       }
       setVal('prof-tmt-awal-iuran', p.tmtAwalIuran || '');
       setVal('prof-tmt-akhir-iuran', p.tmtAkhirIuran || '');
-      setVal('prof-tmt-pensiun', '01 Aug 2026');
-      setVal('prof-tgl-skep-pensiun', '2026-05-10');
-      setVal('prof-no-skep-pensiun', 'SKEP-PENS/1102/V/2026');
-      setVal('prof-tmt-skpp', '01 Sep 2026');
-      setVal('prof-nopens', p.nopens || '800012345');
-      setVal('prof-nopens-2', p.nopens || '800012345');
-      setVal('prof-penspok', 'Rp 4.500.000');
+      setVal('prof-tmt-pensiun', isPending ? '-' : '01 Aug 2026');
+      setVal('prof-tgl-skep-pensiun', isPending ? '' : '2026-05-10');
+      setVal('prof-no-skep-pensiun', isPending ? '-' : 'SKEP-PENS/1102/V/2026');
+      setVal('prof-tmt-skpp', isPending ? '-' : '01 Sep 2026');
+      setVal('prof-nopens', p.nopens || (isPending ? '-' : '800012345'));
+      setVal('prof-nopens-2', p.nopens || (isPending ? '-' : '800012345'));
+      setVal('prof-penspok', isPending ? 'Rp 0' : 'Rp 4.500.000');
       setVal('prof-tunjangan-cacat', 'Rp 0');
-      setVal('prof-status-hidup', 'Hidup');
+      setVal('prof-status-hidup', isPending ? 'Hidup (Pending Verifikasi)' : 'Hidup');
       setVal('prof-tgl-meninggal', '-');
       setVal('prof-tgl-nonaktif', '-');
-      setVal('prof-jk', 'Laki-laki');
-      setVal('prof-mkd', '32 Tahun');
-      setVal('prof-mkg', '28 Tahun');
-      setVal('prof-tgl-dapem', '01 Jul 2026');
-      setVal('prof-batas-hak', 'Seumur Hidup');
-      setVal('prof-tgl-sptb', '15 Jan 2026');
-      setVal('prof-tgl-ambil', '05 Jul 2026');
+      setVal('prof-jk', p.jenis_kelamin === 'P' ? 'Perempuan' : 'Laki-laki');
+      setVal('prof-mkd', isPending ? '-' : '32 Tahun');
+      setVal('prof-mkg', isPending ? '-' : '28 Tahun');
+      setVal('prof-tgl-dapem', isPending ? '-' : '01 Jul 2026');
+      setVal('prof-batas-hak', isPending ? '-' : 'Seumur Hidup');
+      setVal('prof-tgl-sptb', isPending ? '-' : '15 Jan 2026');
+      setVal('prof-tgl-ambil', isPending ? '-' : '05 Jul 2026');
       setVal('prof-tgl-hilang', '');
       setVal('prof-tgl-temu', '');
       setVal('prof-tgl-stop-tunjang', '');
@@ -3162,11 +3205,19 @@
       const famBody = document.getElementById('fam-table-body');
       if (!famBody) return;
       
+      famBody.innerHTML = '';
       if (!meKeluargaList || meKeluargaList.length === 0) {
-        meKeluargaList = JSON.parse(JSON.stringify(DUMMY_KELUARGA));
+        famBody.innerHTML = `
+          <tr>
+            <td colspan="12" class="py-8 text-center text-slate-400 italic text-xs">
+              <i class="fas fa-users-slash text-slate-300 text-xl block mb-2"></i>
+              Belum ada data keluarga terdaftar (Data Peserta Belum Lengkap / Pending).
+            </td>
+          </tr>
+        `;
+        return;
       }
 
-      famBody.innerHTML = '';
       meKeluargaList.forEach((item, index) => {
         const tr = document.createElement('tr');
         tr.className = 'hover:bg-slate-50';
@@ -3208,6 +3259,14 @@
     }
 
     function populateKeluargaSubTab(p) {
+      const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
+      if (isPending || (p && p.keluarga && p.keluarga.length === 0)) {
+        meKeluargaList = [];
+      } else if (p && p.keluarga && p.keluarga.length > 0) {
+        meKeluargaList = JSON.parse(JSON.stringify(p.keluarga));
+      } else if (!isPending && (!meKeluargaList || meKeluargaList.length === 0)) {
+        meKeluargaList = JSON.parse(JSON.stringify(DUMMY_KELUARGA));
+      }
       renderKeluargaTable();
       renderKeluargaHistoryTable();
       if (typeof renderSptbTable === 'function') renderSptbTable();
@@ -3215,47 +3274,69 @@
 
     function populateRhsSubTab(p) {
       console.log('populateRhsSubTab dipanggil! activeParticipant:', p);
+      const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
       const sekTbody = document.getElementById('rhs-sekarang-tbody');
       if (sekTbody) {
-        sekTbody.innerHTML = `
-          <tr class="hover:bg-slate-50">
-            <td class="py-2 px-3 font-bold text-slate-700">Letda</td>
-            <td class="py-2 px-3 font-mono">01 Sep 2012</td>
-            <td class="py-2 px-3 font-mono">SKEP/405/VIII/2012</td>
-          </tr>
-          <tr class="hover:bg-slate-50">
-            <td class="py-2 px-3 font-bold text-slate-700">Kapten</td>
-            <td class="py-2 px-3 font-mono">01 Apr 2016</td>
-            <td class="py-2 px-3 font-mono">SKEP/102/IV/2016</td>
-          </tr>
-          <tr class="hover:bg-slate-50">
-            <td class="py-2 px-3 font-bold text-slate-700">Mayor</td>
-            <td class="py-2 px-3 font-mono">01 Apr 2020</td>
-            <td class="py-2 px-3 font-mono">SKEP/54/IV/2020</td>
-          </tr>
-        `;
+        if (isPending || (p && p.riwayatPangkat && p.riwayatPangkat.length === 0)) {
+          sekTbody.innerHTML = `
+            <tr>
+              <td colspan="3" class="py-6 text-center text-slate-400 italic text-xs">
+                <i class="fas fa-file-lines text-slate-300 text-lg block mb-1"></i>
+                Belum ada data kepangkatan saat ini (Data Peserta Pending).
+              </td>
+            </tr>
+          `;
+        } else {
+          sekTbody.innerHTML = `
+            <tr class="hover:bg-slate-50">
+              <td class="py-2 px-3 font-bold text-slate-700">Letda</td>
+              <td class="py-2 px-3 font-mono">01 Sep 2012</td>
+              <td class="py-2 px-3 font-mono">SKEP/405/VIII/2012</td>
+            </tr>
+            <tr class="hover:bg-slate-50">
+              <td class="py-2 px-3 font-bold text-slate-700">Kapten</td>
+              <td class="py-2 px-3 font-mono">01 Apr 2016</td>
+              <td class="py-2 px-3 font-mono">SKEP/102/IV/2016</td>
+            </tr>
+            <tr class="hover:bg-slate-50">
+              <td class="py-2 px-3 font-bold text-slate-700">Mayor</td>
+              <td class="py-2 px-3 font-mono">01 Apr 2020</td>
+              <td class="py-2 px-3 font-mono">SKEP/54/IV/2020</td>
+            </tr>
+          `;
+        }
       }
 
       const rhsTbody = document.getElementById('rhs-riwayat-tbody');
       if (rhsTbody) {
-        rhsTbody.innerHTML = `
-          <tr class="hover:bg-slate-50" id="rhs-row-1">
-            <td class="py-2 px-3 font-bold text-slate-700">Letda</td>
-            <td class="py-2 px-3 font-mono">01 Sep 2012</td>
-            <td class="py-2 px-3 font-mono">SKEP/405/VIII/2012</td>
-            <td class="py-2 px-3 text-center">
-              <button onclick="document.getElementById('rhs-row-1').remove(); showToast('Hapus Baris RHS', 'Baris RHS berhasil dihapus.', 'info')" class="text-rose-600 hover:text-rose-800"><i class="fas fa-trash"></i></button>
-            </td>
-          </tr>
-          <tr class="hover:bg-slate-50" id="rhs-row-2">
-            <td class="py-2 px-3 font-bold text-slate-700">Kapten</td>
-            <td class="py-2 px-3 font-mono">01 Apr 2016</td>
-            <td class="py-2 px-3 font-mono">SKEP/102/IV/2016</td>
-            <td class="py-2 px-3 text-center">
-              <button onclick="document.getElementById('rhs-row-2').remove(); showToast('Hapus Baris RHS', 'Baris RHS berhasil dihapus.', 'info')" class="text-rose-600 hover:text-rose-800"><i class="fas fa-trash"></i></button>
-            </td>
-          </tr>
-        `;
+        if (isPending || (p && p.riwayatPangkat && p.riwayatPangkat.length === 0)) {
+          rhsTbody.innerHTML = `
+            <tr>
+              <td colspan="4" class="py-6 text-center text-slate-400 italic text-xs">
+                Belum ada riwayat kepangkatan tercatat (Data Peserta Pending).
+              </td>
+            </tr>
+          `;
+        } else {
+          rhsTbody.innerHTML = `
+            <tr class="hover:bg-slate-50" id="rhs-row-1">
+              <td class="py-2 px-3 font-bold text-slate-700">Letda</td>
+              <td class="py-2 px-3 font-mono">01 Sep 2012</td>
+              <td class="py-2 px-3 font-mono">SKEP/405/VIII/2012</td>
+              <td class="py-2 px-3 text-center">
+                <button onclick="document.getElementById('rhs-row-1').remove(); showToast('Hapus Baris RHS', 'Baris RHS berhasil dihapus.', 'info')" class="text-rose-600 hover:text-rose-800"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+            <tr class="hover:bg-slate-50" id="rhs-row-2">
+              <td class="py-2 px-3 font-bold text-slate-700">Kapten</td>
+              <td class="py-2 px-3 font-mono">01 Apr 2016</td>
+              <td class="py-2 px-3 font-mono">SKEP/102/IV/2016</td>
+              <td class="py-2 px-3 text-center">
+                <button onclick="document.getElementById('rhs-row-2').remove(); showToast('Hapus Baris RHS', 'Baris RHS berhasil dihapus.', 'info')" class="text-rose-600 hover:text-rose-800"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+          `;
+        }
       }
 
 
@@ -3357,6 +3438,11 @@
       const tbody = document.getElementById('cacat-table-body');
       if (!tbody) return;
       tbody.innerHTML = "";
+      const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
+      if (isPending) {
+        tbody.innerHTML = `<tr><td colspan="10" class="py-6 text-center text-slate-400 italic text-xs">Tidak ada data kecacatan untuk peserta ini.</td></tr>`;
+        return;
+      }
       const nik = p.nik || "3273120105910003";
       const rawCacat = localStorage.getItem(`cacatData_${nik}`);
       const listCacat = rawCacat ? JSON.parse(rawCacat) : [];
@@ -3400,6 +3486,42 @@
 
     function populateDokumenSubTab(p) {
       const tbody = document.getElementById('dokumen-table-body');
+      if (!tbody) return;
+      const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
+      
+      if (isPending) {
+        tbody.innerHTML = `
+          <tr class="hover:bg-amber-50/50 bg-amber-50/20">
+            <td class="py-2.5 px-3 font-mono text-slate-500">-</td>
+            <td class="py-2.5 px-3 font-bold text-slate-800 flex items-center gap-2">
+              <i class="fas fa-file-circle-xmark text-amber-600 text-xs"></i> SK Pengangkatan / CPNS Asli
+            </td>
+            <td class="py-2.5 px-3">${p.nama || '-'}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Belum Diunggah</span></td>
+            <td class="py-2.5 px-3 text-center text-slate-400 italic text-xs">Pending</td>
+          </tr>
+          <tr class="hover:bg-amber-50/50 bg-amber-50/20">
+            <td class="py-2.5 px-3 font-mono text-slate-500">-</td>
+            <td class="py-2.5 px-3 font-bold text-slate-800 flex items-center gap-2">
+              <i class="fas fa-file-circle-xmark text-amber-600 text-xs"></i> Kartu Keluarga (KK)
+            </td>
+            <td class="py-2.5 px-3">${p.nama || '-'}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Belum Diunggah</span></td>
+            <td class="py-2.5 px-3 text-center text-slate-400 italic text-xs">Pending</td>
+          </tr>
+          <tr class="hover:bg-amber-50/50 bg-amber-50/20">
+            <td class="py-2.5 px-3 font-mono text-slate-500">-</td>
+            <td class="py-2.5 px-3 font-bold text-slate-800 flex items-center gap-2">
+              <i class="fas fa-file-circle-xmark text-amber-600 text-xs"></i> Buku Rekening Bank Mitra
+            </td>
+            <td class="py-2.5 px-3">${p.nama || '-'}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Belum Diunggah</span></td>
+            <td class="py-2.5 px-3 text-center text-slate-400 italic text-xs">Pending</td>
+          </tr>
+        `;
+        return;
+      }
+
       tbody.innerHTML = `
         <tr class="hover:bg-slate-50">
           <td class="py-2.5 px-3 font-mono text-slate-500">10 Jul 2026</td>
@@ -3607,7 +3729,12 @@
     }
 
     function populateRekeningTab(p) {
-      if (p && p.nik) {
+      const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
+      
+      if (isPending) {
+        rekeningDaftarData = [];
+        rekeningRequestData = [];
+      } else if (p && p.nik) {
         try {
           const localData = localStorage.getItem("rekeningData_" + p.nik);
           if (localData && localData !== "undefined" && localData !== "null") {
@@ -3630,27 +3757,39 @@
         ];
       }
       
-      if (rekeningRequestData === null) {
+      if (!isPending && rekeningRequestData === null) {
         rekeningRequestData = [
           { hubKeluarga: 'Istri', namaRek: (p ? p.nama : 'MOCK') + ' (Istri)', noRek: '0987654321', mitra: 'Bank Mandiri', cabang: 'Jakarta Barat' }
         ];
       }
       
       const tbody = document.getElementById('rek-daftar-tbody');
-      tbody.innerHTML = rekeningDaftarData.map((r, index) => {
-        return `
-          <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
-            <td class="py-2.5 px-3 font-semibold text-slate-700">${r.hubKeluarga || 'Peserta Sendiri'}</td>
-            <td class="py-2.5 px-3 font-bold text-slate-800">${r.atasNama || r.namaRek || '-'}</td>
-            <td class="py-2.5 px-3 font-mono">${r.nomorRekening || r.noRek || '-'}</td>
-            <td class="py-2.5 px-3 font-medium text-slate-800">${r.bank || r.mitra || '-'}</td>
-            <td class="py-2.5 px-3">${r.cabang || '-'}</td>
-            <td class="py-2.5 px-3 text-center">
-              <button onclick="deleteRekening(${index})" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[10px] font-bold shadow-sm transition-all">Hapus</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+      if (tbody) {
+        if (!rekeningDaftarData || rekeningDaftarData.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="6" class="py-6 text-center text-slate-400 italic text-xs">
+                Belum ada rekening pembayaran terdaftar (Data Peserta Pending).
+              </td>
+            </tr>
+          `;
+        } else {
+          tbody.innerHTML = rekeningDaftarData.map((r, index) => {
+            return `
+              <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
+                <td class="py-2.5 px-3 font-semibold text-slate-700">${r.hubKeluarga || 'Peserta Sendiri'}</td>
+                <td class="py-2.5 px-3 font-bold text-slate-800">${r.atasNama || r.namaRek || '-'}</td>
+                <td class="py-2.5 px-3 font-mono">${r.nomorRekening || r.noRek || '-'}</td>
+                <td class="py-2.5 px-3 font-medium text-slate-800">${r.bank || r.mitra || '-'}</td>
+                <td class="py-2.5 px-3">${r.cabang || '-'}</td>
+                <td class="py-2.5 px-3 text-center">
+                  <button onclick="deleteRekening(${index})" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded text-[10px] font-bold shadow-sm transition-all">Hapus</button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
 
       const reqBody = document.getElementById('rek-req-tbody');
       reqBody.innerHTML = rekeningRequestData.map(r => `
@@ -3805,10 +3944,13 @@
     }
 
     function populateHutangTab(p) {
-      const activeNopens = p ? (p.nopens || '800012345') : '800012345';
-      const activeKtpa = p ? (p.no_ktpa || p.noPeserta || 'KTPA-991283') : 'KTPA-991283';
+      const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
+      const activeNopens = p ? (p.nopens || '-') : '-';
+      const activeKtpa = p ? (p.no_ktpa || p.noPeserta || '-') : '-';
 
-      if (p && p.nik) {
+      if (isPending) {
+        hutangData = [];
+      } else if (p && p.nik) {
         const localHutang = localStorage.getItem("hutangData_" + p.nik);
         if (localHutang) {
           try { hutangData = JSON.parse(localHutang); } catch(e){}

@@ -4,19 +4,28 @@
    halaman-halaman yang belum memakai renderSidebar(). */
 function renderSidebar(activePage) {
   const currentFilename = window.location.pathname.split('/').pop() || 'index.html';
+  const currentFullUrl = currentFilename + window.location.search;
 
   const menuItems = [
     { id: 'dashboard', label: '1. Dashboard', icon: 'fas fa-chart-pie', href: 'index.html', subMenu: [] },
-    { id: 'registrasi', label: '2. Pelayanan Registrasi Klaim Peserta', icon: 'fas fa-pen-to-square', href: 'registrasi.html', subMenu: [] },
+    {
+      id: 'pelayanan-klaim',
+      label: '2. Pelayanan Klaim',
+      icon: 'fas fa-file-invoice-dollar',
+      href: '#',
+      subMenu: [
+        { id: 'registrasi', label: 'Registrasi Klaim', href: 'registrasi.html' },
+        { id: 'kejadian', label: 'Klaim Kejadian', href: 'kejadian.html' },
+        { id: 'verifikasi', label: 'List Request Verifikasi', href: 'verifikasi.html' },
+        { id: 'approval-produk', label: 'List Request Approval', href: 'approval-produk.html' },
+        { id: 'riwayat', label: 'Riwayat Transaksi', href: 'riwayat.html' }
+      ]
+    },
     { id: 'data-peserta', label: '3. Data Peserta', icon: 'fas fa-magnifying-glass', href: 'data-peserta.html', subMenu: [] },
-    { id: 'riwayat', label: '4. Riwayat Transaksi Klaim', icon: 'fas fa-clock-rotate-left', href: 'riwayat.html', subMenu: [] },
-    { id: 'kejadian', label: '5. Pelayanan Klaim', icon: 'fas fa-file-invoice', href: 'kejadian.html', subMenu: [] },
-    { id: 'verifikasi', label: '6. List Verifikasi', icon: 'fas fa-file-signature', href: 'verifikasi.html', subMenu: [] },
-    { id: 'approval-produk', label: '7. List Request Approval Produk', icon: 'fas fa-file-circle-check', href: 'approval-produk.html', subMenu: [] },
-    { id: 'dapem-susulan', label: '8. Dapem Susulan Sementara', icon: 'fas fa-file-invoice-dollar', href: 'dapem-susulan.html', subMenu: [] },
+    { id: 'dapem-susulan', label: '4. Dapem Susulan Sementara', icon: 'fas fa-file-invoice-dollar', href: 'dapem-susulan.html', subMenu: [] },
     {
       id: 'perbandingan-dapem',
-      label: '9. Perbandingan DAPEM',
+      label: '5. Perbandingan DAPEM',
       icon: 'fas fa-scale-balanced',
       href: '#',
       subMenu: [
@@ -26,7 +35,7 @@ function renderSidebar(activePage) {
     },
     {
       id: 'perawatan',
-      label: '10. Perawatan JKK',
+      label: '6. Perawatan JKK',
       icon: 'fas fa-hand-holding-medical',
       href: '#',
       subMenu: [
@@ -55,7 +64,7 @@ function renderSidebar(activePage) {
     },
     {
       id: 'komunikasi',
-      label: '11. Pelayanan Komunikasi Pelanggan',
+      label: '7. Pelayanan Komunikasi Pelanggan',
       icon: 'fas fa-comments',
       href: '#',
       subMenu: [
@@ -63,13 +72,13 @@ function renderSidebar(activePage) {
         { label: 'Riwayat Interaksi', href: 'komunikasi-riwayat.html' }
       ]
     },
-    { id: 'request-umum', label: '12. Request Umum', icon: 'fas fa-envelope-open-text', href: 'request-umum.html', subMenu: [] },
-    { id: 'sejarah-sp', label: '13. Sejarah SP', icon: 'fas fa-clock-rotate-left', href: 'sejarah-sp.html', subMenu: [] },
-    { id: 'pembatalan-sp', label: '14. List Pembatalan SP', icon: 'fas fa-ban', href: 'pembatalan-sp.html', subMenu: [] },
-    { id: 'rekap-waktu-layanan', label: '15. Rekap Waktu Layanan', icon: 'fas fa-chart-line', href: 'rekap-waktu-layanan.html', subMenu: [] },
+    { id: 'request-umum', label: '8. Request Umum', icon: 'fas fa-envelope-open-text', href: 'request-umum.html', subMenu: [] },
+    { id: 'sejarah-sp', label: '9. Sejarah SP', icon: 'fas fa-clock-rotate-left', href: 'sejarah-sp.html', subMenu: [] },
+    { id: 'pembatalan-sp', label: '10. List Pembatalan SP', icon: 'fas fa-ban', href: 'pembatalan-sp.html', subMenu: [] },
+    { id: 'rekap-waktu-layanan', label: '11. Rekap Waktu Layanan', icon: 'fas fa-chart-line', href: 'rekap-waktu-layanan.html', subMenu: [] },
     {
       id: 'monitoring-sp3r',
-      label: '16. Monitoring SP3R',
+      label: '12. Monitoring SP3R',
       icon: 'fas fa-chart-pie',
       href: '#',
       subMenu: [
@@ -79,11 +88,30 @@ function renderSidebar(activePage) {
     }
   ];
 
-  const currentFullUrl = window.location.pathname.split('/').pop() + window.location.search;
+  const isSubActive = (sub) => {
+    if (!sub || !sub.href || sub.href === '#') return false;
+    if (sub.id && activePage === sub.id) return true;
+    if (sub.href === currentFullUrl) return true;
+    if (sub.href.split('?')[0] === currentFilename && !sub.href.includes('?') && !window.location.search) return true;
+    if (sub.href.split('?')[0] === currentFilename && sub.href.includes('?') && window.location.search && sub.href.split('?')[1] === window.location.search.slice(1)) return true;
+    return false;
+  };
+
+  const isGroupActive = (item) => {
+    if (activePage === item.id) return true;
+    if (item.subMenu && item.subMenu.length > 0) {
+      return item.subMenu.some(sub => {
+        if (sub.subMenu) {
+          return sub.subMenu.some(nested => isSubActive(nested));
+        }
+        return isSubActive(sub);
+      });
+    }
+    return false;
+  };
 
   const subLink = (item) => {
-    const isCurrent = (item.href === currentFullUrl) || (item.href === currentFilename && !window.location.search);
-    const active = isCurrent ? ' active' : '';
+    const active = isSubActive(item) ? ' active' : '';
     return `
             <a href="${item.href}" class="nav-sublink${active}">
               <span class="dot"></span>
@@ -92,11 +120,12 @@ function renderSidebar(activePage) {
   };
 
   const sidebarHTML = menuItems.map(item => {
-    const isActive = activePage === item.id;
+    const isGroupOpen = isGroupActive(item);
+    const isDirectActive = (activePage === item.id) || (!item.subMenu.length && item.href === currentFilename);
 
     if (item.subMenu.length === 0) {
       return `
-          <a href="${item.href}" class="nav-link${isActive ? ' active' : ''}">
+          <a href="${item.href}" class="nav-link${isDirectActive ? ' active' : ''}">
             <span class="flex items-center gap-2.5 min-w-0">
               <i class="nav-ico ${item.icon}"></i>
               <span>${item.label}</span>
@@ -104,7 +133,7 @@ function renderSidebar(activePage) {
           </a>`;
     }
 
-    const chevron = isActive ? 'fa-chevron-down' : 'fa-chevron-right';
+    const chevron = isGroupOpen ? 'fa-chevron-down' : 'fa-chevron-right';
     const subItemsHTML = item.subMenu.map(sub => {
       if (sub.subMenu) {
         return `
@@ -115,14 +144,14 @@ function renderSidebar(activePage) {
 
     return `
           <div class="space-y-0.5">
-            <button type="button" onclick="toggleSidebarAccordion('submenu-${item.id}','chevron-${item.id}')" class="nav-link${isActive ? ' active' : ''}">
+            <button type="button" onclick="toggleSidebarAccordion('submenu-${item.id}','chevron-${item.id}')" class="nav-link${isGroupOpen ? ' active' : ''}">
               <span class="flex items-center gap-2.5 min-w-0">
                 <i class="nav-ico ${item.icon}"></i>
                 <span>${item.label}</span>
               </span>
               <i id="chevron-${item.id}" class="nav-chev fas ${chevron}"></i>
             </button>
-            <div id="submenu-${item.id}" class="nav-sub space-y-0.5${isActive ? '' : ' hidden'}">${subItemsHTML}
+            <div id="submenu-${item.id}" class="nav-sub space-y-0.5${isGroupOpen ? '' : ' hidden'}">${subItemsHTML}
             </div>
           </div>`;
   }).join('');
@@ -159,3 +188,4 @@ function toggleSidebarAccordion(menuId, chevId) {
     chev.classList.toggle('fa-chevron-right', !opening);
   }
 }
+

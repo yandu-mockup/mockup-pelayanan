@@ -478,6 +478,7 @@
       { ktpa: 'ASB-2000-056789', nrp: '3273120105910208', nopens: '2022-067890', nama: 'Lukman Hakim', angkatan: 'TNI-AL', nik: '3273120105910208', pangkat: 'Kapten (Purn)', gajiPokok: 4300000, status: 'Pensiun' },
       { ktpa: 'ASB-2014-078901', nrp: '3273120105910209', nopens: '-', nama: 'Maria Ulfa', angkatan: 'POLRI', nik: '3273120105910209', pangkat: 'Kompol', gajiPokok: 4800000, status: 'Aktif' },
       { ktpa: 'ASB-2013-090123', nrp: '3273120105910210', nopens: '-', nama: 'Nanang Wijaya', angkatan: 'TNI-AU', nik: '3273120105910210', pangkat: 'Letda', gajiPokok: 3600000, status: 'Aktif' },
+      { ktpa: '-', nrp: '3201231508990007', nopens: '-', nama: 'Rian Pratama (Pending Kelengkapan Data)', angkatan: '-', nik: '3201231508990007', pangkat: '-', gajiPokok: 0, status: 'Pending', isPending: true }
     ];
 
     const LOCAL_MOCK_PESERTA = DUMMY_PESERTA.map(item => ({
@@ -503,20 +504,21 @@
     }));
 
     const DAFTAR_KEJADIAN = [
-      'Pensiun Pertama',
+      'Pensiun',
       'Berhenti dengan Hak Tunjangan',
       'Berhenti Tanpa Hak Pensiun',
-      'Istri/Suami Meninggal Dunia',
-      'Anak Meninggal Dunia',
-      'Meninggal Dunia Dalam Dinas Aktif',
-      'Kecelakaan Kerja - Meninggal Dunia - Tewas',
-      'Kecelakaan Kerja - Meninggal Dunia - Gugur',
-      'Kecelakaan Kerja - Cacat',
-      'Pensiun Sendiri - Meninggal Dunia',
-      'Pensiun Sendiri - Istri/Suami Meninggal Dunia',
-      'Pensiun Sendiri - Anak Meninggal Dunia',
-      'Pensiun Warakawuri - Meninggal Dunia',
-      'Tunjangan Yatim/Piatu/YatimPiatu',
+      'Peserta Aktif - Istri/suami meninggal dunia',
+      'Peserta Aktif - Anak meninggal Dunia',
+      'Meninggal Dunia Aktif Biasa',
+      'Meninggal Dunia Aktif Tewas',
+      'Meninggal Dunia Aktif Gugur',
+      'Cacat Dinas Biasa',
+      'Cacat Dinas Khusus',
+      'Meninggal Dunia Setelah Pensiun',
+      'Istri/suami meninggal Dunia Setelah Pensiun',
+      'Anak meninggal Dunia Setelah Pensiun',
+      'Pensiun Wari/Janda/Duda - Meninggal Dunia',
+      'Tunjangan Yatim Piatu',
       'Tunjangan Orang Tua',
       'Beasiswa JKK',
       'Beasiswa JKM',

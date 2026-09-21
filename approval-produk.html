@@ -271,7 +271,7 @@
                   <option value="">Semua Manfaat / Produk</option>
                   <option value="TA">TA (Tabungan Asuransi)</option>
                   <option value="NTTA">NTTA (Nilai Tunai Tabungan Asuransi)</option>
-                  <option value="PP">PP (Pensiun Pertama)</option>
+                  <option value="PP">PP (Pensiun)</option>
                   <option value="NTIP">NTIP (Nilai Tunai Iuran Pasti)</option>
                   <option value="SRKK">SRKK (Santunan Risiko Kecelakaan Kerja)</option>
                   <option value="Santunan Kematian">Santunan Kematian (JKm)</option>
@@ -459,7 +459,7 @@
                 <select id="l2-filter-produk" onchange="applyLevel2Filters()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700">
                   <option value="">Semua Produk</option>
                   <option value="TA">TA (Tabungan Asuransi)</option>
-                  <option value="PP">PP (Pensiun Pertama)</option>
+                  <option value="PP">PP (Pensiun)</option>
                   <option value="NTTA">NTTA (Nilai Tunai TA)</option>
                   <option value="NTIP">NTIP (Nilai Tunai IP)</option>
                   <option value="SRKK">SRKK</option>
@@ -608,7 +608,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
               <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
                 <span class="block text-[10px] font-bold text-slate-400 uppercase">Jenis Kejadian</span>
-                <span class="font-extrabold text-slate-800" id="l3-b2-kejadian">Pensiun Pertama</span>
+                <span class="font-extrabold text-slate-800" id="l3-b2-kejadian">Pensiun</span>
               </div>
               <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200/60">
                 <span class="block text-[10px] font-bold text-slate-400 uppercase">Tanggal Kejadian / TMT</span>
@@ -794,13 +794,29 @@
               <p class="text-slate-200 italic font-medium" id="l4-cancel-note-text">-</p>
             </div>
 
+            <!-- Revision Note Box if Revisi -->
+            <div id="l4-revisi-note-box" class="hidden bg-amber-950/60 border border-amber-800 p-4 rounded-2xl text-xs space-y-1">
+              <span class="font-bold text-amber-400 flex items-center gap-1.5">
+                <i class="fas fa-rotate-left"></i> Catatan Revisi Produk:
+              </span>
+              <p class="text-slate-200 whitespace-pre-line font-medium text-[11px]" id="l4-revisi-note-text">-</p>
+            </div>
+
+            <!-- Rejection Note Box if Ditolak -->
+            <div id="l4-tolak-note-box" class="hidden bg-rose-950/60 border border-rose-800 p-4 rounded-2xl text-xs space-y-1">
+              <span class="font-bold text-rose-400 flex items-center gap-1.5">
+                <i class="fas fa-times-circle"></i> Catatan Penolakan Produk:
+              </span>
+              <p class="text-slate-200 whitespace-pre-line font-medium text-[11px]" id="l4-tolak-note-text">-</p>
+            </div>
+
             <!-- Action Buttons Row -->
             <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
               <button onclick="showLevel(2)" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all border border-slate-700 flex items-center gap-2 active:scale-95">
                 <i class="fas fa-arrow-left"></i> Kembali ke List Produk (Level 2)
               </button>
 
-              <div id="l4-action-buttons-group" class="flex items-center gap-3">
+              <div id="l4-action-buttons-group" class="flex flex-wrap items-center gap-3">
                 <!-- Dynamically populated via renderLevel3Rincian -->
               </div>
             </div>
@@ -815,6 +831,70 @@
   <!-- ========================================================================= -->
   <!-- MODAL DIALOGS -->
   <!-- ========================================================================= -->
+
+  <!-- Modal Revisi Produk KAKANCAB -->
+  <div id="modal-revisi-kakancab" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-fade-in">
+      <div class="flex items-center gap-3 text-amber-600 border-b border-slate-100 pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-lg text-amber-600">
+          <i class="fas fa-rotate-left"></i>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-slate-800 text-sm">Kembalikan ke Verifikator (Revisi)</h3>
+          <p class="text-[11px] text-slate-500">Tuliskan catatan perbaikan data/berkas untuk produk ini.</p>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700">Catatan Revisi KAKANCAB <span class="text-rose-500 font-extrabold">* (Wajib Diisi)</span>:</label>
+        <textarea id="modal-revisi-kakancab-catatan" rows="4" placeholder="Tuliskan rincian koreksi data atau dokumen yang harus diperbaiki oleh Verifikator & Staf Kancab..." class="w-full bg-slate-50 border border-slate-300 rounded-2xl p-3 text-xs outline-none focus:border-amber-500 font-medium"></textarea>
+      </div>
+
+      <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 font-medium leading-relaxed flex items-start gap-2">
+        <i class="fas fa-info-circle text-amber-600 mt-0.5"></i>
+        <span>Produk ini akan berstatus <strong>Revisi</strong> dan dikembalikan ke Verifikator. Tombol Approve klaim ini akan dinonaktifkan sampai produk selesai diperbaiki.</span>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button type="button" onclick="closeModal('modal-revisi-kakancab')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-700">Batal</button>
+        <button type="button" onclick="submitRevisiKakancab()" class="bg-amber-500 hover:bg-amber-600 text-slate-900 px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm active:scale-95 flex items-center gap-1.5">
+          <i class="fas fa-paper-plane"></i> Kirim Revisi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Tolak Produk KAKANCAB -->
+  <div id="modal-tolak-kakancab" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 animate-fade-in">
+      <div class="flex items-center gap-3 text-rose-600 border-b border-slate-100 pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-rose-100 flex items-center justify-center text-lg text-rose-600">
+          <i class="fas fa-times-circle"></i>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-slate-800 text-sm">Penolakan Produk (Tolak)</h3>
+          <p class="text-[11px] text-slate-500">Tuliskan alasan penolakan produk ini secara jelas.</p>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700">Alasan Penolakan KAKANCAB <span class="text-rose-500 font-extrabold">* (Wajib Diisi)</span>:</label>
+        <textarea id="modal-tolak-kakancab-catatan" rows="4" placeholder="Tuliskan alasan penolakan permohonan produk ini..." class="w-full bg-slate-50 border border-slate-300 rounded-2xl p-3 text-xs outline-none focus:border-rose-500 font-medium"></textarea>
+      </div>
+
+      <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-[11px] text-rose-800 font-medium leading-relaxed flex items-start gap-2">
+        <i class="fas fa-triangle-exclamation text-rose-600 mt-0.5"></i>
+        <span>Produk ini akan berstatus <strong>Ditolak</strong> dan diteruskan ke Verifikator. Produk lain yang terverifikasi tetap dapat disetujui secara normal.</span>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button type="button" onclick="closeModal('modal-tolak-kakancab')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-700">Batal</button>
+        <button type="button" onclick="submitTolakKakancab()" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-sm active:scale-95 flex items-center gap-1.5">
+          <i class="fas fa-times-circle"></i> Tolak Produk
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Pop Up Alasan Pembatalan KAKANCAB (Langkah 1 - Input Alasan) -->
   <div id="modal-cancel-kakancab" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -1262,6 +1342,16 @@
           status === 'terverifikasi';
 
         if (prods.length > 0) {
+          // Produk yang statusnya 'Terverifikasi' (sudah final individual) baru BENAR-BENAR lanjut ke List Approval
+          // SETELAH seluruh klaim (semua produk) sudah final — BUKAN langsung begitu 1 produk selesai duluan
+          const adaYangBelumFinal = prods.some(p => 
+            p.status === 'Menunggu Verifikasi' || 
+            p.status === 'Revisi' || 
+            !p.status
+          );
+          if (adaYangBelumFinal) {
+            return false;
+          }
           return hasVerifiedProduct;
         }
         return isClaimInApprovalState;
@@ -1272,7 +1362,7 @@
       const noAgenda = claim.noRegistrasi || claim.noAgenda || claim.noReg;
       const verifData = getApprovalProductStatuses();
       if (verifData[noAgenda]) {
-        const validProds = verifData[noAgenda].filter(p => p.status !== 'Ditolak' && p.status !== 'Menunggu Verifikasi');
+        const validProds = verifData[noAgenda].filter(p => p.status !== 'Ditolak' && p.status !== 'Menunggu Verifikasi' && p.status !== 'Revisi');
         return validProds.length;
       }
       return getProductListForClaim(claim).length;
@@ -1581,24 +1671,33 @@
 
       // Render Produk List Table
       const verifData = getApprovalProductStatuses();
-      let prodList = (verifData[activeNoAgenda] && verifData[activeNoAgenda].length > 0)
+      const allProds = (verifData[activeNoAgenda] && verifData[activeNoAgenda].length > 0)
         ? verifData[activeNoAgenda]
         : getProductListForClaim(claim || activeNoAgenda);
 
-      if (!prodList || prodList.length === 0) {
-        prodList = getProductListForClaim(claim || activeNoAgenda);
-      }
+      let prodList = [...allProds];
 
-      // Filter OUT products that are rejected (Ditolak) or still waiting for verifikasi (Menunggu Verifikasi)
-      // Level 2 KAKANCAB ONLY shows products that are Terverifikasi, Menunggu Approval, SP Terbit, Selesai, Disetujui, or Dibatalkan
-      prodList = prodList.filter(item => item.status !== 'Ditolak' && item.status !== 'Menunggu Verifikasi');
+      // Check if any product is in Revisi or Menunggu Verifikasi
+      const hasRevisiOrPending = allProds.some(p => p.status === 'Revisi' || p.status === 'Menunggu Verifikasi' || p.status === 'PENDING');
+      const unapprovedProds = allProds.filter(p => p.status === 'Terverifikasi' || p.status === 'Menunggu Approval');
+      const hasUnapprovedProds = unapprovedProds.length > 0;
 
       // Toggle Approve Semua Produk button at Level 2 Header
-      const hasUnapprovedProds = prodList.some(p => p.status === 'Terverifikasi' || p.status === 'Menunggu Approval');
       const btnApproveAll = document.getElementById("btn-approve-semua-level2");
       if (btnApproveAll) {
         if (hasUnapprovedProds) {
           btnApproveAll.classList.remove("hidden");
+          if (hasRevisiOrPending) {
+            btnApproveAll.disabled = true;
+            btnApproveAll.className = "bg-slate-700 text-slate-400 cursor-not-allowed opacity-60 px-5 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-2";
+            btnApproveAll.innerHTML = '<i class="fas fa-lock"></i> Approve Semua Produk (Terkunci)';
+            btnApproveAll.title = "Approval ditangguhkan: Masih ada produk yang berstatus Revisi atau Menunggu Verifikasi";
+          } else {
+            btnApproveAll.disabled = false;
+            btnApproveAll.className = "bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-2xl text-xs font-black transition-all shadow-lg flex items-center gap-2 active:scale-95";
+            btnApproveAll.innerHTML = `<i class="fas fa-check-double"></i> Approve Semua Produk (${unapprovedProds.length})`;
+            btnApproveAll.title = "Approve SEMUA produk terverifikasi sekaligus";
+          }
         } else {
           btnApproveAll.classList.add("hidden");
         }
@@ -1654,6 +1753,15 @@
         } else if (isApproved) {
           badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
           statusLabel = "SP Terbit";
+        } else if (item.status === 'Revisi') {
+          badgeClass = "bg-amber-100 text-amber-800 border-amber-300";
+          statusLabel = "Revisi";
+        } else if (item.status === 'Ditolak') {
+          badgeClass = "bg-rose-100 text-rose-800 border-rose-300";
+          statusLabel = "Ditolak";
+        } else if (item.status === 'Menunggu Verifikasi') {
+          badgeClass = "bg-slate-100 text-slate-700 border-slate-300";
+          statusLabel = "Menunggu Verifikasi";
         } else {
           badgeClass = "bg-blue-100 text-blue-800 border-blue-300";
           statusLabel = "Terverifikasi";
@@ -1695,8 +1803,24 @@
               </button>
             </div>
           `;
+        } else if (item.status === 'Revisi') {
+          actionHtml = `
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 active:scale-95">
+                <i class="fas fa-rotate-left text-[10px]"></i> Detail Revisi
+              </button>
+            </div>
+          `;
+        } else if (item.status === 'Ditolak') {
+          actionHtml = `
+            <div class="flex items-center justify-center gap-1.5">
+              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 active:scale-95">
+                <i class="fas fa-times-circle text-[10px]"></i> Detail Tolak
+              </button>
+            </div>
+          `;
         } else {
-          // Before approve: Only Detail button
+          // Before approve: Detail button
           actionHtml = `
             <div class="flex items-center justify-center gap-1.5">
               <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 active:scale-95">
@@ -1846,11 +1970,36 @@
     };
 
     const ALIAS_DOKUMEN_MANDATORY = {
+      'Pensiun': 'Pensiun',
       'Pensiun Pertama': 'Pensiun',
+      'Berhenti dengan Hak Tunjangan': 'THT',
+      'Berhenti Tanpa Hak Pensiun': 'THT',
+      'Berhenti tanpa Hak Pensiun': 'THT',
+      'Peserta Aktif - Istri/suami meninggal dunia': 'JKm',
+      'Peserta Aktif - Anak meninggal Dunia': 'JKm',
+      'Meninggal Dunia Aktif Biasa': 'JKm',
+      'Meninggal Dunia Aktif Tewas': 'JKK',
+      'Meninggal Dunia Aktif Gugur': 'JKK',
+      'Cacat Dinas Biasa': 'JKK',
+      'Cacat Dinas Khusus': 'JKK',
+      'Meninggal Dunia Setelah Pensiun': 'JKm',
+      'Istri/suami meninggal Dunia Setelah Pensiun': 'JKm',
+      'Anak meninggal Dunia Setelah Pensiun': 'JKm',
+      'Pensiun Wari/Janda/Duda - Meninggal Dunia': 'JKm',
+      'Tunjangan Yatim Piatu': 'Pensiun',
+      'Tunjangan Orang Tua': 'Pensiun',
+      'Beasiswa JKK': 'JKK',
+      'Beasiswa JKM': 'JKm',
+      'Uang Kekurangan Pensiun (UKP)': 'Pensiun',
+      // Legacy aliases:
       'Pensiun Sendiri — Meninggal Dunia': 'JKm',
+      'Pensiun Sendiri - Meninggal Dunia': 'JKm',
       'Meninggal Dunia dalam Dinas Aktif': 'JKm',
+      'Meninggal Dunia Dalam Dinas Aktif': 'JKm',
+      'Meninggal Dunia dalam Dinas Aktif (JKm)': 'JKm',
       'Kecelakaan Kerja — Dirawat': 'JKK',
       'Kecelakaan Kerja — Cacat': 'JKK',
+      'Kecelakaan Kerja - Cacat': 'JKK',
       'Kecelakaan Kerja - Meninggal Dunia - Tewas': 'JKK',
       'Kecelakaan Kerja - Meninggal Dunia - Gugur': 'JKK',
       'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': 'JKK'
@@ -2096,8 +2245,8 @@
       currentParticipantNik = p.nik || claim.nik || '';
 
       const verifData = getApprovalProductStatuses();
-      const prodList = verifData[activeNoAgenda] || [];
-      const currentProd = prodList.find(item => item.nama === activeNamaProduk) || {
+      const allProds = verifData[activeNoAgenda] || getProductListForClaim(claim || activeNoAgenda);
+      const currentProd = allProds.find(item => item.nama === activeNamaProduk) || {
         nama: activeNamaProduk,
         status: 'Menunggu Approval',
         catatanPenolakan: '',
@@ -2107,6 +2256,11 @@
         potongan: 0,
         nominalBersih: 57822900
       };
+
+      // Check if any product is in Revisi or Menunggu Verifikasi
+      const hasRevisiOrPending = allProds.some(p => p.status === 'Revisi' || p.status === 'Menunggu Verifikasi' || p.status === 'PENDING');
+      const unapprovedProds = allProds.filter(p => p.status === 'Terverifikasi' || p.status === 'Menunggu Approval');
+      const countVerified = unapprovedProds.length;
 
       document.getElementById("bc-level3-text").innerText = `Produk ${activeNamaProduk}`;
       document.getElementById("l3-current-produk-title").innerText = `${activeNamaProduk} (${getNamaPanjangProduk(activeNamaProduk)})`;
@@ -2137,7 +2291,7 @@
       if (claim.objekKejadian) {
         objekKejadianText = claim.objekKejadian;
       } else if (kejadianType.includes('Istri') || kejadianType.includes('Suami')) {
-        objekKejadianText = p.pasangan?.nama ? `${p.pasangan.nama} (Pasangan)` : "Istri/Suami";
+        objekKejapanText = p.pasangan?.nama ? `${p.pasangan.nama} (Pasangan)` : "Istri/Suami";
       } else if (kejadianType.includes('Anak')) {
         objekKejadianText = (p.anak && p.anak[0]) ? `${p.anak[0].nama} (Anak)` : "Anak Peserta";
       } else {
@@ -2178,6 +2332,12 @@
       } else if (isApproved) {
         badge.className += "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
         badge.innerText = "SP Terbit";
+      } else if (currentProd.status === 'Revisi') {
+        badge.className += "bg-amber-500/20 text-amber-300 border-amber-500/40";
+        badge.innerText = "Revisi (Mundur ke Verifikator)";
+      } else if (currentProd.status === 'Ditolak') {
+        badge.className += "bg-rose-500/20 text-rose-300 border-rose-500/40";
+        badge.innerText = "Ditolak (Keputusan Final)";
       } else {
         badge.className += "bg-blue-500/20 text-blue-300 border-blue-500/40";
         badge.innerText = "Terverifikasi (Siap Approve)";
@@ -2185,6 +2345,8 @@
 
       const spBox = document.getElementById("l4-sp-terbit-box");
       const cancelBox = document.getElementById("l4-cancel-note-box");
+      const revisiBox = document.getElementById("l4-revisi-note-box");
+      const tolakBox = document.getElementById("l4-tolak-note-box");
 
       if (isApproved || isCancelled) {
         if (currentProd.nomorSP) {
@@ -2202,6 +2364,36 @@
         document.getElementById("l4-cancel-note-text").innerText = currentProd.alasanCancel;
       } else {
         cancelBox.classList.add("hidden");
+      }
+
+      if (revisiBox) {
+        if (currentProd.status === 'Revisi' && ((currentProd.revisiChain && currentProd.revisiChain.length > 0) || currentProd.catatanRevisi || currentProd.catatanPenolakan)) {
+          revisiBox.classList.remove("hidden");
+          let noteText = '';
+          if (Array.isArray(currentProd.revisiChain) && currentProd.revisiChain.length > 0) {
+            noteText = currentProd.revisiChain.map(item => `[${item.role} - ${item.waktu || ''}]:\n${item.catatan}`).join('\n\n');
+          } else {
+            noteText = currentProd.catatanRevisi || currentProd.catatanPenolakan || '-';
+          }
+          document.getElementById("l4-revisi-note-text").innerText = noteText;
+        } else {
+          revisiBox.classList.add("hidden");
+        }
+      }
+
+      if (tolakBox) {
+        if (currentProd.status === 'Ditolak' && ((currentProd.tolakChain && currentProd.tolakChain.length > 0) || currentProd.catatanPenolakan)) {
+          tolakBox.classList.remove("hidden");
+          let noteText = '';
+          if (Array.isArray(currentProd.tolakChain) && currentProd.tolakChain.length > 0) {
+            noteText = currentProd.tolakChain.map(item => `[${item.role} - ${item.waktu || ''}]:\n${item.catatan}`).join('\n\n');
+          } else {
+            noteText = currentProd.catatanPenolakan || '-';
+          }
+          document.getElementById("l4-tolak-note-text").innerText = noteText;
+        } else {
+          tolakBox.classList.add("hidden");
+        }
       }
 
       // Dynamic Action Buttons in Level 4 Action Group
@@ -2225,15 +2417,53 @@
               <i class="fas fa-times-circle"></i> Cancel Produk Ini
             </button>
           `;
-        } else {
-          // Before approval: Approve & Preview Draft SP buttons
+        } else if (currentProd.status === 'Ditolak') {
           actionsGroup.innerHTML = `
-            <button onclick="previewSPDraft('${activeNoAgenda}', '${currentProd.nama}')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 px-5 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-2 active:scale-95" title="Review Draft Dokumen SP sebelum Approve">
+            <span class="text-rose-400 font-extrabold text-xs inline-flex items-center gap-1.5 bg-rose-950/60 border border-rose-800 px-4 py-2.5 rounded-2xl">
+              <i class="fas fa-times-circle"></i> Produk Telah Ditolak (Final)
+            </span>
+            ${countVerified > 0 ? (
+              hasRevisiOrPending ? `
+                <button disabled class="bg-slate-700 text-slate-400 cursor-not-allowed opacity-60 px-6 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-2" title="Approval ditangguhkan: Masih ada produk lain yang berstatus Revisi atau Menunggu Verifikasi">
+                  <i class="fas fa-lock"></i> Approve Semua Produk (Terkunci)
+                </button>
+              ` : `
+                <button onclick="approveSemuaProduk('${activeNoAgenda}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-2xl text-xs font-black transition-all shadow-lg flex items-center gap-2 active:scale-95" title="Approve semua produk yang terverifikasi">
+                  <i class="fas fa-check-double"></i> Approve Produk Terverifikasi (${countVerified})
+                </button>
+              `
+            ) : ''}
+          `;
+        } else if (currentProd.status === 'Revisi') {
+          actionsGroup.innerHTML = `
+            <span class="text-amber-400 font-extrabold text-xs inline-flex items-center gap-1.5 bg-amber-950/60 border border-amber-800 px-4 py-2.5 rounded-2xl">
+              <i class="fas fa-rotate-left"></i> Dalam Proses Revisi (Mundur ke Verifikator)
+            </span>
+            <button disabled class="bg-slate-700 text-slate-400 cursor-not-allowed opacity-60 px-6 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-2" title="Approval ditangguhkan: Masih ada produk yang berstatus Revisi">
+              <i class="fas fa-lock"></i> Approve Semua Produk (Terkunci)
+            </button>
+          `;
+        } else {
+          // Before approval (Normal): Preview SP Draft, Revisi, Tolak, and Approve buttons
+          actionsGroup.innerHTML = `
+            <button onclick="previewSPDraft('${activeNoAgenda}', '${currentProd.nama}')" class="bg-amber-500 hover:bg-amber-600 text-slate-900 px-4 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-1.5 active:scale-95" title="Review Draft Dokumen SP sebelum Approve">
               <i class="fas fa-eye"></i> Preview SP (Draft)
             </button>
-            <button onclick="approveSemuaProduk('${activeNoAgenda}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-2xl text-xs font-black transition-all shadow-lg flex items-center gap-2 active:scale-95" title="Approve SEMUA produk terverifikasi sekaligus">
-              <i class="fas fa-check-double"></i> Approve Semua Produk
+            <button onclick="triggerRevisiKakancab('${activeNoAgenda}', '${currentProd.nama}')" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 active:scale-95" title="Kembalikan produk ini ke Verifikator untuk direvisi">
+              <i class="fas fa-rotate-left"></i> Revisi
             </button>
+            <button onclick="triggerTolakKakancab('${activeNoAgenda}', '${currentProd.nama}')" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 active:scale-95" title="Tolak permohonan produk ini (Final)">
+              <i class="fas fa-times-circle"></i> Tolak
+            </button>
+            ${hasRevisiOrPending ? `
+              <button disabled class="bg-slate-700 text-slate-400 cursor-not-allowed opacity-60 px-6 py-2.5 rounded-2xl text-xs font-black transition-all shadow-md flex items-center gap-2" title="Approval ditangguhkan: Masih ada produk lain yang berstatus Revisi atau Menunggu Verifikasi">
+                <i class="fas fa-lock"></i> Approve Semua Produk (Terkunci)
+              </button>
+            ` : `
+              <button onclick="approveSemuaProduk('${activeNoAgenda}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-2xl text-xs font-black transition-all shadow-lg flex items-center gap-2 active:scale-95" title="Approve SEMUA produk terverifikasi sekaligus">
+                <i class="fas fa-check-double"></i> Approve Semua Produk (${countVerified})
+              </button>
+            `}
           `;
         }
       }
@@ -2242,7 +2472,7 @@
     function getNamaPanjangProduk(code) {
       const names = {
         'TA': 'Tabungan Asuransi',
-        'PP': 'Pensiun Pertama',
+        'PP': 'Pensiun',
         'NTTA': 'Nilai Tunai Tabungan Asuransi',
         'SRKK': 'Santunan Risiko Kecelakaan Kerja',
         'NTIP': 'Nilai Tunai Iuran Pasti',
@@ -2262,8 +2492,10 @@
 
     // =========================================================================
     // LEVEL 4 LOGIC & ACTION CONTROLLER (KAKANCAB)
-    // TAHAP 1: APPROVAL AWAL (1x UNTUK SEMUA PRODUK TERVERIFIKASI)
-    // TAHAP 2: CANCEL -> REJECT SETELAH SP TERBIT (PER PRODUK)
+    // 1. APPROVAL (SEMUA PRODUK TERVERIFIKASI SEKALIGUS)
+    // 2. REVISI PER PRODUK (BERANTAI KE VERIFIKATOR & STAF KANCAB)
+    // 3. TOLAK PER PRODUK (FINAL / BERANTAI KE VERIFIKATOR)
+    // 4. CANCEL -> REJECT SETELAH SP TERBIT (PER PRODUK)
     // =========================================================================
     function approveSemuaProduk(noAgenda) {
       const targetAgenda = noAgenda || activeNoAgenda;
@@ -2278,6 +2510,13 @@
 
       if (!prodList || prodList.length === 0) {
         prodList = getProductListForClaim(claim || targetAgenda);
+      }
+
+      // Check if any product is in Revisi or Menunggu Verifikasi
+      const hasRevisiOrPending = prodList.some(p => p.status === 'Revisi' || p.status === 'Menunggu Verifikasi' || p.status === 'PENDING');
+      if (hasRevisiOrPending) {
+        showToast("Approval Ditangguhkan", "Tidak dapat menyetujui klaim: Masih ada produk yang sedang dalam status Revisi atau Menunggu Verifikasi. Harap selesaikan perbaikan produk terlebih dahulu.", "warning");
+        return;
       }
 
       // Filter products that are Terverifikasi or Menunggu Approval (exclude Ditolak and Menunggu Verifikasi)
@@ -2306,11 +2545,216 @@
         claim.status = 'SP Terbit';
         claim.waktuApprovalTimestamp = Date.now();
         claim.tanggalApproval = new Date().toISOString();
+
+        if (!claim.auditTrail) claim.auditTrail = [];
+        const timestampStr = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID').slice(0, 5);
+        claim.auditTrail.unshift({
+          tanggal: timestampStr,
+          user: 'Kepala Kantor Cabang (KAKANCAB)',
+          aksi: 'Approval SP Terbit',
+          keterangan: `Persetujuan resmi KAKANCAB untuk ${unapprovedProds.length} produk terverifikasi.`
+        });
+
         saveClaims(claims);
       }
 
+      // Trigger notification to Staf KANCAB (Trigger 6: KAKANCAB Approve (SP Terbit))
+      if (typeof sendNotificationRole === 'function') {
+        sendNotificationRole('Staf KANCAB', 'KAKANCAB Approve (SP Terbit)', targetAgenda, `SP untuk klaim ${targetAgenda} sudah terbit`, `riwayat.html?highlight=${encodeURIComponent(targetAgenda)}`);
+      }
+
       const totalApproved = unapprovedProds.length;
-      showToast("Approval Berhasil", `Semua produk terverifikasi (${totalApproved} produk) berhasil DISETUJUI sekaligus dan Surat Perintah (SP) resmi telah diterbitkan!`, "success");
+      showToast("Approval Berhasil", `Semua produk terverifikasi (${totalApproved} produk) berhasil DISETUJUI sekaligus dan Surat Persetujuan (SP) resmi telah diterbitkan!`, "success");
+
+      const isLevel3Open = !document.getElementById("level-3-container").classList.contains("hidden");
+      if (isLevel3Open) {
+        renderLevel3Rincian();
+      } else {
+        renderLevel2Detail();
+      }
+      renderTable();
+    }
+
+    // =========================================================================
+    // KAKANCAB REVISI & TOLAK (CHAINED FLOW)
+    // =========================================================================
+    function triggerRevisiKakancab(noAgenda, namaProduk) {
+      activeNoAgenda = noAgenda || activeNoAgenda;
+      activeNamaProduk = namaProduk || activeNamaProduk;
+      const noteEl = document.getElementById("modal-revisi-kakancab-catatan");
+      if (noteEl) noteEl.value = '';
+      openModal('modal-revisi-kakancab');
+    }
+
+    function submitRevisiKakancab() {
+      const noteEl = document.getElementById("modal-revisi-kakancab-catatan");
+      const catatan = (noteEl ? noteEl.value : '').trim();
+      if (!catatan) {
+        showToast("Peringatan", "Catatan Revisi WAJIB diisi sebelum dikirim!", "warning");
+        return;
+      }
+      kakancabRevisi(activeNoAgenda, activeNamaProduk, catatan);
+      closeModal('modal-revisi-kakancab');
+    }
+
+    function kakancabRevisi(noAgenda, namaProduk, alasanKakancab) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const targetProd = namaProduk || activeNamaProduk;
+      if (!targetAgenda || !targetProd) return;
+
+      const verifData = getApprovalProductStatuses();
+      if (!verifData[targetAgenda]) {
+        const claims = getClaims();
+        const claim = claims.find(c => (c.noRegistrasi === targetAgenda || c.noAgenda === targetAgenda || c.noReg === targetAgenda));
+        verifData[targetAgenda] = getProductListForClaim(claim || targetAgenda);
+      }
+
+      const prod = verifData[targetAgenda].find(p => p.nama === targetProd);
+      if (!prod) return;
+
+      // 1. Update product status to 'Revisi'
+      prod.status = 'Revisi';
+      prod.catatanRevisi = alasanKakancab;
+      prod.catatanRevisiKakancab = alasanKakancab;
+
+      const timestampStr = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID').slice(0, 5);
+
+      if (!Array.isArray(prod.revisiChain)) {
+        prod.revisiChain = [];
+      }
+      prod.revisiChain.push({
+        role: 'KAKANCAB',
+        catatan: alasanKakancab,
+        waktu: timestampStr
+      });
+
+      saveApprovalProductStatuses(verifData);
+
+      // 2. Sync to asabri_claims
+      const claims = getClaims();
+      const claim = claims.find(c => (c.noRegistrasi === targetAgenda || c.noAgenda === targetAgenda || c.noReg === targetAgenda));
+      if (claim) {
+        claim.status = 'Revisi';
+        
+        // Format full chain for claim.catatanRevisi
+        const chainSummary = prod.revisiChain.map(item => `[${item.role} - ${item.waktu}]: ${item.catatan}`).join('\n');
+        claim.catatanRevisi = chainSummary;
+        claim.catatan = chainSummary;
+        claim.waktuRevisiTimestamp = claim.waktuRevisiTimestamp || Date.now();
+        claim.tanggalRevisi = new Date().toISOString();
+
+        if (!claim.auditTrail) claim.auditTrail = [];
+        claim.auditTrail.unshift({
+          tanggal: timestampStr,
+          user: 'Kepala Kantor Cabang (KAKANCAB)',
+          aksi: 'Revisi Produk (KAKANCAB)',
+          keterangan: `Produk ${targetProd} dikembalikan untuk direvisi: ${alasanKakancab}`
+        });
+
+        saveClaims(claims);
+      }
+
+      // 3. Send notifications
+      if (typeof sendNotificationRole === 'function') {
+        sendNotificationRole('Verifikator', 'KAKANCAB Revisi', targetAgenda, `Klaim ${targetAgenda} (Produk ${targetProd}) perlu direvisi oleh Verifikator & Staf — ${alasanKakancab}`, `verifikasi.html?noAgenda=${encodeURIComponent(targetAgenda)}`);
+        sendNotificationRole('Staf KANCAB', 'KAKANCAB Revisi', targetAgenda, `Klaim ${targetAgenda} (Produk ${targetProd}) direvisi KAKANCAB — ${alasanKakancab}`, `riwayat.html?highlight=${encodeURIComponent(targetAgenda)}`);
+      }
+
+      showToast("Revisi Dikirim", `Produk ${targetProd} telah dikembalikan ke Verifikator untuk perbaikan data/berkas. Tombol Approve untuk klaim ini dinonaktifkan sementara.`, "warning");
+
+      const isLevel3Open = !document.getElementById("level-3-container").classList.contains("hidden");
+      if (isLevel3Open) {
+        renderLevel3Rincian();
+      } else {
+        renderLevel2Detail();
+      }
+      renderTable();
+    }
+
+    function triggerTolakKakancab(noAgenda, namaProduk) {
+      activeNoAgenda = noAgenda || activeNoAgenda;
+      activeNamaProduk = namaProduk || activeNamaProduk;
+      const noteEl = document.getElementById("modal-tolak-kakancab-catatan");
+      if (noteEl) noteEl.value = '';
+      openModal('modal-tolak-kakancab');
+    }
+
+    function submitTolakKakancab() {
+      const noteEl = document.getElementById("modal-tolak-kakancab-catatan");
+      const catatan = (noteEl ? noteEl.value : '').trim();
+      if (!catatan) {
+        showToast("Peringatan", "Alasan Penolakan WAJIB diisi sebelum dikirim!", "warning");
+        return;
+      }
+      kakancabTolak(activeNoAgenda, activeNamaProduk, catatan);
+      closeModal('modal-tolak-kakancab');
+    }
+
+    function kakancabTolak(noAgenda, namaProduk, alasanKakancab) {
+      const targetAgenda = noAgenda || activeNoAgenda;
+      const targetProd = namaProduk || activeNamaProduk;
+      if (!targetAgenda || !targetProd) return;
+
+      const verifData = getApprovalProductStatuses();
+      if (!verifData[targetAgenda]) {
+        const claims = getClaims();
+        const claim = claims.find(c => (c.noRegistrasi === targetAgenda || c.noAgenda === targetAgenda || c.noReg === targetAgenda));
+        verifData[targetAgenda] = getProductListForClaim(claim || targetAgenda);
+      }
+
+      const prod = verifData[targetAgenda].find(p => p.nama === targetProd);
+      if (!prod) return;
+
+      // 1. Update product status to 'Ditolak'
+      prod.status = 'Ditolak';
+      prod.catatanPenolakan = alasanKakancab;
+      prod.catatanPenolakanKakancab = alasanKakancab;
+
+      const timestampStr = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID').slice(0, 5);
+
+      if (!Array.isArray(prod.tolakChain)) {
+        prod.tolakChain = [];
+      }
+      prod.tolakChain.push({
+        role: 'KAKANCAB',
+        catatan: alasanKakancab,
+        waktu: timestampStr
+      });
+
+      saveApprovalProductStatuses(verifData);
+
+      // 2. Sync to asabri_claims
+      const claims = getClaims();
+      const claim = claims.find(c => (c.noRegistrasi === targetAgenda || c.noAgenda === targetAgenda || c.noReg === targetAgenda));
+      if (claim) {
+        const allProds = verifData[targetAgenda] || [];
+        const allDitolak = allProds.length > 0 && allProds.every(p => p.status === 'Ditolak');
+        
+        if (allDitolak) {
+          claim.status = 'Ditolak';
+        }
+
+        const chainSummary = prod.tolakChain.map(item => `[${item.role} - ${item.waktu}]: ${item.catatan}`).join('\n');
+        claim.catatanPenolakan = chainSummary;
+        claim.catatan = chainSummary;
+
+        if (!claim.auditTrail) claim.auditTrail = [];
+        claim.auditTrail.unshift({
+          tanggal: timestampStr,
+          user: 'Kepala Kantor Cabang (KAKANCAB)',
+          aksi: 'Penolakan Produk (KAKANCAB)',
+          keterangan: `Produk ${targetProd} ditolak: ${alasanKakancab}`
+        });
+
+        saveClaims(claims);
+      }
+
+      // 3. Send notifications
+      if (typeof sendNotificationRole === 'function') {
+        sendNotificationRole(['Verifikator', 'Staf KANCAB'], 'KAKANCAB Tolak', targetAgenda, `Klaim ${targetAgenda} (Produk ${targetProd}) ditolak KAKANCAB — ${alasanKakancab}`, `riwayat.html?highlight=${encodeURIComponent(targetAgenda)}`);
+      }
+
+      showToast("Penolakan Disimpan", `Produk ${targetProd} telah DITOLAK (Final). Produk lain yang terverifikasi tetap dapat disetujui secara normal.`, "danger");
 
       const isLevel3Open = !document.getElementById("level-3-container").classList.contains("hidden");
       if (isLevel3Open) {
@@ -2449,6 +2893,12 @@
             }
           }
           saveClaims(claims);
+        }
+
+        // Trigger notification to Verifikator and Staf KANCAB (Trigger 7: KAKANCAB Cancel/Reject)
+        if (typeof sendNotificationRole === 'function') {
+          const alasanTxt = prod.alasanCancel || 'Pembatalan oleh KAKANCAB';
+          sendNotificationRole(['Verifikator', 'Staf KANCAB'], 'KAKANCAB Cancel/Reject (Pembatalan)', noAgenda, `Klaim ${noAgenda} dibatalkan — ${alasanTxt}`, `pembatalan-sp.html?highlight=${encodeURIComponent(noAgenda)}`);
         }
 
         showToast("Produk Dibatalkan", `Produk ${namaProduk} telah resmi DIBATALKAN (Final) dan tercatat di riwayat Pembatalan SP.`, "danger");

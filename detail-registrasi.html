@@ -280,9 +280,14 @@
         <a href="riwayat.html" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-sm">
           <i class="fas fa-arrow-left mr-1.5"></i> Kembali ke Riwayat Transaksi
         </a>
-        <button id="btn-proses-workspace" onclick="prosesBerkasWorkspace()" class="px-6 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
-          Proses Berkas di Workspace <i class="fas fa-arrow-right"></i>
-        </button>
+        <div class="flex items-center gap-3">
+          <button id="btn-refresh-peserta" type="button" onclick="refreshDataPeserta()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-100 flex items-center gap-1.5 hidden">
+            <i class="fas fa-arrows-rotate"></i> Refresh Data Peserta
+          </button>
+          <button id="btn-proses-workspace" onclick="prosesBerkasWorkspace()" class="px-6 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+            Proses Berkas di Workspace <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
       </div>
 
     </main>
@@ -549,7 +554,99 @@
         });
         stepper.innerHTML = stepsHtml;
       }
+
+      // Check if participant data is incomplete
+      const btnRefreshPeserta = document.getElementById("btn-refresh-peserta");
+      if (btnRefreshPeserta) {
+        const isDataIncomplete = (
+          claim.dataLengkap === false ||
+          claim.isDataIncomplete === true ||
+          claim.nik === "3201231508990007" ||
+          (claim.isPending && (claim.catatan?.toLowerCase().includes("data kepesertaan") || claim.catatan?.toLowerCase().includes("data peserta"))) ||
+          ((!claim.angkatan || claim.angkatan === "-" || claim.angkatan === "") && (!claim.alamat || claim.alamat === "-" || claim.alamat === ""))
+        ) && !claim.isDataPesertaRefreshed;
+
+        if (isDataIncomplete) {
+          btnRefreshPeserta.classList.remove("hidden");
+        } else {
+          btnRefreshPeserta.classList.add("hidden");
+        }
+      }
     });
+
+    function refreshDataPeserta(noAgenda, nrpNip) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const activeNoAgenda = noAgenda || urlParams.get('noAgenda');
+
+      const DATA_LENGKAP_DUMMY = {
+        angkatanMiliterPolri: 'TNI AD',
+        unor: 'Kodam Jaya',
+        uker: 'Kodim 0503/Jakarta Barat',
+        nomorTeleponHp: '081234567890',
+        alamatLengkap: 'Jl. Merdeka No. 10',
+        rtRw: '001/002',
+        provinsi: 'DKI Jakarta',
+        kotaKabupaten: 'Jakarta Barat',
+        kecamatan: 'Kebon Jeruk',
+        desaKelurahan: 'Kebon Jeruk',
+        kodePos: '11530',
+      };
+
+      const elPangkat = document.getElementById('peserta-pangkat');
+      const elAngkatan = document.getElementById('peserta-angkatan');
+      if (elPangkat && elPangkat.innerText === '-') elPangkat.innerText = 'Prada';
+      if (elAngkatan) elAngkatan.innerText = DATA_LENGKAP_DUMMY.angkatanMiliterPolri;
+
+      const claims = getClaims();
+      const targetIndex = claims.findIndex(c => (c.noRegistrasi === activeNoAgenda || c.noAgenda === activeNoAgenda));
+
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) + " " + 
+                            now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':');
+
+      const newAuditEntry = {
+        tanggal: formattedDate,
+        user: "Staf Kancab Utama",
+        aksi: "Refresh Data Peserta",
+        keterangan: "Data peserta berhasil diperbarui dari sistem Kepesertaan"
+      };
+
+      if (targetIndex !== -1) {
+        claims[targetIndex].angkatan = DATA_LENGKAP_DUMMY.angkatanMiliterPolri;
+        claims[targetIndex].unor = DATA_LENGKAP_DUMMY.unor;
+        claims[targetIndex].uker = DATA_LENGKAP_DUMMY.uker;
+        claims[targetIndex].unitKerja = DATA_LENGKAP_DUMMY.uker;
+        claims[targetIndex].telepon = DATA_LENGKAP_DUMMY.nomorTeleponHp;
+        claims[targetIndex].alamat = DATA_LENGKAP_DUMMY.alamatLengkap;
+        claims[targetIndex].rt = '001';
+        claims[targetIndex].rw = '002';
+        claims[targetIndex].provinsi = DATA_LENGKAP_DUMMY.provinsi;
+        claims[targetIndex].kota = DATA_LENGKAP_DUMMY.kotaKabupaten;
+        claims[targetIndex].kecamatan = DATA_LENGKAP_DUMMY.kecamatan;
+        claims[targetIndex].kelurahan = DATA_LENGKAP_DUMMY.desaKelurahan;
+        claims[targetIndex].kodepos = DATA_LENGKAP_DUMMY.kodePos;
+        claims[targetIndex].dataLengkap = true;
+        claims[targetIndex].isDataPesertaRefreshed = true;
+
+        if (!claims[targetIndex].auditTrail) {
+          claims[targetIndex].auditTrail = [];
+        }
+        claims[targetIndex].auditTrail.push(newAuditEntry);
+
+        saveClaims(claims);
+      }
+
+      const btnRefresh = document.getElementById("btn-refresh-peserta");
+      if (btnRefresh) {
+        btnRefresh.classList.add("hidden");
+      }
+
+      if (typeof showToast === "function") {
+        showToast("Data Diperbarui", "✅ Data peserta berhasil diperbarui", "success");
+      } else {
+        alert("✅ Data peserta berhasil diperbarui");
+      }
+    }
 
     function prosesBerkasWorkspace() {
       const noAgenda = new URLSearchParams(window.location.search).get('noAgenda');

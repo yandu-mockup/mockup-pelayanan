@@ -648,12 +648,20 @@
               </div>
             </div>
 
+            <!-- Notes Display if Revised -->
+            <div id="l4-revisi-note-box" class="hidden bg-amber-950/60 border border-amber-800 p-4 rounded-2xl text-xs space-y-1">
+              <span class="font-bold text-amber-400 flex items-center gap-1.5">
+                <i class="fas fa-rotate-left"></i> Catatan Revisi Produk:
+              </span>
+              <p class="text-slate-200 whitespace-pre-line font-medium text-[11px]" id="l4-revisi-note-text">-</p>
+            </div>
+
             <!-- Notes Display if Rejected -->
             <div id="l4-rejection-note-box" class="hidden bg-rose-950/60 border border-rose-800 p-4 rounded-2xl text-xs space-y-1">
               <span class="font-bold text-rose-400 flex items-center gap-1.5">
-                <i class="fas fa-exclamation-triangle"></i> Catatan Penolakan Final:
+                <i class="fas fa-times-circle"></i> Catatan Penolakan Produk:
               </span>
-              <p class="text-slate-200 italic font-medium" id="l4-rejection-note-text">-</p>
+              <p class="text-slate-200 whitespace-pre-line font-medium text-[11px]" id="l4-rejection-note-text">-</p>
             </div>
 
             <!-- Action Buttons Row -->
@@ -664,16 +672,20 @@
 
               <!-- Active Decision Buttons (Hanya tampil saat status 'Menunggu Verifikasi') -->
               <div id="l4-action-buttons-group" class="flex items-center gap-3">
+                <button onclick="triggerVerifikasi('Verifikasi')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
+                  <i class="fas fa-check-circle"></i> Verifikasi
+                </button>
+
+                <button onclick="triggerVerifikasi('Revisi')" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
+                  <i class="fas fa-rotate-left"></i> Revisi
+                </button>
+
                 <button onclick="triggerVerifikasi('Tolak')" class="bg-rose-600 hover:bg-rose-700 text-white px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
                   <i class="fas fa-times-circle"></i> Tolak
                 </button>
-
-                <button onclick="triggerVerifikasi('Verifikasi')" class="bg-asabri-blue hover:bg-asabri-blueDark text-white px-6 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
-                  <i class="fas fa-check-circle"></i> Verifikasi
-                </button>
               </div>
 
-              <!-- Completed Status Banner (Muncul saat produk sudah Terverifikasi / Ditolak) -->
+              <!-- Completed Status Banner (Muncul saat produk sudah Terverifikasi / Ditolak / Revisi) -->
               <div id="l4-completed-status-banner" class="hidden flex items-center gap-2.5 text-xs font-bold px-4 py-2 rounded-2xl border">
                 <span id="l4-completed-status-icon"><i class="fas fa-check-circle"></i></span>
                 <span id="l4-completed-status-text">Produk telah diverifikasi.</span>
@@ -690,6 +702,33 @@
   <!-- ========================================================================= -->
   <!-- MODAL DIALOGS -->
   <!-- ========================================================================= -->
+
+  <!-- Modal Revisi Produk (Wajib Catatan) -->
+  <div id="modal-revisi" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center gap-3 text-amber-600 border-b border-slate-100 pb-3">
+        <div class="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-lg">
+          <i class="fas fa-rotate-left"></i>
+        </div>
+        <div>
+          <h3 class="font-extrabold text-slate-800 text-sm">Ajukan Catatan Revisi Produk</h3>
+          <p class="text-[11px] text-slate-500">Klaim akan dialihkan ke Riwayat dengan Nomor Registrasi yang sama untuk diperbaiki Staf Kancab.</p>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700">Catatan Revisi (Wajib Isi):</label>
+        <textarea id="modal-revisi-catatan" rows="4" placeholder="Tuliskan alasan / rincian data atau berkas yang perlu diperbaiki oleh Staf Kancab..." class="w-full bg-slate-50 border border-slate-300 rounded-2xl p-3 text-xs outline-none focus:border-amber-500 font-medium"></textarea>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 pt-2">
+        <button onclick="closeModal('modal-revisi')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-700">Batal</button>
+        <button onclick="submitRevisiProduk()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5">
+          <i class="fas fa-paper-plane"></i> Simpan Catatan Revisi
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Tolak Produk (Wajib Catatan) -->
   <div id="modal-tolak" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -1042,14 +1081,40 @@
     }
 
     // =========================================================================
-    // LEVEL 1 FUNCTIONS
+    // LEVEL 1 FUNCTIONS — LOGIKA STATUS CAMPURAN (REVISI + TERVERIFIKASI)
     // =========================================================================
+    function cekTampilDiListVerifikasi(klaim) {
+      const noAgenda = klaim.noRegistrasi || klaim.noAgenda || klaim.noReg;
+      const verifData = getProductVerifStatuses();
+      let prods = verifData[noAgenda];
+      if (!prods || prods.length === 0) {
+        prods = getProductListForClaim(klaim);
+      }
+      
+      // Klaim TETAP TAMPIL di List Verifikasi jika
+      // MASIH ADA minimal 1 produk yang berstatus:
+      const statusBelumFinal = ['Menunggu Verifikasi', 'Revisi'];
+      
+      if (prods && prods.length > 0) {
+        const masihAdaYangPending = prods.some(
+          p => statusBelumFinal.includes(p.status) || !p.status
+        );
+        return masihAdaYangPending;
+        // Jika TIDAK ADA lagi yang 'Menunggu Verifikasi' atau 'Revisi'
+        // (SEMUA sudah 'Terverifikasi' dan/atau 'Ditolak') → klaim HILANG dari List 
+        // Verifikasi, PINDAH sepenuhnya ke Riwayat Transaksi Klaim & List Approval
+      }
+      
+      const status = (klaim.status || '').toLowerCase();
+      if (status === 'ditolak' || status === 'sp terbit' || status === 'selesai' || status === 'terverifikasi' || status === 'pembayaran selesai' || status === 'proses pembayaran') {
+        return false;
+      }
+      return true;
+    }
+
     function getVerifikasiClaims() {
       const claims = getClaims();
-      return claims.filter(c => {
-        const status = (c.status || '').toLowerCase();
-        return status.includes('verifikasi') || status.includes('menunggu verifikasi') || status === 'dokumen diterima' || status === 'registrasi';
-      });
+      return claims.filter(c => cekTampilDiListVerifikasi(c));
     }
 
     function calculateTotalProduk(claim) {
@@ -1088,7 +1153,7 @@
       const emptyState = document.getElementById("empty-state");
       const countEl = document.getElementById("total-antrian-count");
 
-      let claims = getClaims(); // get all claims for rich display
+      let claims = getVerifikasiClaims(); // get active pending claims
 
       // Apply Filters
       claims = claims.filter(c => {
@@ -1232,26 +1297,64 @@
       const tbody = document.getElementById("l2-produk-table-body");
       tbody.innerHTML = prodList.map(item => {
         let badgeClass = "bg-amber-100 text-amber-800 border-amber-300";
-        if (item.status === 'Terverifikasi') badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
-        if (item.status === 'Ditolak') badgeClass = "bg-rose-100 text-rose-800 border-rose-300";
+        let iconBadge = '<i class="fas fa-clock mr-1 text-[10px]"></i>';
+        if (item.status === 'Terverifikasi') {
+          badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+          iconBadge = '<i class="fas fa-check-circle mr-1 text-emerald-600 text-[10px]"></i>';
+        } else if (item.status === 'Ditolak') {
+          badgeClass = "bg-rose-100 text-rose-800 border-rose-300";
+          iconBadge = '<i class="fas fa-circle-xmark mr-1 text-rose-600 text-[10px]"></i>';
+        } else if (item.status === 'Revisi') {
+          badgeClass = "bg-amber-100 text-amber-800 border-amber-300";
+          iconBadge = '<i class="fas fa-triangle-exclamation mr-1 text-amber-600 text-[10px]"></i>';
+        }
+
+        const hasRevisiNote = item.status === 'Revisi' && (item.catatanRevisi || item.catatanPenolakan);
+        const hasTolakNote = item.status === 'Ditolak' && item.catatanPenolakan;
+
+        const isFinalIndividual = item.status === 'Terverifikasi' || item.status === 'Ditolak';
+        const btnClass = item.status === 'Terverifikasi'
+          ? 'bg-emerald-600 hover:bg-emerald-700'
+          : (item.status === 'Ditolak'
+            ? 'bg-rose-600 hover:bg-rose-700'
+            : (item.status === 'Revisi'
+              ? 'bg-amber-500 hover:bg-amber-600'
+              : 'bg-asabri-blue hover:bg-asabri-blueDark'));
+
+        const btnIcon = item.status === 'Terverifikasi'
+          ? 'fas fa-eye'
+          : (item.status === 'Ditolak'
+            ? 'fas fa-eye'
+            : (item.status === 'Revisi'
+              ? 'fas fa-rotate-left'
+              : 'fas fa-search'));
+
+        const btnLabel = item.status === 'Terverifikasi'
+          ? 'Lihat Rincian (Final)'
+          : (item.status === 'Ditolak'
+            ? 'Lihat Rincian'
+            : (item.status === 'Revisi'
+              ? 'Lihat Revisi'
+              : 'Rincian & Verifikasi'));
 
         return `
           <tr class="hover:bg-slate-50 transition-colors">
             <td class="py-4 px-6 font-extrabold text-slate-800 text-xs">
               <span class="text-asabri-blue uppercase">${item.nama}</span>
-              ${item.catatanPenolakan ? `<p class="text-[10px] text-rose-500 font-normal mt-0.5"><i class="fas fa-info-circle mr-1"></i>${item.catatanPenolakan}</p>` : ''}
+              ${hasRevisiNote ? `<p class="text-[10px] text-amber-700 font-semibold mt-0.5"><i class="fas fa-rotate-left mr-1"></i>Catatan Revisi: ${item.catatanRevisi || item.catatanPenolakan}</p>` : ''}
+              ${hasTolakNote ? `<p class="text-[10px] text-rose-500 font-normal mt-0.5"><i class="fas fa-info-circle mr-1"></i>${item.catatanPenolakan}</p>` : ''}
             </td>
             <td class="py-4 px-6 text-right font-mono font-bold text-slate-700">${formatRupiah(item.nominalKotor)}</td>
             <td class="py-4 px-6 text-right font-mono font-semibold text-rose-600">${formatRupiah(item.potongan)}</td>
             <td class="py-4 px-6 text-right font-mono font-black text-emerald-600 text-sm">${formatRupiah(item.nominalBersih)}</td>
             <td class="py-4 px-6 text-center">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold border ${badgeClass}">
-                ${item.status}
+                ${iconBadge} ${item.status || 'Menunggu Verifikasi'}
               </span>
             </td>
             <td class="py-4 px-6 text-center">
-              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="${item.status === 'Terverifikasi' ? 'bg-emerald-600 hover:bg-emerald-700' : (item.status === 'Ditolak' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-asabri-blue hover:bg-asabri-blueDark')} text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5">
-                <i class="${item.status === 'Terverifikasi' ? 'fas fa-eye' : (item.status === 'Ditolak' ? 'fas fa-eye' : 'fas fa-search')} text-[10px]"></i> ${item.status === 'Terverifikasi' ? 'Lihat Rincian' : (item.status === 'Ditolak' ? 'Lihat Rincian' : 'Rincian & Verifikasi')}
+              <button onclick="openLevel3Rincian('${activeNoAgenda}', '${item.nama}')" class="${btnClass} text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5">
+                <i class="${btnIcon} text-[10px]"></i> ${btnLabel}
               </button>
             </td>
           </tr>
@@ -1383,11 +1486,36 @@
     };
 
     const ALIAS_DOKUMEN_MANDATORY = {
+      'Pensiun': 'Pensiun',
       'Pensiun Pertama': 'Pensiun',
+      'Berhenti dengan Hak Tunjangan': 'THT',
+      'Berhenti Tanpa Hak Pensiun': 'THT',
+      'Berhenti tanpa Hak Pensiun': 'THT',
+      'Peserta Aktif - Istri/suami meninggal dunia': 'JKm',
+      'Peserta Aktif - Anak meninggal Dunia': 'JKm',
+      'Meninggal Dunia Aktif Biasa': 'JKm',
+      'Meninggal Dunia Aktif Tewas': 'JKK',
+      'Meninggal Dunia Aktif Gugur': 'JKK',
+      'Cacat Dinas Biasa': 'JKK',
+      'Cacat Dinas Khusus': 'JKK',
+      'Meninggal Dunia Setelah Pensiun': 'JKm',
+      'Istri/suami meninggal Dunia Setelah Pensiun': 'JKm',
+      'Anak meninggal Dunia Setelah Pensiun': 'JKm',
+      'Pensiun Wari/Janda/Duda - Meninggal Dunia': 'JKm',
+      'Tunjangan Yatim Piatu': 'Pensiun',
+      'Tunjangan Orang Tua': 'Pensiun',
+      'Beasiswa JKK': 'JKK',
+      'Beasiswa JKM': 'JKm',
+      'Uang Kekurangan Pensiun (UKP)': 'Pensiun',
+      // Legacy aliases:
       'Pensiun Sendiri — Meninggal Dunia': 'JKm',
+      'Pensiun Sendiri - Meninggal Dunia': 'JKm',
       'Meninggal Dunia dalam Dinas Aktif': 'JKm',
+      'Meninggal Dunia Dalam Dinas Aktif': 'JKm',
+      'Meninggal Dunia dalam Dinas Aktif (JKm)': 'JKm',
       'Kecelakaan Kerja — Dirawat': 'JKK',
       'Kecelakaan Kerja — Cacat': 'JKK',
+      'Kecelakaan Kerja - Cacat': 'JKK',
       'Kecelakaan Kerja - Meninggal Dunia - Tewas': 'JKK',
       'Kecelakaan Kerja - Meninggal Dunia - Gugur': 'JKK',
       'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': 'JKK'
@@ -1686,38 +1814,96 @@
           completedBanner.classList.remove("hidden");
           completedBanner.className = "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-2xl border bg-emerald-950/60 text-emerald-300 border-emerald-700/50";
           completedIcon.innerHTML = '<i class="fas fa-check-circle text-emerald-400 text-sm"></i>';
-          completedText.innerText = "Produk ini telah TERVERIFIKASI dan siap diajukan ke Kakancab.";
+          completedText.innerText = "Produk ini telah TERVERIFIKASI (Final Individual). Menunggu seluruh produk selesai sebelum lanjut ke Approval Kakancab.";
         }
       } else if (currentProd.status === 'Ditolak') {
         badge.className += "bg-rose-500/20 text-rose-300 border-rose-500/40";
-        // Tombol verifikasi hilang jika sudah ditolak
-        if (btnGroup) btnGroup.classList.add("hidden");
-        if (completedBanner) {
-          completedBanner.classList.remove("hidden");
-          completedBanner.className = "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-2xl border bg-rose-950/60 text-rose-300 border-rose-700/50";
-          completedIcon.innerHTML = '<i class="fas fa-times-circle text-rose-400 text-sm"></i>';
-          completedText.innerText = "Produk ini telah DITOLAK (Keputusan Final).";
+        
+        const isFromKakancab = currentProd.tolakChain && currentProd.tolakChain.some(c => c.role === 'KAKANCAB') && !currentProd.tolakChain.some(c => c.role === 'Verifikator');
+        if (isFromKakancab) {
+          if (btnGroup) btnGroup.classList.remove("hidden");
+          if (completedBanner) {
+            completedBanner.classList.remove("hidden");
+            completedBanner.className = "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-2xl border bg-rose-950/60 text-rose-300 border-rose-700/50";
+            completedIcon.innerHTML = '<i class="fas fa-times-circle text-rose-400 text-sm"></i>';
+            completedText.innerText = "Produk ini DITOLAK oleh KAKANCAB. Silakan konfirmasi keputusan penolakan ini.";
+          }
+        } else {
+          if (btnGroup) btnGroup.classList.add("hidden");
+          if (completedBanner) {
+            completedBanner.classList.remove("hidden");
+            completedBanner.className = "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-2xl border bg-rose-950/60 text-rose-300 border-rose-700/50";
+            completedIcon.innerHTML = '<i class="fas fa-times-circle text-rose-400 text-sm"></i>';
+            completedText.innerText = "Produk ini telah DITOLAK (Keputusan Final).";
+          }
+        }
+      } else if (currentProd.status === 'Revisi') {
+        badge.className += "bg-amber-500/20 text-amber-300 border-amber-500/40";
+        
+        const isFromKakancab = currentProd.revisiChain && currentProd.revisiChain.some(c => c.role === 'KAKANCAB') && !currentProd.revisiChain.some(c => c.role === 'Verifikator');
+        if (isFromKakancab) {
+          // Revisi langsung dari KAKANCAB, Verifikator dapat menambahkan catatan perbaikan & meneruskan ke Staf
+          if (btnGroup) btnGroup.classList.remove("hidden");
+          if (completedBanner) {
+            completedBanner.classList.remove("hidden");
+            completedBanner.className = "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-2xl border bg-amber-950/60 text-amber-300 border-amber-700/50";
+            completedIcon.innerHTML = '<i class="fas fa-rotate-left text-amber-400 text-sm"></i>';
+            completedText.innerText = "Produk ini direvisi oleh KAKANCAB. Silakan periksa catatan dan klik [Revisi] untuk meneruskan ke Staf Kancab.";
+          }
+        } else {
+          // Sudah diteruskan ke Staf Kancab
+          if (btnGroup) btnGroup.classList.add("hidden");
+          if (completedBanner) {
+            completedBanner.classList.remove("hidden");
+            completedBanner.className = "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-2xl border bg-amber-950/60 text-amber-300 border-amber-700/50";
+            completedIcon.innerHTML = '<i class="fas fa-rotate-left text-amber-400 text-sm"></i>';
+            completedText.innerText = "Produk ini berstatus REVISI (Menunggu perbaikan data oleh Staf Kancab).";
+          }
         }
       } else {
         badge.className += "bg-amber-500/20 text-amber-300 border-amber-500/40";
-        // Tombol verifikasi & tolak tampil hanya jika status belum diverifikasi
+        // Tombol aksi (Verifikasi, Revisi, Tolak) tampil jika status masih antrian
         if (btnGroup) btnGroup.classList.remove("hidden");
         if (completedBanner) completedBanner.classList.add("hidden");
       }
 
       const noteBox = document.getElementById("l4-rejection-note-box");
-      if (currentProd.status === 'Ditolak' && currentProd.catatanPenolakan) {
-        noteBox.classList.remove("hidden");
-        document.getElementById("l4-rejection-note-text").innerText = currentProd.catatanPenolakan;
-      } else {
-        noteBox.classList.add("hidden");
+      if (noteBox) {
+        if (currentProd.status === 'Ditolak' && ((currentProd.tolakChain && currentProd.tolakChain.length > 0) || currentProd.catatanPenolakan)) {
+          noteBox.classList.remove("hidden");
+          let noteText = '';
+          if (Array.isArray(currentProd.tolakChain) && currentProd.tolakChain.length > 0) {
+            noteText = currentProd.tolakChain.map(item => `[${item.role} - ${item.waktu || ''}]:\n${item.catatan}`).join('\n\n');
+          } else {
+            noteText = currentProd.catatanPenolakan || '-';
+          }
+          document.getElementById("l4-rejection-note-text").innerText = noteText;
+        } else {
+          noteBox.classList.add("hidden");
+        }
+      }
+
+      const revisiNoteBox = document.getElementById("l4-revisi-note-box");
+      if (revisiNoteBox) {
+        if (currentProd.status === 'Revisi' && ((currentProd.revisiChain && currentProd.revisiChain.length > 0) || currentProd.catatanRevisi || currentProd.catatanPenolakan)) {
+          revisiNoteBox.classList.remove("hidden");
+          let noteText = '';
+          if (Array.isArray(currentProd.revisiChain) && currentProd.revisiChain.length > 0) {
+            noteText = currentProd.revisiChain.map(item => `[${item.role} - ${item.waktu || ''}]:\n${item.catatan}`).join('\n\n');
+          } else {
+            noteText = currentProd.catatanRevisi || currentProd.catatanPenolakan || '-';
+          }
+          document.getElementById("l4-revisi-note-text").innerText = noteText;
+        } else {
+          revisiNoteBox.classList.add("hidden");
+        }
       }
     }
 
     function getNamaPanjangProduk(code) {
       const names = {
         'TA': 'Tabungan Asuransi',
-        'PP': 'Pensiun Pertama',
+        'PP': 'Pensiun',
         'NTTA': 'Nilai Tunai Tabungan Asuransi',
         'SRKK': 'Santunan Risiko Kecelakaan Kerja',
         'NTIP': 'Nilai Tunai Iuran Pasti'
@@ -1726,14 +1912,87 @@
     }
 
     // =========================================================================
-    // LEVEL 4 LOGIC & ACTION CONTROLLER
+    // LEVEL 4 LOGIC & ACTION CONTROLLER (3 TOMBOL: VERIFIKASI, REVISI, TOLAK)
     // =========================================================================
     function triggerVerifikasi(aksi) {
       if (aksi === 'Verifikasi') {
         aksiVerifikatorPerProduk(activeNoAgenda, activeNamaProduk, 'Verifikasi', '');
+      } else if (aksi === 'Revisi') {
+        document.getElementById("modal-revisi-catatan").value = '';
+        openModal('modal-revisi');
       } else if (aksi === 'Tolak') {
         document.getElementById("modal-tolak-catatan").value = '';
         openModal('modal-tolak');
+      }
+    }
+
+    function submitRevisiProduk() {
+      const catatan = document.getElementById("modal-revisi-catatan").value;
+      aksiVerifikatorPerProduk(activeNoAgenda, activeNamaProduk, 'Revisi', catatan);
+    }
+
+    function submitTolakProduk() {
+      const catatan = document.getElementById("modal-tolak-catatan").value;
+      aksiVerifikatorPerProduk(activeNoAgenda, activeNamaProduk, 'Tolak', catatan);
+    }
+
+    function ajukanRevisi(noAgenda, namaProduk, catatanRevisi) {
+      aksiVerifikatorPerProduk(noAgenda, namaProduk, 'Revisi', catatanRevisi);
+    }
+
+    function syncOverallClaimStatus(noAgenda, verifData, auditUser, auditAction, auditKeterangan) {
+      try {
+        const claims = getClaims();
+        const claim = claims.find(c => (c.noRegistrasi === noAgenda || c.noAgenda === noAgenda || c.noReg === noAgenda));
+        if (!claim) return;
+
+        const allProds = verifData[noAgenda] || [];
+        const hasPending = allProds.some(p => p.status === 'Menunggu Verifikasi' || !p.status);
+        const hasRevisi = allProds.some(p => p.status === 'Revisi');
+        const allFinal = allProds.length > 0 && allProds.every(p => p.status === 'Terverifikasi' || p.status === 'Ditolak');
+        const allDitolak = allProds.length > 0 && allProds.every(p => p.status === 'Ditolak');
+
+        if (hasRevisi) {
+          // Status klaim CAMPURAN / REVISI: Status klaim 'Revisi' agar masuk Riwayat dengan badge Revisi
+          // TETAPI tetap tampil di List Verifikasi karena ada produk belum final
+          claim.status = 'Revisi';
+          const revProd = allProds.find(p => p.status === 'Revisi' && (p.catatanRevisi || p.catatanPenolakan || (p.revisiChain && p.revisiChain.length > 0)));
+          if (revProd) {
+            if (Array.isArray(revProd.revisiChain) && revProd.revisiChain.length > 0) {
+              claim.catatanRevisi = revProd.revisiChain.map(item => `[${item.role} - ${item.waktu || ''}]: ${item.catatan}`).join('\n');
+            } else {
+              claim.catatanRevisi = revProd.catatanRevisi || revProd.catatanPenolakan;
+            }
+            claim.catatan = claim.catatanRevisi;
+          }
+          claim.waktuRevisiTimestamp = claim.waktuRevisiTimestamp || Date.now();
+          claim.tanggalRevisi = new Date().toISOString();
+        } else if (hasPending) {
+          // Masih ada produk yang Menunggu Verifikasi
+          claim.status = 'Menunggu Verifikasi';
+        } else if (allFinal) {
+          // SEMUA produk sudah FINAL (Kombinasi Terverifikasi dan/atau Ditolak)
+          if (allDitolak) {
+            claim.status = 'Ditolak';
+          } else {
+            claim.status = 'Terverifikasi';
+            claim.waktuVerifikasiTimestamp = Date.now();
+            claim.tanggalVerifikasi = new Date().toISOString();
+          }
+        }
+
+        if (auditAction) {
+          if (!claim.auditTrail) claim.auditTrail = [];
+          claim.auditTrail.unshift({
+            tanggal: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID').slice(0, 5),
+            user: auditUser || 'Verifikator Layanan',
+            aksi: auditAction,
+            keterangan: auditKeterangan || ''
+          });
+        }
+        saveClaims(claims);
+      } catch(e) {
+        console.error("Error syncing overall claim status in asabri_claims:", e);
       }
     }
 
@@ -1744,26 +2003,77 @@
       const prod = verifData[noAgenda].find(p => p.nama === namaProduk);
       if (!prod) return;
 
+      const timestampStr = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID').slice(0, 5);
+
       if (aksi === 'Verifikasi') {
         prod.status = 'Terverifikasi';
         prod.catatanPenolakan = '';
+        prod.catatanRevisi = '';
         saveProductVerifStatuses(verifData);
 
-        // Sync claim status in asabri_claims so approval-produk.html immediately recognizes it
-        try {
-          const claims = getClaims();
-          const claim = claims.find(c => (c.noRegistrasi === noAgenda || c.noAgenda === noAgenda || c.noReg === noAgenda));
-          if (claim) {
-            claim.status = 'Terverifikasi';
-            claim.waktuVerifikasiTimestamp = Date.now();
-            claim.tanggalVerifikasi = new Date().toISOString();
-            saveClaims(claims);
-          }
-        } catch(e) {
-          console.error("Error updating claim status in asabri_claims:", e);
+        // Sync claim status in asabri_claims dynamically based on all products status
+        syncOverallClaimStatus(
+          noAgenda,
+          verifData,
+          'Verifikator Layanan',
+          'Verifikasi Disetujui',
+          `Produk ${namaProduk} telah diverifikasi.`
+        );
+
+        // Trigger notification to KAKANCAB if ALL products in the claim are final and ready for Kakancab
+        const allProds = verifData[noAgenda] || [];
+        const allFinal = allProds.length > 0 && allProds.every(p => p.status === 'Terverifikasi' || p.status === 'Ditolak');
+        const allDitolak = allProds.length > 0 && allProds.every(p => p.status === 'Ditolak');
+        if (allFinal && !allDitolak && typeof sendNotificationRole === 'function') {
+          sendNotificationRole('KAKANCAB', 'Semua Produk Terverifikasi', noAgenda, `Ada klaim baru ${noAgenda} untuk di-approve`, 'approval-produk.html');
         }
 
-        showToast("Verifikasi Berhasil", `Produk ${namaProduk} telah TERVERIFIKASI dan siap diajukan ke Kakancab.`, "success");
+        showToast("Verifikasi Berhasil", `Produk ${namaProduk} telah TERVERIFIKASI.`, "success");
+        renderLevel3Rincian();
+        renderLevel2Detail();
+        if (typeof renderLevel1List === 'function') renderLevel1List();
+      }
+
+      if (aksi === 'Revisi') {
+        if (!catatan.trim()) {
+          showToast("Peringatan", "Wajib mengisi Catatan Revisi!", "warning");
+          return;
+        }
+        prod.status = 'Revisi';
+        prod.catatanRevisi = catatan;
+        prod.catatanRevisiVerifikator = catatan;
+
+        if (!Array.isArray(prod.revisiChain)) {
+          prod.revisiChain = [];
+        }
+        prod.revisiChain.push({
+          role: 'Verifikator',
+          catatan: catatan,
+          waktu: timestampStr
+        });
+
+        saveProductVerifStatuses(verifData);
+
+        // Sync claim status in asabri_claims:
+        // - Status klaim -> 'Revisi' (BUKAN 'Ditolak')
+        // - Nomor Registrasi TETAP SAMA
+        // - SLA TETAP BERJALAN (tidak di-reset)
+        // - Data klaim masuk ke Riwayat Transaksi Klaim
+        syncOverallClaimStatus(
+          noAgenda,
+          verifData,
+          'Verifikator Layanan',
+          'Revisi Diminta',
+          `Produk ${namaProduk} perlu direvisi: ${catatan}`
+        );
+
+        // Trigger notification to Staf KANCAB
+        if (typeof sendNotificationRole === 'function') {
+          sendNotificationRole('Staf KANCAB', 'Verifikator Revisi', noAgenda, `Klaim ${noAgenda} perlu direvisi — ${catatan}`, `riwayat.html?highlight=${encodeURIComponent(noAgenda)}`);
+        }
+
+        showToast("Revisi Diajukan", `Status produk ${namaProduk} telah diubah menjadi REVISI. Berkas dialihkan ke Riwayat Transaksi untuk ditindaklanjuti Staf Kancab.`, "warning");
+        closeModal('modal-revisi');
         renderLevel3Rincian();
         renderLevel2Detail();
         if (typeof renderLevel1List === 'function') renderLevel1List();
@@ -1776,25 +2086,31 @@
         }
         prod.status = 'Ditolak';
         prod.catatanPenolakan = catatan;
+        prod.catatanPenolakanVerifikator = catatan;
+
+        if (!Array.isArray(prod.tolakChain)) {
+          prod.tolakChain = [];
+        }
+        prod.tolakChain.push({
+          role: 'Verifikator',
+          catatan: catatan,
+          waktu: timestampStr
+        });
+
         saveProductVerifStatuses(verifData);
 
-        // Update main claim status if all are rejected or partially verified
-        try {
-          const claims = getClaims();
-          const claim = claims.find(c => (c.noRegistrasi === noAgenda || c.noAgenda === noAgenda || c.noReg === noAgenda));
-          if (claim) {
-            const allProds = verifData[noAgenda] || [];
-            const allDitolak = allProds.length > 0 && allProds.every(p => p.status === 'Ditolak');
-            const hasTerverifikasi = allProds.some(p => p.status === 'Terverifikasi');
-            if (allDitolak) {
-              claim.status = 'Ditolak';
-            } else if (hasTerverifikasi) {
-              claim.status = 'Terverifikasi';
-            }
-            saveClaims(claims);
-          }
-        } catch(e) {
-          console.error("Error updating claim status in asabri_claims:", e);
+        // Sync claim status in asabri_claims
+        syncOverallClaimStatus(
+          noAgenda,
+          verifData,
+          'Verifikator Layanan',
+          'Produk Ditolak',
+          `Produk ${namaProduk} ditolak: ${catatan}`
+        );
+
+        // Trigger notification to Staf KANCAB
+        if (typeof sendNotificationRole === 'function') {
+          sendNotificationRole('Staf KANCAB', 'Verifikator Tolak', noAgenda, `Klaim ${noAgenda} ditolak — ${catatan}`, `riwayat.html?highlight=${encodeURIComponent(noAgenda)}`);
         }
 
         showToast("Produk Ditolak", `Status produk ${namaProduk} telah diubah menjadi DITOLAK (Final).`, "danger");
@@ -1803,11 +2119,6 @@
         renderLevel2Detail();
         if (typeof renderLevel1List === 'function') renderLevel1List();
       }
-    }
-
-    function submitTolakProduk() {
-      const catatan = document.getElementById("modal-tolak-catatan").value;
-      aksiVerifikatorPerProduk(activeNoAgenda, activeNamaProduk, 'Tolak', catatan);
     }
 
     function getSisaHutangDariManajemenPiutang(nikPeserta) {

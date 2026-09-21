@@ -173,44 +173,367 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize Sidebar Accordion states from localStorage
   initializeSidebarAccordionState();
 
-  // Update header notifications automatically
-  updateHeaderNotifications();
-  
-  // Listen for local changes to keep notifications synchronized
-  window.addEventListener("storage", updateHeaderNotifications);
+  // Initialize unified role selector across all pages
+  initializeSharedRoleSelector();
 
-  // Toggle notification dropdown on click instead of hover
-  const bell = document.getElementById("header-notification-bell");
-  if (bell) {
-    bell.classList.remove("group");
-    const dropdown = bell.querySelector(".absolute.right-0.top-10");
-    if (dropdown) {
-      dropdown.classList.remove("group-hover:opacity-100", "group-hover:pointer-events-auto");
-      
-      bell.addEventListener("click", (e) => {
-        e.stopPropagation();
-        const isShown = dropdown.classList.contains("opacity-100");
-        if (isShown) {
-          dropdown.classList.remove("opacity-100", "pointer-events-auto");
-          dropdown.classList.add("opacity-0", "pointer-events-none");
-        } else {
-          dropdown.classList.remove("opacity-0", "pointer-events-none");
-          dropdown.classList.add("opacity-100", "pointer-events-auto");
-        }
-      });
-      
-      document.addEventListener("click", (e) => {
-        if (!dropdown.contains(e.target) && !bell.contains(e.target)) {
-          dropdown.classList.remove("opacity-100", "pointer-events-auto");
-          dropdown.classList.add("opacity-0", "pointer-events-none");
-        }
-      });
+  // Initialize and render role-based notification bell
+  renderHeaderNotificationBell();
+  
+  // Listen for local changes to keep notifications synchronized across tabs
+  window.addEventListener("storage", () => {
+    renderHeaderNotificationBell();
+  });
+
+  // Global click listener to close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    const bell = document.getElementById("header-notification-bell");
+    if (bell) {
+      const dropdown = bell.querySelector("#header-notif-dropdown-menu");
+      if (dropdown && !bell.contains(e.target)) {
+        dropdown.classList.add("opacity-0", "pointer-events-none", "scale-95");
+        dropdown.classList.remove("opacity-100", "pointer-events-auto", "scale-100");
+      }
+    }
+  });
+});
+
+// =============================================================================
+// SISTEM NOTIFIKASI LONCENG PER ROLE (7 TRIGGER EVENTS)
+// =============================================================================
+const NOTIFIKASI_TRIGGER = [
+  { 
+    event: 'Ajukan ke Verifikator', 
+    targetRole: 'Verifikator', 
+    pesan: 'Ada klaim baru [noAgenda] untuk diverifikasi',
+    defaultLink: 'verifikasi.html',
+    icon: 'fa-file-signature',
+    badgeClass: 'bg-blue-100 text-asabri-blue border-blue-200'
+  },
+  { 
+    event: 'Verifikator Revisi', 
+    targetRole: 'Staf KANCAB', 
+    pesan: 'Klaim [noAgenda] perlu direvisi — [catatan]',
+    defaultLink: 'riwayat.html',
+    icon: 'fa-rotate-left',
+    badgeClass: 'bg-amber-100 text-amber-800 border-amber-300'
+  },
+  { 
+    event: 'Verifikator Tolak', 
+    targetRole: 'Staf KANCAB', 
+    pesan: 'Klaim [noAgenda] ditolak — [alasan]',
+    defaultLink: 'riwayat.html',
+    icon: 'fa-circle-xmark',
+    badgeClass: 'bg-rose-100 text-rose-800 border-rose-300'
+  },
+  { 
+    event: 'Semua Produk Terverifikasi', 
+    targetRole: 'KAKANCAB', 
+    pesan: 'Ada klaim baru [noAgenda] untuk di-approve',
+    defaultLink: 'approval-produk.html',
+    icon: 'fa-check-double',
+    badgeClass: 'bg-emerald-100 text-emerald-800 border-emerald-300'
+  },
+  { 
+    event: 'Staf Ajukan Ulang Setelah Revisi', 
+    targetRole: 'Verifikator', 
+    pesan: 'Klaim [noAgenda] sudah direvisi, mohon diverifikasi ulang',
+    defaultLink: 'verifikasi.html',
+    icon: 'fa-file-circle-check',
+    badgeClass: 'bg-indigo-100 text-indigo-800 border-indigo-300'
+  },
+  { 
+    event: 'KAKANCAB Approve (SP Terbit)', 
+    targetRole: 'Staf KANCAB', 
+    pesan: 'SP untuk klaim [noAgenda] sudah terbit',
+    defaultLink: 'riwayat.html',
+    icon: 'fa-file-invoice-dollar',
+    badgeClass: 'bg-teal-100 text-teal-800 border-teal-300'
+  },
+  { 
+    event: 'KAKANCAB Cancel/Reject (Pembatalan)', 
+    targetRole: ['Verifikator', 'Staf KANCAB'], 
+    pesan: 'Klaim [noAgenda] dibatalkan — [alasan]',
+    defaultLink: 'pembatalan-sp.html',
+    icon: 'fa-ban',
+    badgeClass: 'bg-rose-100 text-rose-800 border-rose-300'
+  }
+];
+
+function normalizeRoleName(role) {
+  if (!role) return 'Staf KANCAB';
+  const r = String(role).trim().toLowerCase();
+  if (r.includes('medis')) return 'Verifikator Medis';
+  if (r.includes('staf') || (r.includes('kancab') && !r.includes('kakancab'))) return 'Staf KANCAB';
+  if (r.includes('verif')) return 'Verifikator';
+  if (r.includes('kakancab')) return 'KAKANCAB';
+  if (r.includes('program1') || r.includes('program 1')) return 'Bidang Layanan Program 1';
+  if (r.includes('kabid') || r.includes('kadiv')) return 'Kabid/Kadiv Layanan';
+  return role;
+}
+
+function getNotifStorageKey(role) {
+  const norm = normalizeRoleName(role);
+  return 'notifikasi_' + norm.replace(/[^a-zA-Z0-9]/g, '_');
+}
+
+function getCurrentActiveRole() {
+  const roleVal = localStorage.getItem("currentRole") || localStorage.getItem("YANDU_ROLE") || "Staf KANCAB";
+  return normalizeRoleName(roleVal);
+}
+
+function getNotificationsForRole(role) {
+  const key = getNotifStorageKey(role);
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) {
+      return getInitialSeedNotifications(normalizeRoleName(role));
+    }
+    return JSON.parse(raw);
+  } catch(e) {
+    return [];
+  }
+}
+
+function getInitialSeedNotifications(role) {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const waktu = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const bulanArr = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const tgl = `${now.getDate()} ${bulanArr[now.getMonth()]} ${now.getFullYear()}`;
+
+  let seeds = [];
+  if (role === 'Verifikator') {
+    seeds = [
+      {
+        id: `notif_seed_vr_1`,
+        event: 'Ajukan ke Verifikator',
+        pesan: 'Ada klaim baru REG/000082/0123/IX/2025 (Pensiun - TA + PP) untuk diverifikasi.',
+        link: 'verifikasi.html',
+        noAgenda: 'REG/000082/0123/IX/2025',
+        waktu: waktu,
+        tanggal: tgl,
+        timestamp: Date.now() - 3600000,
+        isRead: false
+      }
+    ];
+  } else if (role === 'KAKANCAB') {
+    seeds = [
+      {
+        id: `notif_seed_kc_1`,
+        event: 'Semua Produk Terverifikasi',
+        pesan: 'Ada klaim baru REG/000082/0123/IX/2025 untuk di-approve oleh Kakancab.',
+        link: 'approval-produk.html',
+        noAgenda: 'REG/000082/0123/IX/2025',
+        waktu: waktu,
+        tanggal: tgl,
+        timestamp: Date.now() - 7200000,
+        isRead: false
+      }
+    ];
+  } else if (role === 'Staf KANCAB') {
+    seeds = [
+      {
+        id: `notif_seed_sk_1`,
+        event: 'KAKANCAB Approve (SP Terbit)',
+        pesan: 'SP untuk klaim REG/000081/0123/IX/2025 sudah terbit.',
+        link: 'riwayat.html',
+        noAgenda: 'REG/000081/0123/IX/2025',
+        waktu: waktu,
+        tanggal: tgl,
+        timestamp: Date.now() - 10800000,
+        isRead: true
+      }
+    ];
+  }
+
+  saveNotificationsForRole(role, seeds);
+  return seeds;
+}
+
+function saveNotificationsForRole(role, list) {
+  const key = getNotifStorageKey(role);
+  localStorage.setItem(key, JSON.stringify(list));
+}
+
+function sendNotificationRole(targetRoles, eventName, noAgenda, customPesan, customLink) {
+  const targets = Array.isArray(targetRoles) ? targetRoles : [targetRoles];
+  const triggerDef = NOTIFIKASI_TRIGGER.find(t => t.event === eventName) || {};
+
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const waktu = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const bulanArr = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const tanggal = `${now.getDate()} ${bulanArr[now.getMonth()]} ${now.getFullYear()}`;
+
+  targets.forEach(tgtRole => {
+    const roleKey = normalizeRoleName(tgtRole);
+    const existing = getNotificationsForRole(roleKey);
+
+    let pesan = customPesan;
+    if (!pesan) {
+      pesan = (triggerDef.pesan || `Pemberitahuan baru: ${eventName}`)
+        .replace('[noAgenda]', noAgenda || '')
+        .replace('[catatan]', '')
+        .replace('[alasan]', '')
+        .trim();
+    }
+
+    let link = customLink || triggerDef.defaultLink || 'index.html';
+    if (noAgenda && (link === 'riwayat.html' || link === 'pembatalan-sp.html')) {
+      if (!link.includes('highlight=')) {
+        link += `?highlight=${encodeURIComponent(noAgenda)}`;
+      }
+    }
+
+    const notifItem = {
+      id: `notif_${Date.now()}_${Math.floor(Math.random()*1000)}`,
+      event: eventName,
+      pesan: pesan,
+      link: link,
+      noAgenda: noAgenda || '',
+      waktu: waktu,
+      tanggal: tanggal,
+      timestamp: Date.now(),
+      isRead: false
+    };
+
+    existing.unshift(notifItem);
+    const trimmed = existing.slice(0, 50); // Keep last 50
+    saveNotificationsForRole(roleKey, trimmed);
+  });
+
+  renderHeaderNotificationBell();
+  window.dispatchEvent(new Event("storage"));
+}
+
+function markAllNotificationsRead(role) {
+  const roleKey = normalizeRoleName(role || getCurrentActiveRole());
+  const list = getNotificationsForRole(roleKey);
+  list.forEach(n => { n.isRead = true; });
+  saveNotificationsForRole(roleKey, list);
+  renderHeaderNotificationBell();
+  window.dispatchEvent(new Event("storage"));
+}
+
+function markNotificationReadAndOpen(role, notifId, link) {
+  const roleKey = normalizeRoleName(role || getCurrentActiveRole());
+  const list = getNotificationsForRole(roleKey);
+  const item = list.find(n => n.id === notifId);
+  if (item) {
+    item.isRead = true;
+    saveNotificationsForRole(roleKey, list);
+  }
+  renderHeaderNotificationBell();
+  if (link) {
+    window.location.href = link;
+  }
+}
+
+function renderHeaderNotificationBell() {
+  const activeRole = getCurrentActiveRole();
+  const notifs = getNotificationsForRole(activeRole);
+  const unreadCount = notifs.filter(n => !n.isRead).length;
+
+  let bell = document.getElementById("header-notification-bell");
+  const headerControls = document.querySelector("header .flex.items-center.gap-4");
+  
+  if (!bell && headerControls) {
+    bell = document.createElement("div");
+    bell.id = "header-notification-bell";
+    bell.className = "relative cursor-pointer";
+    
+    const divider = headerControls.querySelector(".h-8.w-px");
+    if (divider) {
+      headerControls.insertBefore(bell, divider);
+    } else {
+      headerControls.appendChild(bell);
     }
   }
 
-  // Initialize unified role selector across all pages
-  initializeSharedRoleSelector();
-});
+  if (!bell) return;
+
+  const badgeHtml = unreadCount > 0
+    ? `<span id="header-notif-badge" class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white font-black text-[9px] min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center border-2 border-asabri-blue shadow-sm animate-pulse">${unreadCount > 99 ? '99+' : unreadCount}</span>`
+    : `<span id="header-notif-badge" class="hidden"></span>`;
+
+  let itemsHtml = '';
+  if (notifs.length === 0) {
+    itemsHtml = `
+      <div class="py-8 px-4 text-center text-slate-400 flex flex-col items-center justify-center gap-2">
+        <i class="far fa-bell-slash text-2xl text-slate-300"></i>
+        <p class="text-xs font-semibold text-slate-600">Belum ada notifikasi untuk <b>${activeRole}</b></p>
+        <span class="text-[10px] text-slate-400">Notifikasi perubahan status klaim akan muncul di sini secara otomatis.</span>
+      </div>
+    `;
+  } else {
+    itemsHtml = notifs.slice(0, 20).map(n => {
+      const isUnread = !n.isRead;
+      const trig = NOTIFIKASI_TRIGGER.find(t => t.event === n.event) || {};
+      const icon = trig.icon || 'fa-bell';
+      const badgeCls = trig.badgeClass || 'bg-blue-100 text-asabri-blue border-blue-200';
+
+      return `
+        <div onclick="markNotificationReadAndOpen('${activeRole}', '${n.id}', '${n.link}')" class="p-3 border-b border-slate-100 hover:bg-blue-50/60 transition-colors cursor-pointer flex items-start gap-3 ${isUnread ? 'bg-amber-50/50' : 'bg-white'}">
+          <div class="w-7 h-7 rounded-xl flex items-center justify-center text-xs shrink-0 border ${badgeCls}">
+            <i class="fas ${icon}"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1 mb-0.5">
+              <span class="text-[10px] font-extrabold text-slate-700 truncate">${n.event}</span>
+              <span class="text-[9px] text-slate-400 shrink-0 font-mono">${n.waktu}</span>
+            </div>
+            <p class="text-xs ${isUnread ? 'font-bold text-slate-900' : 'font-normal text-slate-600'} line-clamp-2 leading-snug">${n.pesan}</p>
+            <div class="flex items-center justify-between mt-1.5">
+              <span class="text-[9px] text-slate-400">${n.tanggal}</span>
+              <span class="text-[10px] text-asabri-blue font-bold inline-flex items-center gap-0.5 hover:underline">Buka Link <i class="fas fa-arrow-right text-[8px] ml-0.5"></i></span>
+            </div>
+          </div>
+          ${isUnread ? '<span class="w-2 h-2 rounded-full bg-asabri-blue shrink-0 mt-1" title="Belum dibaca"></span>' : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  bell.innerHTML = `
+    <button type="button" id="btn-bell-icon" class="p-2 rounded-xl text-white hover:bg-white/10 transition-colors relative flex items-center justify-center focus:outline-none" title="Notifikasi ${activeRole}">
+      <i class="fas fa-bell text-base"></i>
+      ${badgeHtml}
+    </button>
+    
+    <div id="header-notif-dropdown-menu" class="absolute right-0 top-11 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 transform transition-all duration-150 opacity-0 pointer-events-none scale-95 origin-top-right">
+      <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <i class="fas fa-bell text-amber-400 text-xs"></i>
+          <span class="text-xs font-bold tracking-wide">Notifikasi — ${activeRole}</span>
+          ${unreadCount > 0 ? `<span class="bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">${unreadCount}</span>` : ''}
+        </div>
+        ${unreadCount > 0 ? `<button onclick="event.stopPropagation(); markAllNotificationsRead('${activeRole}')" class="text-[10px] text-blue-300 hover:text-white font-semibold transition-colors">Tandai Semua Dibaca</button>` : ''}
+      </div>
+      <div class="max-h-[360px] overflow-y-auto divide-y divide-slate-100">
+        ${itemsHtml}
+      </div>
+      <div class="px-4 py-2 bg-slate-50 border-t border-slate-200 text-center">
+        <span class="text-[10px] text-slate-500 font-medium">Role Aktif: <b>${activeRole}</b> • ${notifs.length} total</span>
+      </div>
+    </div>
+  `;
+
+  const btnBell = bell.querySelector("#btn-bell-icon");
+  const dropdown = bell.querySelector("#header-notif-dropdown-menu");
+  if (btnBell && dropdown) {
+    btnBell.onclick = (e) => {
+      e.stopPropagation();
+      const isHidden = dropdown.classList.contains("opacity-0");
+      if (isHidden) {
+        dropdown.classList.remove("opacity-0", "pointer-events-none", "scale-95");
+        dropdown.classList.add("opacity-100", "pointer-events-auto", "scale-100");
+      } else {
+        dropdown.classList.add("opacity-0", "pointer-events-none", "scale-95");
+        dropdown.classList.remove("opacity-100", "pointer-events-auto", "scale-100");
+      }
+    };
+  }
+}
 
 function initializeSharedRoleSelector() {
   const headerContainer = document.querySelector("header .flex.items-center.gap-4");
@@ -311,12 +634,14 @@ function initializeSharedRoleSelector() {
     if (typeof changeRole === "function") {
       changeRole(legacyVal);
     }
+
+    // Immediately re-render notification bell for the new active role!
+    renderHeaderNotificationBell();
   }
 
   // Change listener
   selectEl.addEventListener("change", (e) => {
     updateRoleState(e.target.value);
-    // Also dispatch storage event for tab sync
     window.dispatchEvent(new Event("storage"));
   });
 
