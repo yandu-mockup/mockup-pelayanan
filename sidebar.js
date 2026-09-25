@@ -21,7 +21,7 @@ function renderSidebar(activePage) {
         { id: 'riwayat', label: 'Riwayat Transaksi', href: 'riwayat.html' }
       ]
     },
-    { id: 'data-peserta', label: '3. Data Peserta', icon: 'fas fa-magnifying-glass', href: 'data-peserta.html', subMenu: [] },
+    { id: 'data-peserta', label: '3. List Peserta', icon: 'fas fa-magnifying-glass', href: 'data-peserta.html', subMenu: [] },
     { id: 'dapem-susulan', label: '4. Dapem Susulan Sementara', icon: 'fas fa-file-invoice-dollar', href: 'dapem-susulan.html', subMenu: [] },
     {
       id: 'perbandingan-dapem',

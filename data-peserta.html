@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASABRI - YANDU NG (Data Peserta)</title>
-  <meta name="description" content="Halaman Pencarian dan Detail Data Peserta ASABRI YANDU NG.">
+  <title>ASABRI - YANDU NG (List Peserta)</title>
+  <meta name="description" content="Halaman Pencarian dan Detail List Peserta ASABRI YANDU NG.">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -120,75 +120,104 @@
       
       <!-- BREADCRUMB -->
       <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
-        <div class="flex items-center gap-1 text-[11px] font-medium">
-          <span class="font-bold text-asabri-blue">Data Peserta</span>
+        <div class="flex items-center gap-1 text-[11px] font-medium" id="page-breadcrumb">
+          <span class="font-bold text-asabri-blue">List Peserta</span>
         </div>
       </div>
 
       <div class="flex-1 flex flex-col overflow-y-auto p-6 space-y-6">
 
-        <!-- BAGIAN 1: PENCARIAN DATA PESERTA -->
-        <div id="search-section" class="max-w-5xl mx-auto w-full space-y-6">
+        <!-- BAGIAN 1: PENCARIAN DATA PESERTA (REVISI TOTAL FILTER & PARAMETER) -->
+        <div id="search-section" class="w-full space-y-6">
           <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
-            <div class="border-b border-slate-100 pb-3">
-              <h3 class="text-sm font-bold text-slate-800">Pencarian Data Kepesertaan</h3>
-              <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mt-0.5">Filter dan temukan berkas profil peserta ASABRI</p>
+            <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-slate-800">Filter &amp; Parameter Pencarian</h3>
+                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mt-0.5">Filter dan temukan data kepesertaan ASABRI</p>
+              </div>
             </div>
             
             <form id="search-form" onsubmit="event.preventDefault(); executeSearch();" class="space-y-4">
+              <!-- Baris Filter Dinamis -->
               <div id="filter-rows-container" class="space-y-3">
-                <div class="flex flex-col md:flex-row md:items-center gap-3 filter-row">
-                  <div class="w-full md:w-1/3">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tipe Pencarian</label>
-                    <select onchange="handleFilterTypeChange(this)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 filter-type">
-                      <option value="ANY" selected>KTPA, NRP/NIP, NOPENS, NAMA</option>
-                      <option value="ANGKATAN">Angkatan</option>
-                      <option value="NIK">NIK</option>
-                    </select>
-                  </div>
-                  <div class="flex-1 filter-value-container">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nilai Pencarian</label>
-                    <input type="text" placeholder="Masukkan kata kunci pencarian..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 filter-val">
-                  </div>
-                  <div class="w-full md:w-auto flex items-end pt-5 md:pt-0">
-                    <div class="w-[85px]"></div>
-                  </div>
+                <!-- Injected dynamically via JS -->
+              </div>
+
+              <!-- Tombol Tambah Baris Filter -->
+              <div class="pt-1">
+                <button type="button" onclick="tambahFilterRow()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5">
+                  <i class="fas fa-plus text-[10px] text-asabri-blue"></i> Filter
+                </button>
+              </div>
+
+              <!-- Field Tambahan (Statis) -->
+              <div class="pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Alih Status</label>
+                  <select id="filter-alih-status" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 cursor-pointer">
+                    <option value="Semua" selected>Semua</option>
+                    <option value="Asabri - Taspen (Keluar)">Asabri - Taspen (Keluar)</option>
+                    <option value="Taspen - Asabri (Masuk)">Taspen - Asabri (Masuk)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Status Peserta</label>
+                  <select id="filter-status-peserta" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 cursor-pointer">
+                    <option value="SEMUA DATA">SEMUA DATA</option>
+                    <option value="AKTIF" selected>AKTIF</option>
+                    <option value="PENSIUN">PENSIUN</option>
+                    <option value="DESERSI">DESERSI</option>
+                    <option value="MENINGGAL AKTIF">MENINGGAL AKTIF</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Status Valid</label>
+                  <select id="filter-status-valid" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 cursor-pointer">
+                    <option value="Semua" selected>Semua</option>
+                    <option value="Valid">Valid</option>
+                    <option value="Tidak Valid">Tidak Valid</option>
+                  </select>
                 </div>
               </div>
 
-              <div class="flex justify-between items-center pt-3 border-t border-slate-100">
-                <div class="flex gap-2">
-                  <button type="button" onclick="addFilterRow()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
-                    <i class="fas fa-plus text-[10px]"></i> Filter
-                  </button>
-                </div>
-                <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5">
+              <!-- Tombol Aksi: Cari & Export Nominatif -->
+              <div class="flex justify-end items-center gap-3 pt-4 border-t border-slate-100">
+                <button type="button" onclick="exportNominatif()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2">
+                  <i class="fas fa-file-excel text-emerald-400"></i> Export Nominatif
+                </button>
+                <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-2">
                   <i class="fas fa-magnifying-glass"></i> Cari
                 </button>
               </div>
             </form>
           </div>
 
-          <!-- Tabel Hasil Pencarian -->
+          <!-- Tabel Hasil Pencarian (13 Kolom Sesuai Spesifikasi) -->
           <div id="results-card" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
             <div class="border-b border-slate-100 pb-3 mb-4 flex items-center justify-between">
               <div>
                 <h3 class="text-sm font-bold text-slate-800">Hasil Pencarian</h3>
-                <p class="text-[10px] text-slate-400 uppercase font-bold tracking-wider mt-0.5" id="results-count">Ditemukan 0 data</p>
+                <p class="text-[11px] text-slate-500 font-medium mt-0.5" id="results-count">Menampilkan 0 data peserta.</p>
               </div>
             </div>
 
             <div class="overflow-x-auto border border-slate-200 rounded-xl">
-              <table class="w-full text-xs text-slate-800">
-                <thead class="bg-slate-800 text-white font-bold border-b border-slate-200">
+              <table class="w-full text-xs text-slate-800 whitespace-nowrap">
+                <thead class="bg-slate-800 text-white font-bold border-b border-slate-200 text-[11px] tracking-wide">
                   <tr>
-                    <th class="px-4 py-3 text-left">KTPA</th>
-                    <th class="px-4 py-3 text-left">NRP / NIP</th>
-                    <th class="px-4 py-3 text-left">Nopens</th>
-                    <th class="px-4 py-3 text-left">Nama</th>
-                    <th class="px-4 py-3 text-left">Angkatan</th>
-                    <th class="px-4 py-3 text-left">NIK</th>
-                    <th class="px-4 py-3 text-center w-36">Aksi</th>
+                    <th class="px-3 py-3 text-center w-12">NO</th>
+                    <th class="px-3 py-3 text-left">NRP</th>
+                    <th class="px-3 py-3 text-left">NOPENS</th>
+                    <th class="px-3 py-3 text-left">KPA</th>
+                    <th class="px-3 py-3 text-left">NAMA</th>
+                    <th class="px-3 py-3 text-left">TANGGAL LAHIR</th>
+                    <th class="px-3 py-3 text-left">TMT PENGANGKATAN</th>
+                    <th class="px-3 py-3 text-left">NO. SKEP</th>
+                    <th class="px-3 py-3 text-left">TANGGAL SKEP</th>
+                    <th class="px-3 py-3 text-left">PANGKAT AWAL</th>
+                    <th class="px-3 py-3 text-left">KESATUAN</th>
+                    <th class="px-3 py-3 text-center">VIP</th>
+                    <th class="px-3 py-3 text-center w-28">AKSI</th>
                   </tr>
                 </thead>
                 <tbody id="results-tbody" class="divide-y divide-slate-100">
@@ -858,8 +887,10 @@
                                 <option value="Anak">Anak</option>
                                 <option value="Ayah">Ayah</option>
                                 <option value="Ibu">Ibu</option>
-                                <option value="Ahli Waris">Ahli Waris</option>
+                                <option value="Ahli Waris - (khusus hak/manfaat)">Ahli Waris - (khusus hak/manfaat)</option>
+                                <option value="Sendiri - (khusus hak/manfaat)">Sendiri - (khusus hak/manfaat)</option>
                                 <option value="Wali">Wali</option>
+                                <option value="Yang Bersangkutan">Yang Bersangkutan</option>
                                 <option value="Kakak/Adik">Kakak/Adik</option>
                                 <option value="Anak Angkat">Anak Angkat</option>
                                 <option value="Anak Tiri">Anak Tiri</option>
@@ -911,6 +942,25 @@
                                 <label class="block font-bold text-slate-700 mb-1 text-xs">TMT Kejadian (Tanggal Menikah / Mulai Bekerja ASN/Government) <span class="text-rose-500">*</span></label>
                                 <input type="date" id="fam-add-tmt-kejadian-d2" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue text-xs">
                                 <p class="text-[10px] text-slate-500 mt-1"><i class="fas fa-info-circle text-rose-500 mr-1"></i> Tunjangan anak akan otomatis dihentikan mulai periode Dapem berikutnya dari TMT Kejadian ini. Dokumen pendukung (Surat Nikah / SK Pengangkatan) diunggah pada slot <strong>"Dokumen Pendukung Lainnya"</strong> di section Dokumen Lampiran.</p>
+                            <!-- Container Orang Tua (Ayah / Ibu) -->
+                            <div id="fam-ortu-fields" class="hidden space-y-3 bg-indigo-50/60 p-3.5 border border-indigo-200 rounded-xl">
+                              <div class="flex items-center justify-between text-xs font-bold text-indigo-800">
+                                <span class="flex items-center gap-1.5"><i class="fas fa-person-cane text-indigo-600"></i> Profil Khusus Orang Tua (Ayah / Ibu)</span>
+                                <span class="text-[10px] text-indigo-600 bg-indigo-100 px-2 py-0.5 rounded-full font-semibold">Tunjangan Orang Tua</span>
+                              </div>
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <label class="block font-bold text-slate-700 mb-1 text-xs">Penspok (Rp) <span class="text-slate-400 font-normal">(Hanya untuk Orang Tua)</span></label>
+                                  <input type="number" id="fam-add-penspok" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue text-xs font-mono" placeholder="0" value="0">
+                                  <p class="text-[10px] text-slate-500 mt-0.5">Nominal pensiun pokok orang tua jika ada.</p>
+                                </div>
+                                <div>
+                                  <label class="block font-bold text-slate-700 mb-1 text-xs">Tipe Dokumen Akta Kelahiran</label>
+                                  <select id="fam-add-tipe-akta" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue text-xs">
+                                    <option value="Dokumen Baru">Dokumen Baru</option>
+                                    <option value="Dokumen Yang Sudah Ada">Dokumen Yang Sudah Ada</option>
+                                  </select>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -2492,159 +2542,416 @@
         });
       }
 
-      // Execute search initially to show all records immediately on load
+      // Inisialisasi Filter Rows dan Search awal
+      renderFilterRows();
       executeSearch();
       if (typeof renderKeluargaTable === 'function') renderKeluargaTable();
     });
 
-    function handleFilterTypeChange(selectEl) {
-      const row = selectEl.closest('.filter-row');
-      if (!row) return;
-      const valueContainer = row.querySelector('.filter-value-container');
-      if (!valueContainer) return;
+    // ==========================================
+    // FILTER & PARAMETER PENCARIAN (REVISI TOTAL)
+    // ==========================================
+    const TIPE_PENCARIAN = [
+      'NAMA', 'MIGRASI ID', 'NRP', 'NOPENS', 'KPA', 'ANGKATAN',
+      'TANGGAL SKEP PENGANGKATAN', 'NOMOR SKEP PENGANGKATAN',
+      'TANGGAL SKEP PENSIUN', 'NOMOR SKEP PENSIUN',
+      'TEMPAT LAHIR', 'TANGGAL LAHIR', 'PANGKAT AWAL',
+      'PANGKAT AKHIR', 'KESATUAN', 'TMT PENGANGKATAN', 'VIP',
+    ];
 
-      const type = selectEl.value;
-      if (type === 'ANGKATAN') {
-        valueContainer.innerHTML = `
-          <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nilai Pencarian</label>
-          <select class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 filter-val">
-            <option value="Semua" selected>Semua</option>
-            <option value="TNI-AD">TNI-AD</option>
-            <option value="TNI-AL">TNI-AL</option>
-            <option value="TNI-AU">TNI-AU</option>
-            <option value="POLRI">POLRI</option>
-            <option value="KEMHAN">KEMHAN</option>
+    const TIPE_OPERATOR = [
+      'SERUPA', 'SAMA DENGAN', 'SAMA DENGAN TANGGAL',
+      'LEBIH BESAR DARI', 'LEBIH KECIL DARI',
+      'LEBIH BESAR SAMA DENGAN', 'LEBIH KECIL SAMA DENGAN',
+      'LEBIH BESAR DARI TANGGAL', 'LEBIH KECIL DARI TANGGAL',
+      'LEBIH BESAR SAMA DENGAN TANGGAL',
+      'LEBIH KECIL SAMA DENGAN TANGGAL',
+    ];
+
+    const FILTER_ROW = {
+      tipePencarian: 'NAMA',
+      tipe: 'SERUPA',
+      nilaiPencarian: '',
+    };
+
+    let filterRows = [{ ...FILTER_ROW }];
+    let currentSearchResults = [];
+
+    function renderFilterRows() {
+      const container = document.getElementById('filter-rows-container');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      filterRows.forEach((row, index) => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'grid grid-cols-1 md:grid-cols-12 gap-3 items-end filter-row animate-fade-in bg-slate-50/50 p-3.5 rounded-xl border border-slate-200/80';
+
+        // Tipe Pencarian (col-span-4)
+        const colType = document.createElement('div');
+        colType.className = 'md:col-span-4';
+        colType.innerHTML = `
+          <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Tipe Pencarian</label>
+          <select onchange="updateFilterRow(${index}, 'tipePencarian', this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 cursor-pointer">
+            ${TIPE_PENCARIAN.map(t => `<option value="${t}" ${row.tipePencarian === t ? 'selected' : ''}>${t}</option>`).join('')}
           </select>
         `;
-      } else {
-        valueContainer.innerHTML = `
-          <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nilai Pencarian</label>
-          <input type="text" placeholder="Masukkan kata kunci pencarian..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 filter-val">
+
+        // Tipe Operator (col-span-3)
+        const colOp = document.createElement('div');
+        colOp.className = 'md:col-span-3';
+        colOp.innerHTML = `
+          <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Tipe Operator</label>
+          <select onchange="updateFilterRow(${index}, 'tipe', this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 cursor-pointer">
+            ${TIPE_OPERATOR.map(op => `<option value="${op}" ${row.tipe === op ? 'selected' : ''}>${op}</option>`).join('')}
+          </select>
         `;
+
+        // Nilai Pencarian (col-span-4)
+        const isDateType = row.tipe.includes('TANGGAL') || row.tipePencarian.includes('TANGGAL') || row.tipePencarian === 'TMT PENGANGKATAN';
+        const isVip = row.tipePencarian === 'VIP';
+        const colVal = document.createElement('div');
+        colVal.className = 'md:col-span-4';
+
+        if (isVip) {
+          colVal.innerHTML = `
+            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Nilai Pencarian</label>
+            <select onchange="updateFilterRow(${index}, 'nilaiPencarian', this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
+              <option value="" ${!row.nilaiPencarian ? 'selected' : ''}>-- Semua VIP --</option>
+              <option value="Ya" ${row.nilaiPencarian === 'Ya' ? 'selected' : ''}>Ya</option>
+              <option value="Tidak" ${row.nilaiPencarian === 'Tidak' ? 'selected' : ''}>Tidak</option>
+            </select>
+          `;
+        } else {
+          colVal.innerHTML = `
+            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Nilai Pencarian</label>
+            <input type="${isDateType ? 'date' : 'text'}" value="${row.nilaiPencarian || ''}" placeholder="Masukkan nilai pencarian..." oninput="updateFilterRow(${index}, 'nilaiPencarian', this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
+          `;
+        }
+
+        // Action column (col-span-1)
+        const colAct = document.createElement('div');
+        colAct.className = 'md:col-span-1 flex justify-end';
+        if (filterRows.length > 1) {
+          colAct.innerHTML = `
+            <button type="button" onclick="hapusFilterRow(${index})" title="Hapus filter" class="w-full px-2.5 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-sm">
+              <i class="fas fa-minus text-[10px]"></i>
+            </button>
+          `;
+        } else {
+          colAct.innerHTML = `<div class="h-9"></div>`;
+        }
+
+        rowDiv.appendChild(colType);
+        rowDiv.appendChild(colOp);
+        rowDiv.appendChild(colVal);
+        rowDiv.appendChild(colAct);
+
+        container.appendChild(rowDiv);
+      });
+    }
+
+    function tambahFilterRow() {
+      filterRows.push({ ...FILTER_ROW });
+      renderFilterRows();
+    }
+
+    function hapusFilterRow(index) {
+      if (filterRows.length > 1) {
+        filterRows.splice(index, 1);
+        renderFilterRows();
       }
     }
 
-    function addFilterRow() {
-      const container = document.getElementById('filter-rows-container');
-      if (!container) return;
-      const newRow = document.createElement('div');
-      newRow.className = 'flex flex-col md:flex-row md:items-center gap-3 filter-row animate-fade-in mt-3';
-      newRow.innerHTML = `
-        <div class="w-full md:w-1/3">
-          <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tipe Pencarian</label>
-          <select onchange="handleFilterTypeChange(this)" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 filter-type">
-            <option value="ANY" selected>KTPA, NRP/NIP, NOPENS, NAMA</option>
-            <option value="ANGKATAN">Angkatan</option>
-            <option value="NIK">NIK</option>
-          </select>
-        </div>
-        <div class="flex-1 filter-value-container">
-          <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Nilai Pencarian</label>
-          <input type="text" placeholder="Masukkan kata kunci pencarian..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700 filter-val">
-        </div>
-        <div class="w-full md:w-auto flex items-end pt-5 md:pt-0">
-          <button type="button" onclick="removeFilterRow(this)" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-sm w-[85px] justify-center">
-            <i class="fas fa-minus"></i> Filter
-          </button>
-        </div>
-      `;
-      container.appendChild(newRow);
+    function updateFilterRow(index, key, value) {
+      if (filterRows[index]) {
+        filterRows[index][key] = value;
+        // If type changed to date or VIP, re-render to switch input type
+        if (key === 'tipePencarian' || key === 'tipe') {
+          renderFilterRows();
+        }
+      }
     }
 
-    function removeFilterRow(btn) {
-      const row = btn.closest('.filter-row');
-      if (row) row.remove();
+    function getParticipantFieldValue(p, tipe) {
+      switch (tipe) {
+        case 'NAMA': return p.nama || '';
+        case 'MIGRASI ID': return p.migrasiId || p.migrasi_id || p.nik || '';
+        case 'NRP': return p.nrp || p.nrp_nip || '';
+        case 'NOPENS': return p.nopens || '';
+        case 'KPA': return p.kpa || p.no_ktpa || p.noPeserta || '';
+        case 'ANGKATAN': return p.angkatan || p.kesatuan || p.unitKerja || '';
+        case 'TANGGAL SKEP PENGANGKATAN': return p.tanggalSkep || p.tgl_skep_pengangkatan || '';
+        case 'NOMOR SKEP PENGANGKATAN': return p.noSkep || p.no_skep_pengangkatan || '';
+        case 'TANGGAL SKEP PENSIUN': return p.tglSkepPensiun || '';
+        case 'NOMOR SKEP PENSIUN': return p.noSkepPensiun || '';
+        case 'TEMPAT LAHIR': return p.tempatLahir || p.tempat_lahir || '';
+        case 'TANGGAL LAHIR': return p.tanggalLahir || p.tanggal_lahir || '';
+        case 'PANGKAT AWAL': return p.pangkatAwal || p.pangkat_awal || '';
+        case 'PANGKAT AKHIR': return p.pangkatAkhir || p.pangkat || '';
+        case 'KESATUAN': return p.kesatuan || p.unitKerja || '';
+        case 'TMT PENGANGKATAN': return p.tmtPengangkatan || p.tmt_pengangkatan || '';
+        case 'VIP': return p.vip || 'Tidak';
+        default: return '';
+      }
+    }
+
+    function matchFilterOperator(fieldVal, op, searchVal) {
+      const v = String(fieldVal || '').trim();
+      const s = String(searchVal || '').trim();
+      if (!s) return true;
+
+      const vLower = v.toLowerCase();
+      const sLower = s.toLowerCase();
+
+      switch (op) {
+        case 'SERUPA':
+          return vLower.includes(sLower);
+        case 'SAMA DENGAN':
+          return vLower === sLower;
+        case 'SAMA DENGAN TANGGAL': {
+          const d1 = new Date(v).getTime();
+          const d2 = new Date(s).getTime();
+          if (!isNaN(d1) && !isNaN(d2)) return d1 === d2;
+          return vLower === sLower;
+        }
+        case 'LEBIH BESAR DARI': {
+          const n1 = parseFloat(v);
+          const n2 = parseFloat(s);
+          if (!isNaN(n1) && !isNaN(n2)) return n1 > n2;
+          return vLower > sLower;
+        }
+        case 'LEBIH KECIL DARI': {
+          const n1 = parseFloat(v);
+          const n2 = parseFloat(s);
+          if (!isNaN(n1) && !isNaN(n2)) return n1 < n2;
+          return vLower < sLower;
+        }
+        case 'LEBIH BESAR SAMA DENGAN': {
+          const n1 = parseFloat(v);
+          const n2 = parseFloat(s);
+          if (!isNaN(n1) && !isNaN(n2)) return n1 >= n2;
+          return vLower >= sLower;
+        }
+        case 'LEBIH KECIL SAMA DENGAN': {
+          const n1 = parseFloat(v);
+          const n2 = parseFloat(s);
+          if (!isNaN(n1) && !isNaN(n2)) return n1 <= n2;
+          return vLower <= sLower;
+        }
+        case 'LEBIH BESAR DARI TANGGAL': {
+          const d1 = new Date(v).getTime();
+          const d2 = new Date(s).getTime();
+          if (!isNaN(d1) && !isNaN(d2)) return d1 > d2;
+          return vLower > sLower;
+        }
+        case 'LEBIH KECIL DARI TANGGAL': {
+          const d1 = new Date(v).getTime();
+          const d2 = new Date(s).getTime();
+          if (!isNaN(d1) && !isNaN(d2)) return d1 < d2;
+          return vLower < sLower;
+        }
+        case 'LEBIH BESAR SAMA DENGAN TANGGAL': {
+          const d1 = new Date(v).getTime();
+          const d2 = new Date(s).getTime();
+          if (!isNaN(d1) && !isNaN(d2)) return d1 >= d2;
+          return vLower >= sLower;
+        }
+        case 'LEBIH KECIL SAMA DENGAN TANGGAL': {
+          const d1 = new Date(v).getTime();
+          const d2 = new Date(s).getTime();
+          if (!isNaN(d1) && !isNaN(d2)) return d1 <= d2;
+          return vLower <= sLower;
+        }
+        default:
+          return vLower.includes(sLower);
+      }
+    }
+
+    function getPesertaListSource() {
+      const localCustom = localStorage.getItem("MOCK_PESERTA_CUSTOM");
+      if (localCustom) {
+        try {
+          const list = JSON.parse(localCustom);
+          if (Array.isArray(list) && list.length > 0) return list;
+        } catch(e) {}
+      }
+      return typeof MOCK_PESERTA !== 'undefined' ? MOCK_PESERTA : [];
     }
 
     function executeSearch() {
-      console.log('executeSearch dipanggil, jumlah MOCK_PESERTA:', typeof MOCK_PESERTA !== 'undefined' ? MOCK_PESERTA.length : 'undefined');
-      const filterRows = document.querySelectorAll('.filter-row');
-      let filtered = [...(typeof MOCK_PESERTA !== 'undefined' ? MOCK_PESERTA : [])];
+      let filtered = [...getPesertaListSource()];
 
+      // 1. Dynamic Filter Rows
       filterRows.forEach(row => {
-        const type = row.querySelector('.filter-type').value;
-        const valEl = row.querySelector('.filter-val');
-        if (!valEl) return;
-        const val = valEl.value.trim().toLowerCase();
-        if (!val) return;
-
-        if (type === 'ANY') {
-          filtered = filtered.filter(p => 
-            (p.noPeserta && p.noPeserta.toLowerCase().includes(val)) ||
-            (p.no_ktpa && p.no_ktpa.toLowerCase().includes(val)) ||
-            (p.nrp_nip && p.nrp_nip.toLowerCase().includes(val)) ||
-            (p.nopens && p.nopens.toLowerCase().includes(val)) ||
-            (p.nama && p.nama.toLowerCase().includes(val))
-          );
-        } else if (type === 'NIK') {
-          filtered = filtered.filter(p => p.nik && p.nik.toLowerCase().includes(val));
-        } else if (type === 'ANGKATAN') {
-          if (val !== 'semua') {
-            filtered = filtered.filter(p => 
-              (p.angkatan && p.angkatan.toLowerCase() === val) ||
-              (p.unitKerja && p.unitKerja.toLowerCase() === val)
-            );
-          }
+        if (row.nilaiPencarian && String(row.nilaiPencarian).trim() !== '') {
+          filtered = filtered.filter(p => {
+            const fieldVal = getParticipantFieldValue(p, row.tipePencarian);
+            return matchFilterOperator(fieldVal, row.tipe, row.nilaiPencarian);
+          });
         }
       });
 
+      // 2. Additional Static Filters
+      const alihStatusVal = document.getElementById('filter-alih-status')?.value || 'Semua';
+      const statusPesertaVal = document.getElementById('filter-status-peserta')?.value || 'AKTIF';
+      const statusValidVal = document.getElementById('filter-status-valid')?.value || 'Semua';
+
+      if (alihStatusVal !== 'Semua') {
+        filtered = filtered.filter(p => (p.alihStatus && p.alihStatus.toLowerCase() === alihStatusVal.toLowerCase()));
+      }
+
+      if (statusPesertaVal !== 'SEMUA DATA') {
+        filtered = filtered.filter(p => {
+          const sp = (p.statusPeserta || p.statusKepesertaan || p.status_kepesertaan || '').toUpperCase();
+          if (statusPesertaVal === 'AKTIF') return sp === 'AKTIF';
+          if (statusPesertaVal === 'PENSIUN') return sp === 'PENSIUN' || sp === 'PENSIUNAN';
+          if (statusPesertaVal === 'DESERSI') return sp === 'DESERSI';
+          if (statusPesertaVal === 'MENINGGAL AKTIF') return sp === 'MENINGGAL AKTIF';
+          return true;
+        });
+      }
+
+      if (statusValidVal !== 'Semua') {
+        filtered = filtered.filter(p => {
+          const sv = p.statusValid || (p.isPending ? 'Tidak Valid' : 'Valid');
+          return sv.toLowerCase() === statusValidVal.toLowerCase();
+        });
+      }
+
+      currentSearchResults = filtered;
       renderSearchResults(filtered);
     }
 
     function renderSearchResults(results) {
-      console.log('renderSearchResults dipanggil dengan data count:', results.length);
       const tbody = document.getElementById("results-tbody");
       const resultsCard = document.getElementById("results-card");
       const countEl = document.getElementById("results-count");
       
       tbody.innerHTML = "";
       resultsCard.classList.remove("hidden");
-      countEl.innerText = `Ditemukan ${results.length} data`;
-
-      if (results.length === 0) {
+      
+      const total = results.length;
+      if (total === 0) {
+        countEl.innerText = "Menampilkan 0 data peserta.";
         tbody.innerHTML = `
           <tr>
-            <td colspan="7" class="px-4 py-8 text-center text-slate-400 italic">Data peserta tidak ditemukan.</td>
+            <td colspan="13" class="px-4 py-8 text-center text-slate-400 italic">Data peserta tidak ditemukan dengan kriteria filter saat ini.</td>
           </tr>
         `;
         return;
       }
 
-      results.forEach(p => {
+      countEl.innerText = `Menampilkan 1–${total} dari ${total} peserta.`;
+
+      results.forEach((p, idx) => {
         const tr = document.createElement("tr");
-        tr.className = "odd:bg-asabri-softBlue/30 hover:bg-slate-50";
+        tr.className = "odd:bg-asabri-softBlue/30 hover:bg-slate-50 transition-colors";
         
-        const isPending = (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending);
-        // Setup JSON representation to pass safely
-        const pJson = encodeURIComponent(JSON.stringify(p));
+        const isVip = (p.vip === 'Ya');
+        const kpaVal = p.kpa || p.no_ktpa || p.noPeserta || p.nik || p.nrp || '';
+        const nrpVal = p.nrp || p.nrp_nip || p.kpa || p.no_ktpa || '';
 
         tr.innerHTML = `
-          <td class="px-4 py-3 font-semibold">
-            ${p.no_ktpa || p.noPeserta || '-'}
-            ${isPending ? '<span class="ml-1 px-2 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Pending</span>' : ''}
+          <td class="px-3 py-3 text-center font-bold text-slate-500">${idx + 1}</td>
+          <td class="px-3 py-3 font-mono font-semibold text-slate-700">${p.nrp || p.nrp_nip || '-'}</td>
+          <td class="px-3 py-3 font-mono text-slate-600">${p.nopens || '-'}</td>
+          <td class="px-3 py-3 font-mono font-semibold text-slate-800">${p.kpa || p.no_ktpa || p.noPeserta || '-'}</td>
+          <td class="px-3 py-3 font-bold text-slate-800">
+            <a href="javascript:void(0)" onclick="openDetailPeserta('${String(nrpVal).replace(/'/g, "\\'")}')" class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-bold inline-flex items-center gap-1.5 transition-colors">
+              <span>${p.nama || '-'}</span>
+            </a>
           </td>
-          <td class="px-4 py-3 font-mono">${p.nrp_nip || '-'}</td>
-          <td class="px-4 py-3 font-mono">${p.nopens || '-'}</td>
-          <td class="px-4 py-3 font-bold">
-            ${p.nama || '-'}
-            ${isPending ? '<span class="block text-[10px] font-normal text-amber-700 italic">Data belum lengkap</span>' : ''}
+          <td class="px-3 py-3 font-mono text-slate-600">${p.tanggalLahir || p.tanggal_lahir || '-'}</td>
+          <td class="px-3 py-3 font-mono text-slate-600">${p.tmtPengangkatan || p.tmt_pengangkatan || '-'}</td>
+          <td class="px-3 py-3 font-mono text-slate-700">${p.noSkep || p.no_skep_pengangkatan || '-'}</td>
+          <td class="px-3 py-3 font-mono text-slate-600">${p.tanggalSkep || p.tgl_skep_pengangkatan || '-'}</td>
+          <td class="px-3 py-3 text-slate-700">${p.pangkatAwal || p.pangkat_awal || '-'}</td>
+          <td class="px-3 py-3 text-slate-700 font-medium">${p.kesatuan || p.unitKerja || '-'}</td>
+          <td class="px-3 py-3 text-center">
+            ${isVip ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">Ya</span>' : '<span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600">Tidak</span>'}
           </td>
-          <td class="px-4 py-3">${p.angkatan || p.unitKerja || '-'}</td>
-          <td class="px-4 py-3 font-mono">${p.nik || '-'}</td>
-          <td class="px-4 py-3 text-center">
-            <button type="button" onclick="openParticipantProfileFromTable('${pJson}')" class="px-3 py-1 ${isPending ? 'bg-amber-600 hover:bg-amber-700' : 'bg-asabri-blue hover:bg-asabri-blueDark'} text-white font-bold rounded-lg transition-all text-[11px] shadow-sm flex items-center gap-1 mx-auto">
-              <i class="fas fa-folder-open text-[10px]"></i> Buka Data Peserta
+          <td class="px-3 py-3 text-center">
+            <button type="button" onclick="openUbahDataPeserta('${String(kpaVal).replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl transition-all text-xs shadow-sm inline-flex items-center justify-center gap-1.5 mx-auto cursor-pointer">
+              <i class="fas fa-pencil-alt text-[10px]"></i> Ubah
             </button>
           </td>
         `;
         tbody.appendChild(tr);
       });
-      console.log('HTML results-tbody diisi dengan', tbody.children.length, 'baris');
+    }
+
+    function exportNominatif() {
+      const dataToExport = currentSearchResults && currentSearchResults.length > 0 ? currentSearchResults : getPesertaListSource();
+      
+      if (!dataToExport || dataToExport.length === 0) {
+        showToast("Export Nominatif", "Tidak ada data peserta yang dapat di-export.", "warning");
+        return;
+      }
+
+      const headers = ["NO", "NRP", "NOPENS", "KPA", "NAMA", "TANGGAL LAHIR", "TMT PENGANGKATAN", "NO SKEP PENGANGKATAN", "TANGGAL SKEP PENGANGKATAN", "PANGKAT AWAL", "KESATUAN", "VIP", "STATUS PESERTA", "STATUS VALID"];
+      
+      const rows = dataToExport.map((p, idx) => [
+        idx + 1,
+        `"${p.nrp || p.nrp_nip || ''}"`,
+        `"${p.nopens || ''}"`,
+        `"${p.kpa || p.no_ktpa || p.noPeserta || ''}"`,
+        `"${p.nama || ''}"`,
+        `"${p.tanggalLahir || p.tanggal_lahir || ''}"`,
+        `"${p.tmtPengangkatan || p.tmt_pengangkatan || ''}"`,
+        `"${p.noSkep || p.no_skep_pengangkatan || ''}"`,
+        `"${p.tanggalSkep || p.tgl_skep_pengangkatan || ''}"`,
+        `"${p.pangkatAwal || p.pangkat_awal || ''}"`,
+        `"${p.kesatuan || p.unitKerja || ''}"`,
+        `"${p.vip || 'Tidak'}"`,
+        `"${p.statusPeserta || p.statusKepesertaan || ''}"`,
+        `"${p.statusValid || 'Valid'}"`
+      ]);
+
+      const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Data_Nominatif_Peserta_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      showToast("Export Nominatif", `Berhasil mengunduh ${dataToExport.length} data nominatif peserta.`, "success");
+    }
+
+    function openDetailPeserta(identifier) {
+      const source = getPesertaListSource();
+      const target = String(identifier || '').trim().toLowerCase();
+      let found = source.find(p => {
+        const nrp = String(p.nrp || p.nrp_nip || '').trim().toLowerCase();
+        const kpa = String(p.kpa || p.no_ktpa || p.noPeserta || '').trim().toLowerCase();
+        const nik = String(p.nik || '').trim().toLowerCase();
+        const nama = String(p.nama || '').trim().toLowerCase();
+        return (nrp && nrp === target) || (kpa && kpa === target) || (nik && nik === target) || (nama && nama === target);
+      });
+      if (!found && source.length > 0) {
+        found = source[0];
+      }
+      if (found) {
+        const kpaVal = found.kpa || found.no_ktpa || found.noPeserta || found.nrp || found.nik || '';
+        window.location.href = `detail-peserta.html?kpa=${encodeURIComponent(kpaVal)}`;
+      } else {
+        window.location.href = `detail-peserta.html?kpa=${encodeURIComponent(identifier || '')}`;
+      }
+    }
+
+    function openUbahDataPeserta(kpaOrNrp) {
+      const kpaVal = encodeURIComponent(kpaOrNrp || '');
+      window.location.href = `ubah-data-peserta.html?kpa=${kpaVal}`;
     }
 
     function openParticipantProfileFromTable(pJson) {
       const p = JSON.parse(decodeURIComponent(pJson));
-      openParticipantProfile(p);
+      const kpaVal = p.kpa || p.no_ktpa || p.noPeserta || p.nik || p.nrp || '';
+      window.location.href = `ubah-data-peserta.html?kpa=${encodeURIComponent(kpaVal)}`;
     }
 
     function openParticipantProfile(p) {
@@ -2653,6 +2960,22 @@
       
       const isPending = (p && (p.statusKepesertaan === 'Pending' || p.status_kepesertaan === 'Pending' || p.status === 'Pending' || p.isPending));
       
+      // Update breadcrumb
+      const breadcrumbEl = document.getElementById('page-breadcrumb');
+      if (breadcrumbEl) {
+        breadcrumbEl.innerHTML = `
+          <a href="javascript:void(0)" onclick="closeParticipantProfile()" class="text-slate-400 hover:text-slate-600 transition-colors">Beranda</a>
+          <span class="text-slate-300 mx-1">/</span>
+          <a href="javascript:void(0)" onclick="closeParticipantProfile()" class="text-slate-400 hover:text-slate-600 transition-colors">Kepesertaan</a>
+          <span class="text-slate-300 mx-1">/</span>
+          <a href="javascript:void(0)" onclick="closeParticipantProfile()" class="text-slate-400 hover:text-slate-600 transition-colors">List Peserta</a>
+          <span class="text-slate-300 mx-1">/</span>
+          <span class="text-slate-600 font-semibold">${p.nama || 'Peserta'}</span>
+          <span class="text-slate-300 mx-1">/</span>
+          <span class="font-bold text-asabri-blue">Detail Peserta</span>
+        `;
+      }
+
       // Show/hide pending participant alert banner
       const pendingAlert = document.getElementById('pending-participant-alert');
       if (pendingAlert) {
@@ -4681,6 +5004,10 @@ Keterangan: ${item.keterangan || '-'}
       activeParticipant = null;
       document.getElementById('search-section').classList.remove('hidden');
       document.getElementById('detail-section').classList.add('hidden');
+      const breadcrumbEl = document.getElementById('page-breadcrumb');
+      if (breadcrumbEl) {
+        breadcrumbEl.innerHTML = `<span class="font-bold text-asabri-blue">List Peserta</span>`;
+      }
     }
 
     function switchTab(tabId) {
@@ -5072,11 +5399,15 @@ Keterangan: ${item.keterangan || '-'}
         if (document.getElementById('fam-add-tgl-meninggal')) document.getElementById('fam-add-tgl-meninggal').value = parseDateToInput(editData.tglMeninggal);
         if (document.getElementById('fam-add-tgl-stop-tunjang')) document.getElementById('fam-add-tgl-stop-tunjang').value = parseDateToInput(editData.tglBerhentiDitunjang || editData.tglBerhentiTunjangan);
         if (document.getElementById('fam-add-tgl-kembali-tunjang')) document.getElementById('fam-add-tgl-kembali-tunjang').value = parseDateToInput(editData.tglDitunjangKembali);
+        if (document.getElementById('fam-add-penspok')) document.getElementById('fam-add-penspok').value = editData.penspok || 0;
+        if (document.getElementById('fam-add-tipe-akta')) document.getElementById('fam-add-tipe-akta').value = editData.tipeDokumenAktaKelahiran || editData.tipeAkta || 'Dokumen Baru';
       } else {
         ['nama', 'nik', 'tempat-lahir', 'tgl-lahir', 'pekerjaan', 'tmt-cerai', 'tgl-mulai-kuliah', 'tgl-selesai-kuliah', 'penyebab-berhenti-kuliah', 'tmt-kejadian-kuliah', 'tgl-meninggal', 'tgl-stop-tunjang', 'tgl-kembali-tunjang', 'tgl-menikah', 'tmt-kejadian-d2'].forEach(f => {
           const el = document.getElementById(`fam-add-${f}`);
           if (el) el.value = '';
         });
+        if (document.getElementById('fam-add-penspok')) document.getElementById('fam-add-penspok').value = 0;
+        if (document.getElementById('fam-add-tipe-akta')) document.getElementById('fam-add-tipe-akta').value = 'Dokumen Baru';
         const genderRadios = document.getElementsByName('fam-add-gender');
         if (genderRadios.length > 0) genderRadios[0].checked = true;
       }
@@ -5556,17 +5887,28 @@ Keterangan: ${item.keterangan || '-'}
       const hub = document.getElementById('fam-add-hubungan')?.value || '';
       const pasanganBox = document.getElementById('fam-pasangan-fields');
       const anakBox = document.getElementById('fam-anak-fields');
-      if (!pasanganBox || !anakBox) return;
+      const ortuBox = document.getElementById('fam-ortu-fields');
+      const kuliahSection = document.getElementById('fam-section-2');
 
-      if (hub === 'Istri' || hub === 'Suami') {
-        pasanganBox.classList.remove('hidden');
-        anakBox.classList.add('hidden');
-      } else if (hub === 'Anak' || hub === 'Anak Angkat' || hub === 'Anak Tiri') {
-        anakBox.classList.remove('hidden');
-        pasanganBox.classList.add('hidden');
+      const upper = hub.toUpperCase();
+      const isPasangan = (upper === 'ISTRI' || upper === 'SUAMI');
+      const isAnakGroup = (upper === 'ANAK' || upper.includes('ANGKAT') || upper.includes('TIRI'));
+      const isOrtuGroup = (upper === 'AYAH' || upper === 'IBU');
+
+      if (pasanganBox) pasanganBox.classList.toggle('hidden', !isPasangan);
+      if (anakBox) anakBox.classList.toggle('hidden', !isAnakGroup);
+      if (ortuBox) ortuBox.classList.toggle('hidden', isPasangan);
+      if (kuliahSection) kuliahSection.classList.toggle('hidden', !isAnakGroup);
+
+      // Default gender
+      const genderRadios = document.getElementsByName('fam-add-gender');
+      if (upper === 'AYAH' || upper === 'SUAMI') {
+        for (let r of genderRadios) if (r.value === 'Laki-laki') r.checked = true;
+      } else if (upper === 'IBU' || upper === 'ISTRI') {
+        for (let r of genderRadios) if (r.value === 'Perempuan') r.checked = true;
       } else {
-        pasanganBox.classList.add('hidden');
-        anakBox.classList.add('hidden');
+        // Default PRIA/Laki-laki for other standard options
+        for (let r of genderRadios) if (r.value === 'Laki-laki') r.checked = true;
       }
     }
 
@@ -5772,6 +6114,9 @@ Keterangan: ${item.keterangan || '-'}
 
       const todayStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
 
+      const penspokVal = parseFloat(document.getElementById('fam-add-penspok')?.value || '0') || 0;
+      const tipeAktaVal = document.getElementById('fam-add-tipe-akta')?.value || 'Dokumen Baru';
+
       const isEdit = (currentEditKeluargaIndex !== null && currentEditKeluargaIndex < meKeluargaList.length);
       const updatedObj = {
         tanggalInput: isEdit ? meKeluargaList[currentEditKeluargaIndex].tanggalInput : todayStr,
@@ -5785,6 +6130,9 @@ Keterangan: ${item.keterangan || '-'}
         jenisKelamin: jenisKelamin,
         statusPerkawinan: statusPerkawinan,
         pekerjaan: pekerjaan,
+        penspok: penspokVal,
+        tipeDokumenAktaKelahiran: tipeAktaVal,
+        tipeAkta: tipeAktaVal,
         tglMulaiKuliah: tglMulaiKuliah,
         tglSelesaiKuliah: tglSelesaiKuliah,
         penyebabBerhentiKuliah: penyebabKuliah,

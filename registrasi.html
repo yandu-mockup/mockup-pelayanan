@@ -404,6 +404,7 @@
                   <select id="sumber-pengajuan" onchange="handleSumberPengajuanChange()" class="border border-slate-200 bg-slate-50/50 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
                     <option value="Kantor Cabang" selected>Kantor Cabang</option>
                     <option value="ASABRI-Link">ASABRI-Link</option>
+                    <option value="Klaim Online">Klaim Online</option>
                   </select>
                   <!-- Badge indikator jalur -->
                   <span id="sumber-badge" class="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full w-fit bg-blue-50 border border-blue-200 text-blue-700">
@@ -421,7 +422,7 @@
                 <!-- 3. Jenis Kejadian (Dropdown, wajib) -->
                 <div class="flex flex-col gap-1.5">
                   <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Jenis Kejadian <span class="text-rose-500">*</span></label>
-                  <select id="jenis-kejadian" class="border border-slate-200 bg-slate-50/50 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
+                  <select id="jenis-kejadian" onchange="handleJenisKejadianChange()" class="border border-slate-200 bg-slate-50/50 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
                     <option value="" disabled selected>-- Silahkan Pilih Kejadian --</option>
                   </select>
                   <span id="error-kejadian" class="text-rose-500 text-[10px] hidden font-semibold mt-0.5">Jenis Kejadian wajib dipilih</span>
@@ -510,6 +511,7 @@
       'Peserta Aktif - Istri/suami meninggal dunia',
       'Peserta Aktif - Anak meninggal Dunia',
       'Meninggal Dunia Aktif Biasa',
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun',
       'Meninggal Dunia Aktif Tewas',
       'Meninggal Dunia Aktif Gugur',
       'Cacat Dinas Biasa',
@@ -517,15 +519,30 @@
       'Meninggal Dunia Setelah Pensiun',
       'Istri/suami meninggal Dunia Setelah Pensiun',
       'Anak meninggal Dunia Setelah Pensiun',
+      'Pensiun Wari/Janda/Duda',
       'Pensiun Wari/Janda/Duda - Meninggal Dunia',
       'Tunjangan Yatim Piatu',
       'Tunjangan Orang Tua',
       'Beasiswa JKK',
       'Beasiswa JKM',
       'Uang Kekurangan Pensiun (UKP)',
+      'Meninggal Peserta TASPEN',
+      'Meninggal Istri/Suami Taspen',
+      'Istri/Suami Meninggal Dunia Peserta Taspen',
     ];
 
-
+    function loginKlaimOnline(kpaAtauKpaE, nrpNip) {
+      // Pengaju login menggunakan Nomor KPA/KPA-E sebagai username, dan NRP/NIP sebagai kata sandi
+      // Sistem tampilkan data profil peserta (KPA, NRP, NIP, Nama)
+      if (!kpaAtauKpaE || !nrpNip) return { success: false, message: 'Nomor KPA/KPA-E dan NRP/NIP wajib diisi.' };
+      const list = (typeof RAW_PESERTA !== 'undefined' ? RAW_PESERTA : []);
+      const match = list.find(p => (p.ktpa === kpaAtauKpaE || p.nik === kpaAtauKpaE || p.nopens === kpaAtauKpaE) && (p.nrp === nrpNip || p.nik === nrpNip));
+      return {
+        success: true,
+        peserta: match || { ktpa: kpaAtauKpaE, nrp: nrpNip, nama: 'Peserta Online (' + kpaAtauKpaE + ')', status: 'Aktif' }
+      };
+    }
+    window.loginKlaimOnline = loginKlaimOnline;
 
     const SUMBER_PENGAJUAN_CONFIG = {
       'Kantor Cabang': {
@@ -537,6 +554,11 @@
         badgeClass: 'bg-emerald-50 border border-emerald-200 text-emerald-700',
         icon: 'fa-mobile-screen-button',
         label: 'ASABRI-Link'
+      },
+      'Klaim Online': {
+        badgeClass: 'bg-cyan-50 border border-cyan-200 text-cyan-700',
+        icon: 'fa-globe',
+        label: 'Klaim Online'
       }
     };
 
@@ -550,6 +572,53 @@
 
       badgeEl.className = `inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full w-fit ${config.badgeClass}`;
       badgeEl.innerHTML = `<i class="fas ${config.icon} text-[9px]"></i> ${config.label}`;
+    }
+
+    function handleJenisKejadianChange() {
+      const jkEl = document.getElementById("jenis-kejadian");
+      const sumberEl = document.getElementById("sumber-pengajuan");
+      if (!jkEl || !sumberEl) return;
+
+      const val = jkEl.value;
+      const asabriLinkOpt = sumberEl.querySelector('option[value="ASABRI-Link"]');
+      const klaimOnlineOpt = sumberEl.querySelector('option[value="Klaim Online"]');
+
+      // Tunjangan Orang Tua & Tunjangan Yatim Piatu HANYA berlaku via Kantor Cabang (1 Jalur)
+      if (val === 'Tunjangan Orang Tua' || val === 'Tunjangan Yatim Piatu' || val.startsWith('Tunjangan Yatim')) {
+        if (asabriLinkOpt) {
+          asabriLinkOpt.disabled = true;
+          asabriLinkOpt.classList.add('hidden');
+        }
+        if (klaimOnlineOpt) {
+          klaimOnlineOpt.disabled = true;
+          klaimOnlineOpt.classList.add('hidden');
+        }
+        sumberEl.value = 'Kantor Cabang';
+        handleSumberPengajuanChange();
+      } else if (val === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun') {
+        // Jalur: Kantor Cabang, ASABRI-Link (2 jalur), Klaim Online tidak berlaku
+        if (asabriLinkOpt) {
+          asabriLinkOpt.disabled = false;
+          asabriLinkOpt.classList.remove('hidden');
+        }
+        if (klaimOnlineOpt) {
+          klaimOnlineOpt.disabled = true;
+          klaimOnlineOpt.classList.add('hidden');
+        }
+        if (sumberEl.value === 'Klaim Online') {
+          sumberEl.value = 'Kantor Cabang';
+        }
+        handleSumberPengajuanChange();
+      } else {
+        if (asabriLinkOpt) {
+          asabriLinkOpt.disabled = false;
+          asabriLinkOpt.classList.remove('hidden');
+        }
+        if (klaimOnlineOpt) {
+          klaimOnlineOpt.disabled = false;
+          klaimOnlineOpt.classList.remove('hidden');
+        }
+      }
     }
 
     function autoFillKantorCabang() {
@@ -1288,6 +1357,9 @@
 
       const sumberPengajuanVal = document.getElementById("sumber-pengajuan")?.value || "Kantor Cabang";
 
+      // Check if Taspen event
+      const isTaspenEvent = (jenisKejadian === 'Meninggal Peserta TASPEN' || jenisKejadian === 'Meninggal Istri/Suami Taspen' || jenisKejadian === 'Istri/Suami Meninggal Dunia Peserta Taspen');
+
       // Assemble state data to save
       const registrationState = {
         noAgenda: regNo,
@@ -1297,6 +1369,9 @@
         kantorCabang: document.getElementById("kantor-cabang").value,
         jenisKejadian: jenisKejadian,
         status: currentParticipant.isManual ? "PENDING" : "Diterima",
+        isTaspen: isTaspenEvent,
+        kategoriPengajuan: isTaspenEvent ? 'Pengajuan Peserta Taspen' : 'Pengajuan Peserta ASABRI',
+        tag: isTaspenEvent ? 'Pengajuan Peserta Taspen' : '',
         timestamp: new Date().toISOString()
       };
 
@@ -1315,6 +1390,9 @@
           manfaatKlaim: jenisKejadian,
           kantorCabang: registrationState.kantorCabang || "KC Utama Jakarta",
           status: "Registrasi",
+          isTaspen: isTaspenEvent,
+          kategoriPengajuan: isTaspenEvent ? 'Pengajuan Peserta Taspen' : 'Pengajuan Peserta ASABRI',
+          tag: isTaspenEvent ? 'Pengajuan Peserta Taspen' : '',
           nik: currentParticipant?.nik || "-",
           namaPeserta: currentParticipant?.nama || "-",
           participant: currentParticipant,

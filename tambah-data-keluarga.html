@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASABRI - YANDU NG (Tambah Data Keluarga)</title>
+  <meta name="description" content="Formulir Tambah Data Keluarga ASABRI YANDU NG.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Data & Sidebar Component -->
+  <script src="data.js"></script>
+  <script src="sidebar.js"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            asabri: { blue: '#0141A8', blueDark: '#01358C', gold: '#FFDE24', softBlue: '#F8FAFC', textDark: '#0F172A' }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'],
+            mono: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .form-label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.375rem;
+    }
+    .form-input {
+      width: 100%;
+      background-color: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 0.75rem;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.8125rem;
+      color: #1E293B;
+      outline: none;
+      transition: all 0.15s;
+    }
+    .form-input:focus {
+      border-color: #0141A8;
+      box-shadow: 0 0 0 3px rgba(1, 65, 168, 0.12);
+    }
+    .form-input::placeholder {
+      color: #94A3B8;
+      font-size: 0.75rem;
+    }
+  </style>
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-sans bg-slate-50 text-slate-800">
+
+  <!-- TOPBAR -->
+  <header class="app-topbar h-16 flex items-center justify-between px-6 z-50 flex-shrink-0">
+    <div class="flex items-center gap-5">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center">
+          <img src="logo-asabri-white.png" alt="Logo ASABRI" class="h-10 w-auto shrink-0">
+        </div>
+        <div class="h-8 w-px bg-white/20"></div>
+        <button id="sidebar-toggle" class="p-2 rounded-lg text-white hover:bg-white/10 transition-colors text-base">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="flex flex-col ml-1">
+          <span class="brand-title">YANDU <b>NEXTGEN</b> ASABRI</span>
+          <span class="brand-sub">HIGH DENSITY MANAGEMENT SYSTEM</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <div class="relative inline-block text-left">
+        <select id="role-select" class="bg-blue-950/20 border border-blue-400/30 text-xs font-semibold text-white tracking-wide px-3 py-1.5 rounded-lg cursor-pointer focus:outline-none focus:ring-1 focus:ring-white/30 hover:bg-blue-950/40 transition-all">
+          <option value="Staf KANCAB" class="text-slate-800 font-semibold" selected>ROLE: Staf KANCAB</option>
+          <option value="Bidang Layanan Program 1" class="text-slate-800 font-semibold">ROLE: Bidang Layanan Program 1</option>
+          <option value="Div Layanan Pusat" class="text-slate-800 font-semibold">ROLE: Div Layanan Pusat</option>
+          <option value="Verifikator" class="text-slate-800 font-semibold">ROLE: Verifikator</option>
+          <option value="KAKANCAB" class="text-slate-800 font-semibold">ROLE: KAKANCAB</option>
+        </select>
+      </div>
+      <div class="w-8 h-8 rounded-lg bg-blue-950/20 border border-blue-400/30 flex items-center justify-center text-white hover:bg-blue-950/40 hover:text-yellow-300 transition-all duration-150 cursor-pointer">
+        <i class="fas fa-bell text-sm"></i>
+      </div>
+      <div class="h-8 w-px bg-white/20"></div>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">SK</div>
+        <div class="flex flex-col">
+          <span class="text-xs font-semibold text-white">SK | Staf Kancab Utama</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19930708001</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="flex flex-1 overflow-hidden">
+    
+    <!-- SIDEBAR -->
+    <div id="sidebar"></div>
+    <script>
+      renderSidebar('data-peserta');
+    </script>
+
+    <!-- CONTENT -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+      
+      <!-- HEADER / NAVIGASI & BREADCRUMB -->
+      <div class="bg-white border-b border-slate-200 px-8 py-3.5 flex flex-wrap items-center justify-between gap-4 flex-shrink-0 shadow-sm">
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="goBack()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all text-xs flex items-center gap-1.5 shadow-sm border border-slate-200">
+            <i class="fas fa-arrow-left"></i> Kembali
+          </button>
+          <div class="h-5 w-px bg-slate-200"></div>
+          <div>
+            <h1 class="text-sm font-extrabold text-slate-900 tracking-tight">Tambah Data Keluarga</h1>
+            <div class="flex items-center gap-1.5 text-[11px] font-medium text-slate-400 mt-0.5">
+              <a href="data-peserta.html" class="hover:text-asabri-blue transition-colors">Beranda</a>
+              <span>&rsaquo;</span>
+              <span>Kepesertaan</span>
+              <span>&rsaquo;</span>
+              <a href="data-peserta.html" class="hover:text-asabri-blue transition-colors">List Peserta</a>
+              <span>&rsaquo;</span>
+              <span class="font-semibold text-slate-600" id="bc-nama-peserta">ASTUTI</span>
+              <span>&rsaquo;</span>
+              <span class="font-bold text-slate-800">Data Keluarga</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN SCROLLABLE FORM BODY -->
+      <div class="flex-1 flex flex-col overflow-y-auto p-6 space-y-6">
+        
+        <form id="form-tambah-keluarga" onsubmit="event.preventDefault(); saveKeluarga();" class="space-y-6">
+
+          <!-- CARD 1: PROFIL ANGGOTA KELUARGA -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+            
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-asabri-blue shrink-0"></span>
+              <h3 class="text-sm font-bold text-slate-900">Profil Anggota Keluarga</h3>
+            </div>
+
+            <!-- HUBUNGAN KELUARGA DROPDOWN -->
+            <div class="max-w-md">
+              <label class="form-label">
+                HUBUNGAN KELUARGA <span class="text-rose-500">*</span>
+              </label>
+              <select id="hub-keluarga" onchange="handleHubunganKeluargaChange(this.value)" class="form-input cursor-pointer font-semibold text-slate-800">
+                <option value="">— Pilih hubungan keluarga —</option>
+                <option value="ANAK" selected>ANAK</option>
+                <option value="ISTRI">ISTRI</option>
+                <option value="SUAMI">SUAMI</option>
+                <option value="AYAH">AYAH</option>
+                <option value="IBU">IBU</option>
+                <option value="Ahli Waris - (khusus hak/manfaat)">Ahli Waris - (khusus hak/manfaat)</option>
+                <option value="Sendiri - (khusus hak/manfaat)">Sendiri - (khusus hak/manfaat)</option>
+                <option value="Wali">Wali</option>
+                <option value="Yang Bersangkutan">Yang Bersangkutan</option>
+                <option value="Kakak/Adik">Kakak/Adik</option>
+                <option value="Anak Angkat">Anak Angkat</option>
+                <option value="Anak Tiri">Anak Tiri</option>
+              </select>
+            </div>
+
+            <!-- DYNAMIC FORM CONTAINER: ANAK (PERSIS SCREENSHOT 1 & 2 TERBARU) -->
+            <div id="form-anak-container" class="space-y-6 pt-2 animate-fade-in">
+              
+              <!-- GRID BARIS 1: ORANG TUA, NAMA, TEMPAT LAHIR -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">ORANG TUA</label>
+                  <select id="kel-anak-orang-tua" class="form-input font-medium cursor-pointer">
+                    <option value="">— Silahkan Pilih Keluarga —</option>
+                    <option value="DARMAWAN (SUAMI)" selected>DARMAWAN (SUAMI)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">NAMA <span class="text-rose-500">*</span></label>
+                  <input type="text" id="kel-anak-nama" placeholder="Nama lengkap sesuai identitas" class="form-input font-medium">
+                </div>
+                <div>
+                  <label class="form-label">TEMPAT LAHIR</label>
+                  <input type="text" id="kel-anak-tempat-lahir" placeholder="Kota kelahiran" class="form-input font-medium">
+                </div>
+              </div>
+
+              <!-- GRID BARIS 2: TANGGAL LAHIR, JENIS KELAMIN, STATUS PERKAWINAN -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">TANGGAL LAHIR</label>
+                  <input type="date" id="kel-anak-tgl-lahir" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">JENIS KELAMIN</label>
+                  <select id="kel-anak-jenis-kelamin" class="form-input font-medium cursor-pointer">
+                    <option value="WANITA" selected>WANITA</option>
+                    <option value="PRIA">PRIA</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">STATUS PERKAWINAN</label>
+                  <select id="kel-anak-status-kawin" class="form-input font-medium cursor-pointer">
+                    <option value="">— Pilih status perkawinan —</option>
+                    <option value="BELUM KAWIN" selected>BELUM KAWIN</option>
+                    <option value="KAWIN">KAWIN</option>
+                    <option value="CERAI HIDUP">CERAI HIDUP</option>
+                    <option value="CERAI MATI">CERAI MATI</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- GRID BARIS 3: TIPE DOKUMEN AKTA KELAHIRAN, NIK, PENSPOK -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">TIPE DOKUMEN AKTA KELAHIRAN</label>
+                  <select id="kel-anak-tipe-akta" class="form-input font-medium cursor-pointer">
+                    <option value="">— Pilih Tipe —</option>
+                    <option value="Dokumen Baru" selected>Dokumen Baru</option>
+                    <option value="Dokumen Yang Sudah Ada">Dokumen Yang Sudah Ada</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">NIK</label>
+                  <input type="text" id="kel-anak-nik" maxlength="16" placeholder="16 digit sesuai KTP" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">PENSPOK</label>
+                  <div class="relative flex items-center">
+                    <span class="absolute left-3.5 text-xs font-bold text-slate-400">Rp</span>
+                    <input type="number" id="kel-anak-penspok" placeholder="0" value="0" class="form-input pl-10 font-mono">
+                  </div>
+                </div>
+              </div>
+
+              <!-- GRID BARIS 4: PEKERJAAN, TANGGAL MENINGGAL, TANGGAL MULAI KERJA -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">PEKERJAAN</label>
+                  <select id="kel-anak-pekerjaan" class="form-input font-medium cursor-pointer">
+                    <option value="">— Silahkan Pilih Pekerjaan —</option>
+                    <option value="PELAJAR/MAHASISWA" selected>PELAJAR/MAHASISWA</option>
+                    <option value="BELUM/TIDAK BEKERJA">BELUM/TIDAK BEKERJA</option>
+                    <option value="PNS">PNS</option>
+                    <option value="TNI">TNI</option>
+                    <option value="POLRI">POLRI</option>
+                    <option value="KARYAWAN SWASTA">KARYAWAN SWASTA</option>
+                    <option value="WIRASWASTA">WIRASWASTA</option>
+                    <option value="LAINNYA">LAINNYA</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL MENINGGAL</label>
+                  <input type="date" id="kel-anak-tgl-meninggal" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL MULAI KERJA</label>
+                  <input type="date" id="kel-anak-tgl-mulai-kerja" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- GRID BARIS 5: TANGGAL MULAI KULIAH, TANGGAL SELESAI KULIAH, TANGGAL BERHENTI DI TUNJANG -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">TANGGAL MULAI KULIAH</label>
+                  <input type="date" id="kel-anak-tgl-mulai-kuliah" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL SELESAI KULIAH</label>
+                  <input type="date" id="kel-anak-tgl-selesai-kuliah" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL BERHENTI DI TUNJANG</label>
+                  <input type="date" id="kel-anak-tgl-berhenti-tunjang" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- GRID BARIS 6: TANGGAL DI TUNJANG KEMBALI -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">TANGGAL DI TUNJANG KEMBALI</label>
+                  <input type="date" id="kel-anak-tgl-tunjang-kembali" class="form-input font-mono">
+                </div>
+              </div>
+
+            </div>
+
+            <!-- DYNAMIC FORM CONTAINER: ISTRI (PERSIS SCREENSHOT SEBELUMNYA) -->
+            <div id="form-istri-container" class="hidden space-y-6 pt-2 animate-fade-in">
+              
+              <!-- GRID BARIS 1: NAMA, TEMPAT LAHIR, TANGGAL LAHIR -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">NAMA <span class="text-rose-500">*</span></label>
+                  <input type="text" id="kel-istri-nama" placeholder="Nama lengkap sesuai identitas" class="form-input font-medium">
+                </div>
+                <div>
+                  <label class="form-label">TEMPAT LAHIR</label>
+                  <input type="text" id="kel-istri-tempat-lahir" placeholder="Kota kelahiran" class="form-input font-medium">
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL LAHIR</label>
+                  <input type="date" id="kel-istri-tgl-lahir" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- GRID BARIS 2: JENIS KELAMIN, STATUS PERKAWINAN, NIK -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">JENIS KELAMIN</label>
+                  <select id="kel-istri-jenis-kelamin" class="form-input font-medium cursor-pointer">
+                    <option value="WANITA" selected>WANITA</option>
+                    <option value="PRIA">PRIA</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">STATUS PERKAWINAN</label>
+                  <select id="kel-istri-status-kawin" class="form-input font-medium cursor-pointer">
+                    <option value="">— Pilih status perkawinan —</option>
+                    <option value="KAWIN" selected>KAWIN</option>
+                    <option value="BELUM KAWIN">BELUM KAWIN</option>
+                    <option value="CERAI HIDUP">CERAI HIDUP</option>
+                    <option value="CERAI MATI">CERAI MATI</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">NIK</label>
+                  <input type="text" id="kel-istri-nik" maxlength="16" placeholder="16 digit sesuai KTP" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- GRID BARIS 3: PENSPOK, PEKERJAAN, TANGGAL MENINGGAL -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">PENSPOK</label>
+                  <div class="relative flex items-center">
+                    <span class="absolute left-3.5 text-xs font-bold text-slate-400">Rp</span>
+                    <input type="number" id="kel-istri-penspok" placeholder="0" value="0" class="form-input pl-10 font-mono">
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">PEKERJAAN</label>
+                  <select id="kel-istri-pekerjaan" class="form-input font-medium cursor-pointer">
+                    <option value="">— Silahkan Pilih Pekerjaan —</option>
+                    <option value="MENGURUS RUMAH TANGGA" selected>MENGURUS RUMAH TANGGA</option>
+                    <option value="PNS">PNS</option>
+                    <option value="TNI">TNI</option>
+                    <option value="POLRI">POLRI</option>
+                    <option value="BUMN">BUMN</option>
+                    <option value="KARYAWAN SWASTA">KARYAWAN SWASTA</option>
+                    <option value="WIRASWASTA">WIRASWASTA</option>
+                    <option value="TIDAK BEKERJA">TIDAK BEKERJA</option>
+                    <option value="LAINNYA">LAINNYA</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL MENINGGAL</label>
+                  <input type="date" id="kel-istri-tgl-meninggal" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- GRID BARIS 4: TGL MULAI KERJA, TGL BERHENTI KERJA, TGL BERHENTI DI TUNJANG -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">TANGGAL MULAI KERJA</label>
+                  <input type="date" id="kel-istri-tgl-mulai-kerja" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL BERHENTI KERJA</label>
+                  <input type="date" id="kel-istri-tgl-berhenti-kerja" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL BERHENTI DI TUNJANG</label>
+                  <input type="date" id="kel-istri-tgl-berhenti-tunjang" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- GRID BARIS 5: TANGGAL DI TUNJANG KEMBALI -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">TANGGAL DI TUNJANG KEMBALI</label>
+                  <input type="date" id="kel-istri-tgl-tunjang-kembali" class="form-input font-mono">
+                </div>
+              </div>
+
+            </div>
+
+            <!-- DYNAMIC FORM CONTAINER: ORANG TUA (AYAH / IBU) -->
+            <div id="form-ortu-container" class="hidden space-y-6 pt-2 animate-fade-in">
+              
+              <!-- GRID BARIS 1: NAMA, TEMPAT LAHIR, TANGGAL LAHIR -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">NAMA <span class="text-rose-500">*</span></label>
+                  <input type="text" id="kel-ortu-nama" placeholder="Nama lengkap sesuai identitas" class="form-input font-medium">
+                </div>
+                <div>
+                  <label class="form-label">TEMPAT LAHIR</label>
+                  <input type="text" id="kel-ortu-tempat-lahir" placeholder="Kota kelahiran" class="form-input font-medium">
+                </div>
+                <div>
+                  <label class="form-label">TANGGAL LAHIR</label>
+                  <input type="date" id="kel-ortu-tgl-lahir" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- GRID BARIS 2: JENIS KELAMIN, STATUS PERKAWINAN, TIPE DOKUMEN AKTA KELAHIRAN -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">JENIS KELAMIN</label>
+                  <select id="kel-ortu-jenis-kelamin" class="form-input font-medium cursor-pointer">
+                    <option value="PRIA" selected>PRIA</option>
+                    <option value="WANITA">WANITA</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">STATUS PERKAWINAN</label>
+                  <select id="kel-ortu-status-kawin" class="form-input font-medium cursor-pointer">
+                    <option value="">— Pilih status perkawinan —</option>
+                    <option value="KAWIN" selected>KAWIN</option>
+                    <option value="BELUM KAWIN">BELUM KAWIN</option>
+                    <option value="CERAI HIDUP">CERAI HIDUP</option>
+                    <option value="CERAI MATI">CERAI MATI</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">TIPE DOKUMEN AKTA KELAHIRAN</label>
+                  <select id="kel-ortu-tipe-akta" class="form-input font-medium cursor-pointer">
+                    <option value="">— Pilih Tipe —</option>
+                    <option value="Dokumen Baru" selected>Dokumen Baru</option>
+                    <option value="Dokumen Yang Sudah Ada">Dokumen Yang Sudah Ada</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- GRID BARIS 3: NIK, PENSPOK, PEKERJAAN -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">NIK</label>
+                  <input type="text" id="kel-ortu-nik" maxlength="16" placeholder="16 digit sesuai KTP" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">PENSPOK</label>
+                  <div class="relative flex items-center">
+                    <span class="absolute left-3.5 text-xs font-bold text-slate-400">Rp</span>
+                    <input type="number" id="kel-ortu-penspok" placeholder="0" value="0" class="form-input pl-10 font-mono">
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label">PEKERJAAN</label>
+                  <select id="kel-ortu-pekerjaan" class="form-input font-medium cursor-pointer">
+                    <option value="">— Silahkan Pilih Pekerjaan —</option>
+                    <option value="TIDAK BEKERJA" selected>TIDAK BEKERJA</option>
+                    <option value="PENSIUNAN">PENSIUNAN</option>
+                    <option value="MENGURUS RUMAH TANGGA">MENGURUS RUMAH TANGGA</option>
+                    <option value="PNS">PNS</option>
+                    <option value="TNI">TNI</option>
+                    <option value="POLRI">POLRI</option>
+                    <option value="BUMN">BUMN</option>
+                    <option value="KARYAWAN SWASTA">KARYAWAN SWASTA</option>
+                    <option value="WIRASWASTA">WIRASWASTA</option>
+                    <option value="LAINNYA">LAINNYA</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- GRID BARIS 4: TANGGAL MENINGGAL & TUNJANGAN STANDAR -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">TANGGAL MENINGGAL</label>
+                  <input type="date" id="kel-ortu-tgl-meninggal" class="form-input font-mono">
+                </div>
+                <div id="kel-ortu-std-stop-col">
+                  <label class="form-label">TANGGAL BERHENTI DI TUNJANG</label>
+                  <input type="date" id="kel-ortu-tgl-berhenti-tunjang" class="form-input font-mono">
+                </div>
+                <div id="kel-ortu-std-kembali-col">
+                  <label class="form-label">TANGGAL DI TUNJANG KEMBALI</label>
+                  <input type="date" id="kel-ortu-tgl-tunjang-kembali" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- KHUSUS ANAK ANGKAT & ANAK TIRI: 3 FIELD EKSTRA SETELAH TANGGAL MENINGGAL, SEBELUM TANGGAL BERHENTI DI TUNJANG -->
+              <div id="kel-ortu-extra-anak" class="hidden space-y-5 animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <div>
+                    <label class="form-label">TANGGAL MULAI KERJA</label>
+                    <input type="date" id="kel-ortu-tgl-mulai-kerja" class="form-input font-mono">
+                  </div>
+                  <div>
+                    <label class="form-label">TANGGAL MULAI KULIAH</label>
+                    <input type="date" id="kel-ortu-tgl-mulai-kuliah" class="form-input font-mono">
+                  </div>
+                  <div>
+                    <label class="form-label">TANGGAL SELESAI KULIAH</label>
+                    <input type="date" id="kel-ortu-tgl-selesai-kuliah" class="form-input font-mono">
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <div>
+                    <label class="form-label">TANGGAL BERHENTI DI TUNJANG</label>
+                    <input type="date" id="kel-ortu-tgl-berhenti-tunjang-anak" class="form-input font-mono">
+                  </div>
+                  <div>
+                    <label class="form-label">TANGGAL DI TUNJANG KEMBALI</label>
+                    <input type="date" id="kel-ortu-tgl-tunjang-kembali-anak" class="form-input font-mono">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- SUB-SECTION: DOKUMEN IDENTITAS (SHARED) -->
+            <div id="section-dokumen-identitas" class="pt-4 border-t border-slate-100 space-y-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">DOKUMEN IDENTITAS</span>
+              <div class="max-w-md">
+                <label class="form-label">TIPE DOKUMEN IDENTITAS</label>
+                <select id="kel-tipe-dokumen" class="form-input font-medium cursor-pointer">
+                  <option value="">— Pilih Tipe —</option>
+                  <option value="Dokumen Baru" selected>Dokumen Baru</option>
+                  <option value="Dokumen Yang Sudah Ada">Dokumen Yang Sudah Ada</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- SUB-SECTION: ALAMAT & KONTAK (PERSIS SCREENSHOT 2) -->
+            <div id="section-alamat-kontak" class="pt-4 border-t border-slate-100 space-y-5">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ALAMAT &amp; KONTAK</span>
+              
+              <!-- Baris Alamat & Kode Pos -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div class="md:col-span-2">
+                  <label class="form-label">ALAMAT</label>
+                  <input type="text" id="kel-alamat" placeholder="Nama jalan, nomor rumah" class="form-input font-medium">
+                </div>
+                <div>
+                  <label class="form-label">KODE POS</label>
+                  <input type="text" id="kel-kodepos" maxlength="5" placeholder="5 digit" class="form-input font-mono">
+                </div>
+              </div>
+
+              <!-- Baris RT, RW, Desa/Kelurahan -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">RT</label>
+                  <input type="text" id="kel-rt" maxlength="3" placeholder="000" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">RW</label>
+                  <input type="text" id="kel-rw" maxlength="3" placeholder="000" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">DESA / KELURAHAN</label>
+                  <input type="text" id="kel-kelurahan" placeholder="Desa, kecamatan, kabupaten, provinsi" class="form-input font-medium">
+                </div>
+              </div>
+
+              <!-- Baris No Telepon, No Handphone, Email -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label class="form-label">NO TELEPON</label>
+                  <input type="text" id="kel-telepon" placeholder="(021) 000000" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">NO HANDPHONE</label>
+                  <input type="text" id="kel-handphone" placeholder="08xxxxxxxxxx" class="form-input font-mono">
+                </div>
+                <div>
+                  <label class="form-label">EMAIL</label>
+                  <input type="email" id="kel-email" placeholder="nama@contoh.com" class="form-input">
+                </div>
+              </div>
+
+              <!-- Baris Nama Ibu Kandung & Ahli Waris -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5 items-end">
+                <div>
+                  <label class="form-label">NAMA IBU KANDUNG</label>
+                  <input type="text" id="kel-ibu-kandung" placeholder="Nama ibu kandung" class="form-input font-medium">
+                </div>
+                <div class="md:col-span-2">
+                  <label class="form-label">AHLI WARIS</label>
+                  <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-2 cursor-pointer shrink-0">
+                      <input type="checkbox" id="kel-is-ahli-waris" checked class="w-4 h-4 rounded text-asabri-blue focus:ring-asabri-blue border-slate-300">
+                      <span class="text-xs font-bold text-slate-700">Jadikan Ahli Waris</span>
+                    </label>
+                    <input type="text" id="kel-persen-ahli-waris" placeholder="Dalam persen, contoh: 50" value="100%" class="form-input font-mono text-xs max-w-[240px]">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- EMPTY/PROMPT CONTAINER KETIKA BELUM PILIH HUBUNGAN -->
+            <div id="form-empty-prompt" class="hidden p-8 text-center text-slate-400 italic text-xs bg-slate-50 rounded-xl border border-dashed border-slate-200">
+              Silakan pilih hubungan keluarga di atas untuk menampilkan formulir isian data keluarga.
+            </div>
+
+          </div>
+
+          <!-- CARD 2: DATA REKENING -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
+            
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-asabri-blue shrink-0"></span>
+              <h3 class="text-sm font-bold text-slate-900">Data Rekening</h3>
+            </div>
+
+            <!-- SUB-TITLE: RIWAYAT DATA REKENING -->
+            <div class="space-y-2">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">RIWAYAT DATA REKENING</span>
+              
+              <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                <table class="w-full text-xs text-slate-800 whitespace-nowrap">
+                  <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-200 text-[10px] uppercase tracking-wider text-left">
+                    <tr>
+                      <th class="px-3 py-2.5 text-center w-12">NO</th>
+                      <th class="px-3 py-2.5">NAMA REKENING</th>
+                      <th class="px-3 py-2.5">NOMOR REKENING</th>
+                      <th class="px-3 py-2.5">MITRA BAYAR</th>
+                      <th class="px-3 py-2.5">CABANG MITRA BAYAR</th>
+                      <th class="px-3 py-2.5 text-center w-16">AKSI</th>
+                    </tr>
+                  </thead>
+                  <tbody id="rekening-tbody" class="divide-y divide-slate-100">
+                    <tr id="empty-rekening-row">
+                      <td colspan="6" class="p-8 text-center">
+                        <div class="text-xs font-bold text-slate-700">Belum ada rekening</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">Rekening yang ditambahkan di bawah akan muncul di daftar ini.</div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- FORM TAMBAH DATA REKENING -->
+            <div class="pt-3 space-y-2">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">TAMBAH DATA REKENING</span>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end text-xs">
+                <div>
+                  <label class="form-label">NAMA REKENING</label>
+                  <input type="text" id="rek-nama" placeholder="Nama pemilik rekening" class="form-input text-xs">
+                </div>
+                <div>
+                  <label class="form-label">NOMOR REKENING</label>
+                  <input type="text" id="rek-nomor" placeholder="0000-00-000000" class="form-input text-xs font-mono">
+                </div>
+                <div>
+                  <label class="form-label">MITRA BAYAR</label>
+                  <select id="rek-mitra" class="form-input text-xs font-medium cursor-pointer">
+                    <option value="">— Pilih mitra bayar —</option>
+                    <option value="BANK MANDIRI TASPEN">BANK MANDIRI TASPEN</option>
+                    <option value="BANK BRI">BANK BRI</option>
+                    <option value="BANK BNI">BANK BNI</option>
+                    <option value="BANK MANDIRI">BANK MANDIRI</option>
+                    <option value="BANK BSI">BANK BSI</option>
+                    <option value="PT POS INDONESIA">PT POS INDONESIA</option>
+                    <option value="BANK BJB">BANK BJB</option>
+                    <option value="BANK LAINNYA">BANK LAINNYA</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="form-label">CABANG MITRA BAYAR</label>
+                  <input type="text" id="rek-cabang" placeholder="Nama kantor cabang mitra" class="form-input text-xs">
+                </div>
+                <div>
+                  <button type="button" onclick="tambahRekening()" class="w-full py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs transition-all shadow-sm border border-slate-200 flex items-center justify-center gap-1.5">
+                    <i class="fas fa-plus text-[10px] text-asabri-blue"></i> Rekening
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- CARD 3: TOMBOL BATAL & SIMPAN -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex items-center justify-end gap-3">
+            <button type="button" onclick="goBack()" class="px-6 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition-all">
+              Batal
+            </button>
+            <button type="submit" class="px-7 py-2.5 bg-[#0141A8] hover:bg-[#01358C] text-white font-bold rounded-xl text-xs shadow-md transition-all">
+              Simpan
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- SCRIPT LOGIC -->
+  <script>
+    let currentParticipant = null;
+    let daftarRekeningList = [];
+
+    function getPesertaListSource() {
+      const localCustom = localStorage.getItem("MOCK_PESERTA_CUSTOM");
+      if (localCustom) {
+        try {
+          const list = JSON.parse(localCustom);
+          if (Array.isArray(list) && list.length > 0) return list;
+        } catch(e) {}
+      }
+      return typeof MOCK_PESERTA !== 'undefined' ? MOCK_PESERTA : [];
+    }
+
+    function initPage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const kpaParam = urlParams.get('kpa') || urlParams.get('nrp') || urlParams.get('ktpa') || '';
+      
+      const source = getPesertaListSource();
+      let p = null;
+
+      if (kpaParam) {
+        const target = decodeURIComponent(kpaParam).trim().toLowerCase();
+        p = source.find(item => {
+          const nrp = String(item.nrp || item.nrp_nip || '').trim().toLowerCase();
+          const kpa = String(item.kpa || item.no_ktpa || item.noPeserta || '').trim().toLowerCase();
+          const nik = String(item.nik || '').trim().toLowerCase();
+          const nama = String(item.nama || '').trim().toLowerCase();
+          return nrp === target || kpa === target || nik === target || nama === target;
+        });
+      }
+
+      if (!p && source.length > 0) {
+        p = source[0];
+      }
+
+      currentParticipant = p;
+      if (p) {
+        document.getElementById('bc-nama-peserta').innerText = (p.nama || 'ASTUTI').toUpperCase();
+      }
+
+      // Check edit mode
+      const editParam = urlParams.get('edit');
+      if (editParam !== null && currentParticipant) {
+        const idx = parseInt(editParam, 10);
+        let list = currentParticipant.keluargaLengkap || [];
+        if (!list || list.length === 0) {
+          list = [
+            {
+              hubungan: 'ISTRI',
+              nama: 'DARMAWAN',
+              tempatLahir: 'Bandung',
+              tanggalLahir: '1980-06-10',
+              jenisKelamin: 'WANITA',
+              statusKawin: 'KAWIN',
+              nik: '3273120105800001',
+              penspok: 0,
+              pekerjaan: 'MENGURUS RUMAH TANGGA',
+              alamat: 'Jl. Melati No. 12',
+              kodePos: '40123',
+              rt: '001',
+              rw: '002',
+              kelurahan: 'Cihapit, Bandung',
+              telepon: '022123456',
+              handphone: '081234567890',
+              email: 'darmawan@contoh.com',
+              ibuKandung: 'SITI AMINAH',
+              isAhliWaris: true,
+              persenAhliWaris: '100%',
+              rekeningList: []
+            },
+            {
+              hubungan: 'ANAK',
+              nama: 'BINTANG DARMAWAN',
+              tempatLahir: 'Jakarta',
+              tanggalLahir: '2008-11-20',
+              jenisKelamin: 'PRIA',
+              statusKawin: 'BELUM KAWIN',
+              nik: '3273120105080002',
+              penspok: 0,
+              pekerjaan: 'PELAJAR/MAHASISWA',
+              alamat: 'Jl. Melati No. 12',
+              kodePos: '40123',
+              rt: '001',
+              rw: '002',
+              kelurahan: 'Cihapit, Bandung',
+              isAhliWaris: true,
+              persenAhliWaris: '50%',
+              rekeningList: []
+            }
+          ];
+        }
+
+        const editData = list[idx];
+        if (editData) {
+          const hubVal = (editData.hubungan || 'ANAK').toUpperCase();
+          const hubEl = document.getElementById('hub-keluarga');
+          if (hubEl) {
+            let found = false;
+            for (let opt of hubEl.options) {
+              if (opt.value.toUpperCase() === hubVal) {
+                hubEl.value = opt.value;
+                found = true;
+                break;
+              }
+            }
+            if (!found) hubEl.value = hubVal;
+          }
+          handleHubunganKeluargaChange(document.getElementById('hub-keluarga').value);
+
+          if (hubVal === 'ANAK') {
+            if (document.getElementById('kel-anak-nama')) document.getElementById('kel-anak-nama').value = editData.nama || '';
+            if (document.getElementById('kel-anak-tempat-lahir')) document.getElementById('kel-anak-tempat-lahir').value = editData.tempatLahir || '';
+            if (document.getElementById('kel-anak-tgl-lahir')) document.getElementById('kel-anak-tgl-lahir').value = editData.tanggalLahir || editData.tglLahir || '';
+            if (document.getElementById('kel-anak-jenis-kelamin')) document.getElementById('kel-anak-jenis-kelamin').value = editData.jenisKelamin || 'WANITA';
+            if (document.getElementById('kel-anak-status-kawin')) document.getElementById('kel-anak-status-kawin').value = editData.statusKawin || 'BELUM KAWIN';
+            if (document.getElementById('kel-anak-tipe-akta')) document.getElementById('kel-anak-tipe-akta').value = editData.tipeAkta || 'Dokumen Baru';
+            if (document.getElementById('kel-anak-nik')) document.getElementById('kel-anak-nik').value = editData.nik || '';
+            if (document.getElementById('kel-anak-penspok')) document.getElementById('kel-anak-penspok').value = editData.penspok || 0;
+            if (document.getElementById('kel-anak-pekerjaan')) document.getElementById('kel-anak-pekerjaan').value = editData.pekerjaan || 'PELAJAR/MAHASISWA';
+            if (document.getElementById('kel-anak-tgl-meninggal')) document.getElementById('kel-anak-tgl-meninggal').value = editData.tglMeninggal || '';
+            if (document.getElementById('kel-anak-tgl-mulai-kerja')) document.getElementById('kel-anak-tgl-mulai-kerja').value = editData.tglMulaiKerja || '';
+            if (document.getElementById('kel-anak-tgl-mulai-kuliah')) document.getElementById('kel-anak-tgl-mulai-kuliah').value = editData.tglMulaiKuliah || '';
+            if (document.getElementById('kel-anak-tgl-selesai-kuliah')) document.getElementById('kel-anak-tgl-selesai-kuliah').value = editData.tglSelesaiKuliah || '';
+            if (document.getElementById('kel-anak-tgl-berhenti-tunjang')) document.getElementById('kel-anak-tgl-berhenti-tunjang').value = editData.tglBerhentiTunjang || '';
+            if (document.getElementById('kel-anak-tgl-tunjang-kembali')) document.getElementById('kel-anak-tgl-tunjang-kembali').value = editData.tglTunjangKembali || '';
+          } else if (hubVal === 'ISTRI' || hubVal === 'SUAMI') {
+            if (document.getElementById('kel-istri-nama')) document.getElementById('kel-istri-nama').value = editData.nama || '';
+            if (document.getElementById('kel-istri-tempat-lahir')) document.getElementById('kel-istri-tempat-lahir').value = editData.tempatLahir || '';
+            if (document.getElementById('kel-istri-tgl-lahir')) document.getElementById('kel-istri-tgl-lahir').value = editData.tanggalLahir || editData.tglLahir || '';
+            if (document.getElementById('kel-istri-jenis-kelamin')) document.getElementById('kel-istri-jenis-kelamin').value = editData.jenisKelamin || (hubVal === 'ISTRI' ? 'WANITA' : 'PRIA');
+            if (document.getElementById('kel-istri-status-kawin')) document.getElementById('kel-istri-status-kawin').value = editData.statusKawin || 'KAWIN';
+            if (document.getElementById('kel-istri-nik')) document.getElementById('kel-istri-nik').value = editData.nik || '';
+            if (document.getElementById('kel-istri-penspok')) document.getElementById('kel-istri-penspok').value = editData.penspok || 0;
+            if (document.getElementById('kel-istri-pekerjaan')) document.getElementById('kel-istri-pekerjaan').value = editData.pekerjaan || 'MENGURUS RUMAH TANGGA';
+            if (document.getElementById('kel-istri-tgl-meninggal')) document.getElementById('kel-istri-tgl-meninggal').value = editData.tglMeninggal || '';
+            if (document.getElementById('kel-istri-tgl-mulai-kerja')) document.getElementById('kel-istri-tgl-mulai-kerja').value = editData.tglMulaiKerja || '';
+            if (document.getElementById('kel-istri-tgl-berhenti-kerja')) document.getElementById('kel-istri-tgl-berhenti-kerja').value = editData.tglBerhentiKerja || '';
+            if (document.getElementById('kel-istri-tgl-berhenti-tunjang')) document.getElementById('kel-istri-tgl-berhenti-tunjang').value = editData.tglBerhentiTunjang || '';
+            if (document.getElementById('kel-istri-tgl-tunjang-kembali')) document.getElementById('kel-istri-tgl-tunjang-kembali').value = editData.tglTunjangKembali || '';
+          } else {
+            // Semua opsi standar (Ayah, Ibu, Wali, Ahli Waris, Sendiri, Yang Bersangkutan, Kakak/Adik, Anak Angkat, Anak Tiri)
+            if (document.getElementById('kel-ortu-nama')) document.getElementById('kel-ortu-nama').value = editData.nama || '';
+            if (document.getElementById('kel-ortu-tempat-lahir')) document.getElementById('kel-ortu-tempat-lahir').value = editData.tempatLahir || '';
+            if (document.getElementById('kel-ortu-tgl-lahir')) document.getElementById('kel-ortu-tgl-lahir').value = editData.tanggalLahir || editData.tglLahir || '';
+            if (document.getElementById('kel-ortu-jenis-kelamin')) document.getElementById('kel-ortu-jenis-kelamin').value = editData.jenisKelamin || (hubVal === 'IBU' ? 'WANITA' : 'PRIA');
+            if (document.getElementById('kel-ortu-status-kawin')) document.getElementById('kel-ortu-status-kawin').value = editData.statusKawin || 'KAWIN';
+            if (document.getElementById('kel-ortu-tipe-akta')) document.getElementById('kel-ortu-tipe-akta').value = editData.tipeAkta || 'Dokumen Baru';
+            if (document.getElementById('kel-ortu-nik')) document.getElementById('kel-ortu-nik').value = editData.nik || '';
+            if (document.getElementById('kel-ortu-penspok')) document.getElementById('kel-ortu-penspok').value = editData.penspok || 0;
+            if (document.getElementById('kel-ortu-pekerjaan')) document.getElementById('kel-ortu-pekerjaan').value = editData.pekerjaan || 'TIDAK BEKERJA';
+            if (document.getElementById('kel-ortu-tgl-meninggal')) document.getElementById('kel-ortu-tgl-meninggal').value = editData.tglMeninggal || '';
+            if (document.getElementById('kel-ortu-tgl-mulai-kerja')) document.getElementById('kel-ortu-tgl-mulai-kerja').value = editData.tglMulaiKerja || '';
+            if (document.getElementById('kel-ortu-tgl-mulai-kuliah')) document.getElementById('kel-ortu-tgl-mulai-kuliah').value = editData.tglMulaiKuliah || '';
+            if (document.getElementById('kel-ortu-tgl-selesai-kuliah')) document.getElementById('kel-ortu-tgl-selesai-kuliah').value = editData.tglSelesaiKuliah || '';
+            
+            const stopTunjangVal = editData.tglBerhentiTunjang || '';
+            if (document.getElementById('kel-ortu-tgl-berhenti-tunjang')) document.getElementById('kel-ortu-tgl-berhenti-tunjang').value = stopTunjangVal;
+            if (document.getElementById('kel-ortu-tgl-berhenti-tunjang-anak')) document.getElementById('kel-ortu-tgl-berhenti-tunjang-anak').value = stopTunjangVal;
+            
+            const kembaliTunjangVal = editData.tglTunjangKembali || '';
+            if (document.getElementById('kel-ortu-tgl-tunjang-kembali')) document.getElementById('kel-ortu-tgl-tunjang-kembali').value = kembaliTunjangVal;
+            if (document.getElementById('kel-ortu-tgl-tunjang-kembali-anak')) document.getElementById('kel-ortu-tgl-tunjang-kembali-anak').value = kembaliTunjangVal;
+          }
+
+          if (document.getElementById('kel-tipe-dokumen')) document.getElementById('kel-tipe-dokumen').value = editData.tipeDokumen || 'Dokumen Baru';
+          if (document.getElementById('kel-alamat')) document.getElementById('kel-alamat').value = editData.alamat || '';
+          if (document.getElementById('kel-kodepos')) document.getElementById('kel-kodepos').value = editData.kodePos || '';
+          if (document.getElementById('kel-rt')) document.getElementById('kel-rt').value = editData.rt || '';
+          if (document.getElementById('kel-rw')) document.getElementById('kel-rw').value = editData.rw || '';
+          if (document.getElementById('kel-kelurahan')) document.getElementById('kel-kelurahan').value = editData.kelurahan || '';
+          if (document.getElementById('kel-telepon')) document.getElementById('kel-telepon').value = editData.telepon || '';
+          if (document.getElementById('kel-handphone')) document.getElementById('kel-handphone').value = editData.handphone || '';
+          if (document.getElementById('kel-email')) document.getElementById('kel-email').value = editData.email || '';
+          if (document.getElementById('kel-ibu-kandung')) document.getElementById('kel-ibu-kandung').value = editData.ibuKandung || '';
+          if (document.getElementById('kel-is-ahli-waris')) document.getElementById('kel-is-ahli-waris').checked = editData.isAhliWaris !== false;
+          if (document.getElementById('kel-persen-ahli-waris')) document.getElementById('kel-persen-ahli-waris').value = editData.persenAhliWaris || '100%';
+
+          if (editData.rekeningList && Array.isArray(editData.rekeningList)) {
+            daftarRekeningList = [...editData.rekeningList];
+            renderRekeningTable();
+          }
+        }
+      } else {
+        // Inisialisasi tampilan default (ANAK)
+        handleHubunganKeluargaChange(document.getElementById('hub-keluarga').value);
+      }
+    }
+
+    function handleHubunganKeluargaChange(val) {
+      const formAnak = document.getElementById('form-anak-container');
+      const formIstri = document.getElementById('form-istri-container');
+      const formOrtu = document.getElementById('form-ortu-container');
+      const emptyPrompt = document.getElementById('form-empty-prompt');
+      const extraAnak = document.getElementById('kel-ortu-extra-anak');
+      const stdStopCol = document.getElementById('kel-ortu-std-stop-col');
+      const stdKembaliCol = document.getElementById('kel-ortu-std-kembali-col');
+      
+      if (!val) {
+        if (formAnak) formAnak.classList.add('hidden');
+        if (formIstri) formIstri.classList.add('hidden');
+        if (formOrtu) formOrtu.classList.add('hidden');
+        if (emptyPrompt) emptyPrompt.classList.remove('hidden');
+        return;
+      }
+
+      if (emptyPrompt) emptyPrompt.classList.add('hidden');
+
+      const upper = val.toUpperCase();
+
+      if (upper === 'ANAK') {
+        if (formAnak) formAnak.classList.remove('hidden');
+        if (formIstri) formIstri.classList.add('hidden');
+        if (formOrtu) formOrtu.classList.add('hidden');
+      } else if (upper === 'ISTRI' || upper === 'SUAMI') {
+        if (formAnak) formAnak.classList.add('hidden');
+        if (formIstri) formIstri.classList.remove('hidden');
+        if (formOrtu) formOrtu.classList.add('hidden');
+        
+        const jkEl = document.getElementById('kel-istri-jenis-kelamin');
+        if (jkEl) {
+          jkEl.value = (upper === 'ISTRI') ? 'WANITA' : 'PRIA';
+        }
+      } else {
+        // Form Standar untuk 7 Opsi Baru + AYAH & IBU
+        if (formAnak) formAnak.classList.add('hidden');
+        if (formIstri) formIstri.classList.add('hidden');
+        if (formOrtu) formOrtu.classList.remove('hidden');
+        
+        // Atur default jenis kelamin
+        const jkEl = document.getElementById('kel-ortu-jenis-kelamin');
+        if (jkEl) {
+          if (upper === 'AYAH') {
+            jkEl.value = 'PRIA';
+          } else if (upper === 'IBU') {
+            jkEl.value = 'WANITA';
+          } else {
+            jkEl.value = 'PRIA';
+          }
+        }
+
+        // Khusus Anak Angkat dan Anak Tiri: tampilkan 3 field ekstra (mulai kerja, mulai kuliah, selesai kuliah)
+        const isAnakAngkatTiri = (upper.includes('ANGKAT') || upper.includes('TIRI'));
+        if (extraAnak) extraAnak.classList.toggle('hidden', !isAnakAngkatTiri);
+        if (stdStopCol) stdStopCol.classList.toggle('hidden', isAnakAngkatTiri);
+        if (stdKembaliCol) stdKembaliCol.classList.toggle('hidden', isAnakAngkatTiri);
+      }
+    }
+
+    function tambahRekening() {
+      const nama = document.getElementById('rek-nama').value.trim();
+      const nomor = document.getElementById('rek-nomor').value.trim();
+      const mitra = document.getElementById('rek-mitra').value;
+      const cabang = document.getElementById('rek-cabang').value.trim();
+
+      if (!nama || !nomor || !mitra) {
+        showToast("Validasi Rekening", "Harap isi nama, nomor rekening, dan mitra bayar.", "warning");
+        return;
+      }
+
+      daftarRekeningList.push({ nama, nomor, mitra, cabang });
+      renderRekeningTable();
+
+      // Reset form rekening
+      document.getElementById('rek-nama').value = '';
+      document.getElementById('rek-nomor').value = '';
+      document.getElementById('rek-mitra').value = '';
+      document.getElementById('rek-cabang').value = '';
+
+      showToast("Rekening Ditambahkan", "Data rekening berhasil ditambahkan ke daftar.", "success");
+    }
+
+    function hapusRekening(index) {
+      daftarRekeningList.splice(index, 1);
+      renderRekeningTable();
+    }
+
+    function renderRekeningTable() {
+      const tbody = document.getElementById('rekening-tbody');
+      tbody.innerHTML = '';
+
+      if (daftarRekeningList.length === 0) {
+        tbody.innerHTML = `
+          <tr id="empty-rekening-row">
+            <td colspan="6" class="p-8 text-center">
+              <div class="text-xs font-bold text-slate-700">Belum ada rekening</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">Rekening yang ditambahkan di bawah akan muncul di daftar ini.</div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      daftarRekeningList.forEach((rek, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 transition-colors';
+        tr.innerHTML = `
+          <td class="px-3 py-2.5 text-center font-bold text-slate-500">${idx + 1}</td>
+          <td class="px-3 py-2.5 font-bold text-slate-800">${rek.nama}</td>
+          <td class="px-3 py-2.5 font-mono text-slate-700">${rek.nomor}</td>
+          <td class="px-3 py-2.5 font-semibold text-blue-900">${rek.mitra}</td>
+          <td class="px-3 py-2.5 text-slate-600">${rek.cabang || '-'}</td>
+          <td class="px-3 py-2.5 text-center">
+            <button type="button" onclick="hapusRekening(${idx})" class="p-1.5 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors">
+              <i class="fas fa-trash-alt text-xs"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function saveKeluarga() {
+      const hub = document.getElementById('hub-keluarga').value;
+      const upper = hub.toUpperCase();
+      const isAnakKandung = (upper === 'ANAK');
+      const isIstriSuami = (upper === 'ISTRI' || upper === 'SUAMI');
+      const isAnakAngkatTiri = (upper.includes('ANGKAT') || upper.includes('TIRI'));
+      
+      let nama = '';
+      if (isAnakKandung) {
+        nama = document.getElementById('kel-anak-nama').value.trim();
+      } else if (isIstriSuami) {
+        nama = document.getElementById('kel-istri-nama').value.trim();
+      } else {
+        nama = document.getElementById('kel-ortu-nama').value.trim();
+      }
+      
+      if (!hub) {
+        showToast("Validasi", "Harap pilih hubungan keluarga.", "warning");
+        return;
+      }
+      if (!nama) {
+        showToast("Validasi", "Harap isi nama anggota keluarga.", "warning");
+        return;
+      }
+
+      let newMember = {
+        hubungan: hub,
+        nama: nama,
+        tempatLahir: isAnakKandung 
+          ? document.getElementById('kel-anak-tempat-lahir').value.trim() 
+          : (isIstriSuami ? document.getElementById('kel-istri-tempat-lahir').value.trim() : document.getElementById('kel-ortu-tempat-lahir').value.trim()),
+        tanggalLahir: isAnakKandung 
+          ? document.getElementById('kel-anak-tgl-lahir').value 
+          : (isIstriSuami ? document.getElementById('kel-istri-tgl-lahir').value : document.getElementById('kel-ortu-tgl-lahir').value),
+        jenisKelamin: isAnakKandung 
+          ? document.getElementById('kel-anak-jenis-kelamin').value 
+          : (isIstriSuami ? document.getElementById('kel-istri-jenis-kelamin').value : document.getElementById('kel-ortu-jenis-kelamin').value),
+        statusKawin: isAnakKandung 
+          ? document.getElementById('kel-anak-status-kawin').value 
+          : (isIstriSuami ? document.getElementById('kel-istri-status-kawin').value : document.getElementById('kel-ortu-status-kawin').value),
+        nik: isAnakKandung 
+          ? document.getElementById('kel-anak-nik').value.trim() 
+          : (isIstriSuami ? document.getElementById('kel-istri-nik').value.trim() : document.getElementById('kel-ortu-nik').value.trim()),
+        penspok: isAnakKandung 
+          ? (document.getElementById('kel-anak-penspok')?.value || 0) 
+          : (isIstriSuami ? (document.getElementById('kel-istri-penspok')?.value || 0) : (document.getElementById('kel-ortu-penspok')?.value || 0)),
+        pekerjaan: isAnakKandung 
+          ? document.getElementById('kel-anak-pekerjaan').value 
+          : (isIstriSuami ? document.getElementById('kel-istri-pekerjaan').value : document.getElementById('kel-ortu-pekerjaan').value),
+        tglMeninggal: isAnakKandung 
+          ? document.getElementById('kel-anak-tgl-meninggal').value 
+          : (isIstriSuami ? document.getElementById('kel-istri-tgl-meninggal').value : document.getElementById('kel-ortu-tgl-meninggal').value),
+        tglMulaiKerja: isAnakKandung 
+          ? document.getElementById('kel-anak-tgl-mulai-kerja').value 
+          : (isIstriSuami ? (document.getElementById('kel-istri-tgl-mulai-kerja')?.value || '') : (isAnakAngkatTiri ? (document.getElementById('kel-ortu-tgl-mulai-kerja')?.value || '') : '')),
+        tglBerhentiKerja: isIstriSuami ? (document.getElementById('kel-istri-tgl-berhenti-kerja')?.value || '') : '',
+        tglMulaiKuliah: isAnakKandung ? document.getElementById('kel-anak-tgl-mulai-kuliah').value : (isAnakAngkatTiri ? (document.getElementById('kel-ortu-tgl-mulai-kuliah')?.value || '') : ''),
+        tglSelesaiKuliah: isAnakKandung ? document.getElementById('kel-anak-tgl-selesai-kuliah').value : (isAnakAngkatTiri ? (document.getElementById('kel-ortu-tgl-selesai-kuliah')?.value || '') : ''),
+        tglBerhentiTunjang: isAnakKandung 
+          ? document.getElementById('kel-anak-tgl-berhenti-tunjang').value 
+          : (isIstriSuami ? document.getElementById('kel-istri-tgl-berhenti-tunjang').value : (isAnakAngkatTiri ? (document.getElementById('kel-ortu-tgl-berhenti-tunjang-anak')?.value || document.getElementById('kel-ortu-tgl-berhenti-tunjang')?.value) : document.getElementById('kel-ortu-tgl-berhenti-tunjang').value)),
+        tglTunjangKembali: isAnakKandung 
+          ? document.getElementById('kel-anak-tgl-tunjang-kembali').value 
+          : (isIstriSuami ? document.getElementById('kel-istri-tgl-tunjang-kembali').value : (isAnakAngkatTiri ? (document.getElementById('kel-ortu-tgl-tunjang-kembali-anak')?.value || document.getElementById('kel-ortu-tgl-tunjang-kembali')?.value) : document.getElementById('kel-ortu-tgl-tunjang-kembali').value)),
+        tipeAkta: isAnakKandung 
+          ? document.getElementById('kel-anak-tipe-akta').value 
+          : (isIstriSuami ? '' : document.getElementById('kel-ortu-tipe-akta').value),
+        orangTua: isAnakKandung ? document.getElementById('kel-anak-orang-tua').value : '',
+        tipeDokumen: document.getElementById('kel-tipe-dokumen').value,
+        alamat: document.getElementById('kel-alamat').value.trim(),
+        kodePos: document.getElementById('kel-kodepos').value.trim(),
+        rt: document.getElementById('kel-rt').value.trim(),
+        rw: document.getElementById('kel-rw').value.trim(),
+        kelurahan: document.getElementById('kel-kelurahan').value.trim(),
+        telepon: document.getElementById('kel-telepon').value.trim(),
+        handphone: document.getElementById('kel-handphone').value.trim(),
+        email: document.getElementById('kel-email').value.trim(),
+        ibuKandung: document.getElementById('kel-ibu-kandung').value.trim(),
+        isAhliWaris: document.getElementById('kel-is-ahli-waris').checked,
+        persenAhliWaris: document.getElementById('kel-persen-ahli-waris').value,
+        rekeningList: [...daftarRekeningList],
+        tglEntry: new Date().toLocaleDateString('id-ID')
+      };
+
+      // Save into participant's keluarga list
+      if (currentParticipant) {
+        if (!currentParticipant.keluargaLengkap) currentParticipant.keluargaLengkap = [];
+        const urlParams = new URLSearchParams(window.location.search);
+        const editParam = urlParams.get('edit');
+        if (editParam !== null) {
+          const idx = parseInt(editParam, 10);
+          currentParticipant.keluargaLengkap[idx] = newMember;
+        } else {
+          currentParticipant.keluargaLengkap.push(newMember);
+        }
+
+        // Update in localStorage
+        const source = getPesertaListSource();
+        const kpaKey = currentParticipant.kpa || currentParticipant.nrp || currentParticipant.nik;
+        const idx = source.findIndex(x => (x.kpa === kpaKey || x.nrp === kpaKey || x.nik === kpaKey));
+        if (idx >= 0) {
+          source[idx] = currentParticipant;
+          localStorage.setItem("MOCK_PESERTA_CUSTOM", JSON.stringify(source));
+        }
+      }
+
+      showToast("Berhasil Disimpan", `Data keluarga (${hub} - ${nama}) berhasil disimpan!`, "success");
+
+      setTimeout(() => {
+        goBack();
+      }, 1000);
+    }
+
+    function goBack() {
+      if (currentParticipant) {
+        const kpaVal = currentParticipant.kpa || currentParticipant.no_ktpa || currentParticipant.noPeserta || currentParticipant.nrp || currentParticipant.nik || '';
+        window.location.href = `detail-peserta.html?kpa=${encodeURIComponent(kpaVal)}&tab=keluarga`;
+      } else {
+        window.location.href = 'detail-peserta.html?tab=keluarga';
+      }
+    }
+
+    function showToast(title, message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const colors = {
+        success: 'bg-emerald-600 text-white',
+        warning: 'bg-amber-600 text-white',
+        error: 'bg-rose-600 text-white',
+        info: 'bg-asabri-blue text-white'
+      };
+      
+      toast.className = `p-4 rounded-xl shadow-lg flex items-center gap-3 text-xs pointer-events-auto transform transition-all duration-300 translate-y-4 opacity-0 ${colors[type] || colors.info}`;
+      toast.innerHTML = `
+        <i class="fas fa-info-circle text-base"></i>
+        <div>
+          <strong class="block font-bold">${title}</strong>
+          <span>${message}</span>
+        </div>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-4', 'opacity-0');
+      }, 10);
+      
+      setTimeout(() => {
+        toast.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initPage();
+    });
+  </script>
+</body>
+</html>

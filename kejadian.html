@@ -117,6 +117,7 @@
         <select id="role-select" onchange="changeRole(this.value)" class="bg-white/10 border border-white/15 text-xs font-semibold text-white tracking-wide px-3 py-1 rounded-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-white/30 hover:bg-white/15 transition-all">
           <option value="Staf KANCAB" class="text-slate-800 font-semibold">ROLE: Staf KANCAB</option>
           <option value="Bidang Layanan Program 1" class="text-slate-800 font-semibold">ROLE: Bidang Layanan Program 1</option>
+          <option value="Kabid Layanan" class="text-slate-800 font-semibold">ROLE: Kabid Layanan</option>
           <option value="Div Layanan Pusat" class="text-slate-800 font-semibold">ROLE: Div Layanan Pusat</option>
           <option value="Verifikator" class="text-slate-800 font-semibold">ROLE: Verifikator</option>
           <option value="KAKANCAB" class="text-slate-800 font-semibold">ROLE: KAKANCAB</option>
@@ -348,6 +349,18 @@
                     </div>
                   </div>
 
+                  <!-- Tab 1 Taspen Banner -->
+                  <div id="t1-taspen-banner" class="hidden p-4 bg-indigo-50 border border-indigo-200 text-indigo-900 rounded-2xl flex items-start gap-3 text-xs font-semibold shadow-sm">
+                    <i class="fas fa-building-columns text-indigo-600 text-base mt-0.5"></i>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <strong class="text-indigo-950 font-bold">PENGAJUAN PESERTA TASPEN (THT ASABRI)</strong>
+                        <span class="bg-indigo-200/70 text-indigo-800 text-[10px] px-2 py-0.5 rounded-full font-extrabold border border-indigo-300">Pengajuan Peserta Taspen</span>
+                      </div>
+                      <p class="mt-1 font-medium text-slate-600">Peserta ASABRI dengan gaji pensiun yang dibayarkan melalui PT. Taspen. Hak asuransi (THT) tetap diproses melalui ASABRI. NOPENS Taspen tidak diwajibkan dan proses tetap dapat dilanjutkan meskipun status kepesertaan ASABRI terbaca Aktif.</p>
+                    </div>
+                  </div>
+
                   <!-- Kartu 1: Ringkasan Registrasi Klaim -->
                   <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
                     <div class="border-b border-slate-100 pb-3">
@@ -528,6 +541,25 @@
                         </select>
                         <span id="error-kejadian-jenis" class="text-rose-500 text-[10px] hidden font-semibold">Jenis Kejadian wajib dipilih</span>
                       </div>
+                      
+                      <!-- Validasi Status Kawin untuk Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun -->
+                      <div id="md-tanpa-hak-warning-banner" class="hidden p-3.5 bg-amber-50 border border-amber-300 rounded-xl text-xs space-y-2 animate-fade-in mb-2">
+                        <div class="flex items-start gap-2">
+                          <i class="fas fa-triangle-exclamation text-amber-600 text-sm mt-0.5"></i>
+                          <div class="space-y-1">
+                            <div class="font-bold text-amber-800 text-[11px]">Validasi Status Pernikahan: Peserta Tercatat Menikah / Berkeluarga</div>
+                            <p class="text-amber-700 text-[10px] leading-relaxed">
+                              Kejadian <strong>Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun</strong> khusus untuk peserta AKTIF yang <strong>Belum Menikah (bujangan)</strong> tanpa hak pensiun bagi Istri/Suami/Anak (PP 102 Pasal 45). Jika peserta ternyata berstatus sudah menikah, silakan alihkan pengajuan ke <strong>Meninggal Dunia Aktif Biasa</strong>.
+                            </p>
+                          </div>
+                        </div>
+                        <div class="flex justify-end pt-1">
+                          <button type="button" onclick="alihkanKeMeninggalBiasa()" class="px-3 py-1.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-[10px] font-bold transition-all shadow-sm flex items-center gap-1.5">
+                            <i class="fas fa-arrow-right"></i> Alihkan ke 'Meninggal Dunia Aktif Biasa'
+                          </button>
+                        </div>
+                      </div>
+
                       <!-- Ahli Waris Penerima Manfaat Khusus Meninggal Dunia -->
                       <div id="ahli-waris-penerima-container" class="hidden flex flex-col gap-1.5 animate-fade-in mb-4">
                         <label class="font-bold text-slate-650">Ahli Waris Penerima Manfaat <span class="text-rose-500">*</span></label>
@@ -563,13 +595,53 @@
                       </div>
 
                       <div class="flex flex-col gap-1.5">
-                        <label class="font-bold text-slate-650">Tanggal Kejadian <span class="text-rose-500">*</span></label>
+                        <label id="label-tanggal-kejadian" class="font-bold text-slate-650">Tanggal Kejadian <span class="text-rose-500">*</span></label>
                         <input type="date" id="kejadian-tgl-kejadian" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
                         <span id="error-kejadian-tgl-kejadian" class="text-rose-500 text-[10px] hidden font-semibold">Tanggal Kejadian wajib diisi</span>
+                        <!-- Note kontekstual per Penyebab Perubahan Yatim -->
+                        <div id="yatim-tgl-note" class="hidden text-[10px] font-semibold italic"></div>
                         <div id="regulasi-badge-container"></div>
                       </div>
 
+                      <!-- Conditional TMT Pensiun field -->
+                      <div id="pensiun-tmt-container" class="hidden flex flex-col gap-1.5">
+                        <label class="font-bold text-slate-650 flex items-center gap-1">TMT Pensiun <span class="text-rose-500">*</span></label>
+                        <input type="date" id="pensiun-tmt" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
+                        <span class="text-[10px] text-slate-400">Terhitung Mulai Tanggal Pensiun sesuai SK Pensiun</span>
+                        <span id="error-pensiun-tmt" class="text-rose-500 text-[10px] hidden font-semibold">TMT Pensiun wajib diisi</span>
+                      </div>
 
+                      <!-- Conditional TMT Meninggal Istri/Suami field -->
+                      <div id="istri-suami-wafat-container" class="hidden flex flex-col gap-1.5">
+                        <label class="font-bold text-slate-650 flex items-center gap-1">Tanggal Meninggal Istri/Suami <span class="text-rose-500">*</span></label>
+                        <input type="date" id="istri-suami-wafat-tgl" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
+                        <span class="text-[10px] text-slate-400">Tanggal meninggal dunia istri/suami sesuai Surat Kematian</span>
+                        <span id="error-istri-suami-wafat-tgl" class="text-rose-500 text-[10px] hidden font-semibold">TMT Meninggal Dunia Istri/Suami wajib diisi</span>
+                      </div>
+
+                      <!-- Container Khusus Validasi Tanggal Nikah vs Tanggal Pensiun untuk Meninggal Istri/Suami Taspen -->
+                      <div id="taspen-istri-suami-container" class="hidden p-4 bg-indigo-50/70 border border-indigo-200 rounded-2xl space-y-3 animate-fade-in">
+                        <div class="flex items-center gap-2 border-b border-indigo-100 pb-2">
+                          <i class="fas fa-certificate text-indigo-600"></i>
+                          <span class="text-xs font-bold text-indigo-900">Validasi Data Pernikahan &amp; Pensiun Taspen</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                          <div class="flex flex-col gap-1">
+                            <label class="font-bold text-slate-650">Tanggal Pernikahan <span class="text-rose-500">*</span></label>
+                            <input type="date" id="taspen-tgl-nikah" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700">
+                            <span id="error-taspen-tgl-nikah" class="text-rose-500 text-[10px] hidden font-semibold">Tanggal pernikahan wajib diisi</span>
+                          </div>
+                          <div class="flex flex-col gap-1">
+                            <label class="font-bold text-slate-650">Tanggal Pensiun Taspen <span class="text-rose-500">*</span></label>
+                            <input type="date" id="taspen-tgl-pensiun" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700">
+                            <span id="error-taspen-tgl-pensiun" class="text-rose-500 text-[10px] hidden font-semibold">Tanggal pensiun wajib diisi</span>
+                          </div>
+                        </div>
+                        <div class="p-2.5 bg-indigo-100/60 rounded-xl text-[11px] text-indigo-900 font-medium flex items-start gap-2">
+                          <i class="fas fa-circle-info text-indigo-600 mt-0.5"></i>
+                          <span><strong>Ketentuan Hak BPI/S:</strong> Istri/Suami <u>harus dinikahi pada saat peserta dinas aktif</u> (sebelum tanggal pensiun). Jika tanggal nikah setelah tanggal pensiun, sistem otomatis menolak klaim.</span>
+                        </div>
+                      </div>
 
                       <div id="ahli-waris-dropdown-container" class="hidden flex flex-col gap-1.5 animate-fade-in">
                         <label class="font-bold text-slate-650">👤 Jenis Ahli Waris</label>
@@ -608,15 +680,6 @@
                         </div>
                       </div>
 
-                      <div id="ahli-waris-dropdown-container" class="hidden flex flex-col gap-1.5 animate-fade-in">
-                        <label class="font-bold text-slate-650">👤 Jenis Ahli Waris</label>
-                        <div class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 flex items-center justify-between">
-                          <span id="ahli-waris-jenis-text">-</span>
-                          <span class="text-[10px] text-slate-400 font-normal italic">(read-only — dari data registrasi)</span>
-                        </div>
-                        <input type="hidden" id="ahli-waris-jenis" value="">
-                      </div>
-                      <input type="hidden" id="ptdh-tmt-pemberhentian">
                       <!-- Conditional TMT fields for PTDH -->
                       <div id="ptdh-tmt-container" class="hidden mt-4">
                         <div class="flex flex-col gap-1.5">
@@ -644,21 +707,7 @@
                           <option value="Tunai">Tunai / Kancab</option>
                         </select>
                       </div>
-                      <!-- Conditional TMT Pensiun field -->
-                      <div id="pensiun-tmt-container" class="hidden flex flex-col gap-1.5">
-                        <label class="font-bold text-slate-650 flex items-center gap-1">Tanggal Kejadian <span class="text-rose-500">*</span></label>
-                        <input type="date" id="pensiun-tmt" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
-                        <span class="text-[10px] text-slate-400">Terhitung Mulai Tanggal Pensiun sesuai SK Pensiun</span>
-                        <span id="error-pensiun-tmt" class="text-rose-500 text-[10px] hidden font-semibold">TMT Pensiun wajib diisi</span>
-                      </div>
 
-                      <!-- Conditional TMT Meninggal Istri/Suami field -->
-                      <div id="istri-suami-wafat-container" class="hidden flex flex-col gap-1.5">
-                        <label class="font-bold text-slate-650 flex items-center gap-1">Tanggal Kejadian <span class="text-rose-500">*</span></label>
-                        <input type="date" id="istri-suami-wafat-tgl" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue focus:ring-1 focus:ring-asabri-blue/30 text-slate-700">
-                        <span class="text-[10px] text-slate-400">Tanggal meninggal dunia istri/suami sesuai Surat Kematian</span>
-                        <span id="error-istri-suami-wafat-tgl" class="text-rose-500 text-[10px] hidden font-semibold">TMT Meninggal Dunia Istri/Suami wajib diisi</span>
-                      </div>
                       <!-- Banner warning flagging pinjaman -->
                       <div id="banner-flagging-pinjaman" class="hidden p-3.5 bg-amber-50 border border-amber-200 text-amber-800 text-[11px] rounded-xl flex items-start gap-2 font-bold mb-3">
                         <i class="fas fa-triangle-exclamation mt-0.5 text-amber-600"></i>
@@ -723,6 +772,8 @@
                             <option value="Perpanjangan (Masih Kuliah)" selected>Perpanjangan (Masih Kuliah)</option>
                             <option value="Anak Dewasa (Berhenti)">Anak Dewasa (Berhenti)</option>
                             <option value="Anak Meninggal Dunia">Anak Meninggal Dunia</option>
+                            <option value="Anak Menikah">Anak Menikah</option>
+                            <option value="Anak Disabilitas">Anak Disabilitas</option>
                           </select>
                         </div>
                       </div>
@@ -730,17 +781,20 @@
 
                     <!-- Body Content Parameter Yatim -->
                     <div class="p-5 bg-amber-50/60 border border-amber-200 rounded-2xl shadow-sm space-y-4">
-                      <!-- Field Tanggal Meninggal (Khusus Anak Meninggal Dunia) -->
-                      <div id="yatim-meninggal-fields" class="hidden bg-rose-50 p-4 border border-rose-200 rounded-xl space-y-2">
-                        <label class="block font-bold text-rose-900 text-xs">Tanggal Meninggal Dunia Anak <span class="text-rose-600">*</span></label>
-                        <input type="date" id="yatim-tgl-meninggal" class="w-full bg-white border border-rose-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-800 outline-none focus:border-rose-500 shadow-sm">
-                        <p class="text-[10px] text-rose-700 italic">*Wajib melampirkan Fotokopi Akta Kematian dari Dukcapil pada Tab 3 (Persyaratan).</p>
+                      <!-- Note dokumen wajib per Penyebab Perubahan — muncul di bawah dropdown -->
+                      <div id="yatim-doc-note" class="hidden text-[11px] font-semibold flex items-start gap-2 p-3 rounded-xl border"></div>
+
+                      <!-- Info Disabilitas (Khusus Anak Disabilitas) -->
+                      <div id="yatim-disabilitas-fields" class="hidden bg-sky-50 p-4 border border-sky-200 rounded-xl">
+                        <div class="flex items-start gap-2.5">
+                          <i class="fas fa-wheelchair text-sky-600 mt-0.5"></i>
+                          <p class="text-xs font-bold text-sky-900">Anak Disabilitas — Tanpa batas usia 25 tahun. Wajib melampirkan <span class="text-sky-700">Surat Keterangan Dokter</span> pada Tab 3 (Persyaratan).</p>
+                        </div>
                       </div>
 
-                      <!-- Checkbox Disabilitas -->
-                      <div class="flex items-center gap-2.5 bg-white p-3 border border-amber-200 rounded-xl">
-                        <input type="checkbox" id="yatim-disabilitas-check" onchange="onYatimDisabilitasChange(this.checked)" class="w-4.5 h-4.5 text-amber-600 rounded border-amber-300 focus:ring-amber-500 cursor-pointer">
-                        <label for="yatim-disabilitas-check" class="text-xs font-bold text-amber-950 cursor-pointer">Anak Disabilitas (Tanpa batas usia 25 tahun, wajib melampirkan Surat Keterangan Dokter)</label>
+                      <!-- Checkbox Disabilitas (hidden, dipertahankan untuk kompatibilitas backward) -->
+                      <div class="hidden">
+                        <input type="checkbox" id="yatim-disabilitas-check" onchange="onYatimDisabilitasChange(this.checked)">
                       </div>
 
                       <!-- Subfields Khusus Perpanjangan (Masih Kuliah) -->
@@ -796,17 +850,37 @@
                       <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2.5">
                           <div class="w-8 h-8 rounded-xl bg-purple-400/20 text-purple-300 flex items-center justify-center font-bold text-sm border border-purple-400/30">
-                            <i class="fas fa-person-falling-burst"></i>
+                            <i class="fas fa-person-breastfeeding"></i>
                           </div>
                           <div>
-                            <h4 class="font-bold text-xs uppercase tracking-wider text-white">Form Parameter Tunjangan Orang Tua — Meninggal Dunia</h4>
-                            <p class="text-[10px] text-purple-200">Lengkapi data kematian Orang Tua dan sistem akan memverifikasi sisa Orang Tua yang masih berhak.</p>
+                            <h4 id="ortu-header-title" class="font-bold text-xs uppercase tracking-wider text-white">Form Parameter Tunjangan Orang Tua</h4>
+                            <p id="ortu-header-subtitle" class="text-[10px] text-purple-200">Verifikasi kelayakan hak Tunjangan Orang Tua (25% &times; GPT) bagi Orang Tua yang berhak.</p>
                           </div>
                         </div>
                         <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-purple-400/20 text-purple-300 border border-purple-400/30 uppercase tracking-wider">Tunjangan Orang Tua</span>
                       </div>
                       
-                      <div class="grid grid-cols-2 gap-4 pt-1 text-xs">
+                      <!-- Section Khusus Kejadian Baru Standalone -->
+                      <div id="ortu-fields-standalone" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1 text-xs">
+                        <div>
+                          <label class="text-[11px] font-bold text-purple-100 block mb-1.5">Kondisi Kematian Peserta (Auto-Read)</label>
+                          <div class="w-full bg-white/10 border border-white/20 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white flex items-center justify-between">
+                            <span id="ortu-kondisi-kematian-val">Gugur/Tewas</span>
+                            <span class="text-[10px] text-purple-300 italic font-normal">(dari data kepesertaan)</span>
+                          </div>
+                        </div>
+                        <div>
+                          <label class="text-[11px] font-bold text-purple-100 block mb-1.5">Penerima Tunjangan Orang Tua <span class="text-rose-400">*</span></label>
+                          <select id="ortu-penerima-select" class="w-full bg-white text-slate-800 border border-white/20 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-purple-400 shadow-sm">
+                            <option value="Ayah">Ayah Kandung</option>
+                            <option value="Ibu">Ibu Kandung</option>
+                            <option value="Keduanya" selected>Ayah &amp; Ibu (Keduanya)</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Section Khusus Alih Status (Orang Tua Meninggal) -->
+                      <div id="ortu-fields-alih-status" class="hidden grid-cols-2 gap-4 pt-1 text-xs">
                         <div>
                           <label class="text-[11px] font-bold text-purple-100 block mb-1.5">Tanggal Meninggal Dunia Orang Tua <span class="text-rose-400">*</span></label>
                           <input type="date" id="ortu-tgl-meninggal" class="w-full bg-white text-slate-800 border border-white/20 rounded-xl px-3.5 py-2.5 text-xs font-bold outline-none focus:ring-2 focus:ring-purple-400 shadow-sm">
@@ -821,8 +895,26 @@
                       </div>
                     </div>
 
+                    <!-- Notice Status Validasi Keluarga untuk Standalone Tunjangan Ortu -->
+                    <div id="ortu-validation-notice" class="p-4 rounded-2xl shadow-sm text-xs space-y-2">
+                      <div id="ortu-validasi-sukses" class="flex items-start gap-3 text-emerald-900 bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl">
+                        <i class="fas fa-circle-check text-emerald-600 text-base mt-0.5"></i>
+                        <div>
+                          <strong class="font-bold block text-sm text-emerald-800">Verifikasi Keluarga Memenuhi Syarat</strong>
+                          Peserta tercatat <strong>TIDAK meninggalkan Warakawuri (Istri/Suami) maupun Anak yang berhak</strong>. Berdasarkan PP No. 36/1968 &amp; PP No. 102/2015, Orang Tua berhak menerima Tunjangan Orang Tua sebesar <strong>25% &times; GPT</strong>.
+                        </div>
+                      </div>
+                      <div id="ortu-validasi-gagal" class="hidden flex items-start gap-3 text-rose-900 bg-rose-50 border border-rose-200 p-3.5 rounded-xl">
+                        <i class="fas fa-triangle-exclamation text-rose-600 text-base mt-0.5"></i>
+                        <div>
+                          <strong class="font-bold block text-sm text-rose-800">⚠️ Peringatan Regulasi: Peserta Memiliki Ahli Waris Utama</strong>
+                          Peserta tercatat masih memiliki <strong>Warakawuri (Istri/Suami) atau Anak yang berhak</strong> dalam Data Keluarga. Sesuai ketentuan, Tunjangan Orang Tua HANYA diberikan jika peserta TIDAK meninggalkan Istri/Suami ataupun Anak berhak. Silakan arahkan ke pengajuan <strong>'Pensiun Wari/Janda/Duda'</strong> atau <strong>'Tunjangan Yatim Piatu'</strong>.
+                        </div>
+                      </div>
+                    </div>
+
                     <!-- Notice Status Alih Status Ortu -->
-                    <div id="ortu-status-notice" class="p-4 bg-purple-50 border border-purple-200 rounded-2xl shadow-sm text-xs space-y-2">
+                    <div id="ortu-status-notice" class="hidden p-4 bg-purple-50 border border-purple-200 rounded-2xl shadow-sm text-xs space-y-2">
                       <div id="ortu-notice-ada" class="flex items-start gap-3 text-purple-900">
                         <i class="fas fa-user-check text-purple-600 text-base mt-0.5"></i>
                         <div>
@@ -1318,6 +1410,158 @@
   <script>
     let currentParticipant = null;
     let claimState = null;
+    let isTandaTerimaSaved = false;
+    let activeProducts = [];
+
+    const KEJADIAN_PRODUK_MAP = {
+      'Pensiun': ['TA', 'PP'],
+      'Pensiun Pertama': ['TA', 'PP'],
+      'Berhenti dengan Hak Tunjangan': ['NTTA', 'Tunjangan Terbatas'],
+      'Berhenti Tanpa Hak Pensiun': ['NTTA', 'NTIP'],
+      'Berhenti tanpa Hak Pensiun (PTDH)': ['NTTA', 'NTIP'],
+      'Peserta Aktif - Istri/suami meninggal dunia': ['BPI/S'],
+      'Istri/Suami Meninggal Dunia': ['BPI/S'],
+      'Peserta Aktif - Anak meninggal Dunia': ['BPA'],
+      'Anak Meninggal Dunia': ['BPA'],
+      'Meninggal Dunia Aktif Biasa': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+      'Meninggal Dunia dalam Dinas Aktif (JKm)': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Meninggal Dunia dalam Dinas Aktif': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Kecelakaan Kerja — Dirawat': ['Perawatan JKK', 'Biaya Pengangkutan'],
+      'Meninggal Dunia Aktif Tewas': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Meninggal Dunia Aktif Gugur': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Cacat Dinas Biasa': ['Santunan Cacat'],
+      'Cacat Dinas Khusus': ['Santunan Cacat'],
+      'Kecelakaan Kerja — Cacat': ['Santunan Cacat'],
+      'Kecelakaan Kerja - Cacat': ['Santunan Cacat'],
+      'Meninggal Dunia Setelah Pensiun': ['BPPP', 'UDW'],
+      'Pensiun Sendiri — Meninggal Dunia': ['BPPP', 'UDW'],
+      'Pensiun Sendiri - Meninggal Dunia': ['BPPP', 'UDW'],
+      'Istri/suami meninggal Dunia Setelah Pensiun': ['BPI/S'],
+      'Pensiun Sendiri — Istri/Suami Meninggal Dunia': ['BPI/S'],
+      'Pensiun Sendiri - Istri/Suami Meninggal Dunia': ['BPI/S'],
+      'Anak meninggal Dunia Setelah Pensiun': ['BPA'],
+      'Pensiun Sendiri — Anak Meninggal Dunia': ['BPA'],
+      'Pensiun Sendiri - Anak Meninggal Dunia': ['BPA'],
+      'Pensiun Wari/Janda/Duda': ['Pensiun Warakawuri'],
+      'Pensiun Wari/Janda/Duda - Meninggal Dunia': ['BPPP', 'UDW'],
+      'Pensiun Warakawuri — Meninggal Dunia': ['BPPP', 'UDW'],
+      'Pensiun Warakawuri - Meninggal Dunia': ['BPPP', 'UDW'],
+      'Tunjangan Yatim Piatu': ['Tunjangan Yatim/Piatu'],
+      'Tunjangan Yatim/Piatu/Yatim-Piatu': ['Tunjangan Yatim/Piatu'],
+      'Tunjangan Orang Tua': ['Tunjangan Orang Tua'],
+      'Tunjangan Orang Tua — Meninggal Dunia': ['Tunjangan Orang Tua'],
+      'Tunjangan Orang Tua — Meninggal': ['Tunjangan Orang Tua'],
+      'Beasiswa JKK': ['Beasiswa JKK'],
+      'Beasiswa JKM': ['Beasiswa JKM'],
+      'Beasiswa JKm': ['Beasiswa JKM'],
+      'Beasiswa JKK/JKM': ['Beasiswa JKK'],
+      'Uang Kekurangan Pensiun (UKP)': ['UKP'],
+      'UKP Tanpa Perubahan Data': ['UKP Tanpa Perubahan Data'],
+      'UKP Dengan Perubahan Data': ['UKP Dengan Perubahan Data'],
+      'UKP Pembayaran Tunjangan Cacat': ['UKP Pembayaran Tunjangan Cacat'],
+      'UKP Kelebihan Potongan Hutang': ['UKP Kelebihan Potongan Hutang'],
+      'Meninggal Peserta TASPEN': ['BPPP'],
+      'Meninggal Istri/Suami Taspen': ['BPI/S'],
+      'Istri/Suami Meninggal Dunia Peserta Taspen': ['BPI/S'],
+    };
+
+    const KEJADIAN_AHLIWARIS_PRODUK_MAP = {
+      // Meninggal Peserta TASPEN (Hanya BPPP, UDW TIDAK ADA)
+      'Meninggal Peserta TASPEN_Istri/Suami': ['BPPP'],
+      'Meninggal Peserta TASPEN_Anak': ['BPPP'],
+      'Meninggal Peserta TASPEN_Orang Tua': ['BPPP'],
+      'Meninggal Peserta TASPEN_Ahli Waris Lainnya': ['BPPP'],
+      'Meninggal Peserta TASPEN_Lainnya': ['BPPP'],
+
+      // Istri/Suami Meninggal Dunia Peserta Taspen (Hanya BPI/S)
+      'Meninggal Istri/Suami Taspen_Peserta': ['BPI/S'],
+      'Meninggal Istri/Suami Taspen_Istri/Suami': ['BPI/S'],
+      'Meninggal Istri/Suami Taspen_Anak': ['BPI/S'],
+      'Meninggal Istri/Suami Taspen_Ahli Waris Lainnya': ['BPI/S'],
+      'Meninggal Istri/Suami Taspen_Lainnya': ['BPI/S'],
+      'Istri/Suami Meninggal Dunia Peserta Taspen_Peserta': ['BPI/S'],
+      'Istri/Suami Meninggal Dunia Peserta Taspen_Istri/Suami': ['BPI/S'],
+      'Istri/Suami Meninggal Dunia Peserta Taspen_Anak': ['BPI/S'],
+      'Istri/Suami Meninggal Dunia Peserta Taspen_Ahli Waris Lainnya': ['BPI/S'],
+      'Istri/Suami Meninggal Dunia Peserta Taspen_Lainnya': ['BPI/S'],
+
+      // Meninggal Dinas Aktif
+      'Meninggal Dunia Aktif Biasa_Istri/Suami': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Meninggal Dunia Aktif Biasa_Anak': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Meninggal Dunia Aktif Biasa_Ahli Waris Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+      'Meninggal Dunia Aktif Biasa_Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+
+      // Meninggal Dinas Aktif Tanpa Hak Pensiun (Bujangan / Belum Menikah)
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun_Orang Tua': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun_Ahli Waris Lain': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun_Ahli Waris Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun_Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+
+      'Meninggal Dunia dalam Dinas Aktif (JKm)_Istri/Suami': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Meninggal Dunia dalam Dinas Aktif (JKm)_Anak': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Meninggal Dunia dalam Dinas Aktif (JKm)_Ahli Waris Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+
+      'Meninggal Dunia dalam Dinas Aktif_Istri/Suami': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Meninggal Dunia dalam Dinas Aktif_Anak': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
+      'Meninggal Dunia dalam Dinas Aktif_Ahli Waris Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+      'Meninggal Dunia dalam Dinas Aktif_Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
+
+      // KK Meninggal - Tewas
+      'Meninggal Dunia Aktif Tewas_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Meninggal Dunia Aktif Tewas_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Meninggal Dunia Aktif Tewas_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut'],
+
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut'],
+
+      // KK Meninggal - Gugur
+      'Meninggal Dunia Aktif Gugur_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Meninggal Dunia Aktif Gugur_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Meninggal Dunia Aktif Gugur_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut'],
+
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut'],
+
+      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut'],
+
+      'Kecelakaan Kerja - Gugur/Tewas_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Gugur/Tewas_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
+      'Kecelakaan Kerja - Gugur/Tewas_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut'],
+
+      // Pensiun Sendiri Meninggal / Meninggal Dunia Setelah Pensiun
+      'Meninggal Dunia Setelah Pensiun_Istri/Suami': ['BPPP', 'UDW'],
+      'Meninggal Dunia Setelah Pensiun_Anak': ['BPPP', 'UDW'],
+      'Meninggal Dunia Setelah Pensiun_Ahli Waris Lainnya': ['BPPP', 'UDW'],
+      'Meninggal Dunia Setelah Pensiun_Lainnya': ['BPPP', 'UDW'],
+
+      'Pensiun Sendiri — Meninggal Dunia_Istri/Suami': ['BPPP', 'UDW'],
+      'Pensiun Sendiri — Meninggal Dunia_Anak': ['BPPP', 'UDW'],
+      'Pensiun Sendiri — Meninggal Dunia_Lainnya': ['BPPP', 'UDW'],
+      'Pensiun Sendiri — Meninggal Dunia_Ahli Waris Lainnya': ['BPPP', 'UDW'],
+
+      // Pensiun Wari/Janda/Duda (Pengajuan Awal)
+      'Pensiun Wari/Janda/Duda_Istri/Suami': ['Pensiun Warakawuri'],
+      'Pensiun Wari/Janda/Duda_Peserta': ['Pensiun Warakawuri'],
+      'Pensiun Wari/Janda/Duda_Keluarga': ['Pensiun Warakawuri'],
+      'Pensiun Wari/Janda/Duda_Lainnya': ['Pensiun Warakawuri'],
+
+      // Pensiun Warakawuri Meninggal / Pensiun Wari/Janda/Duda - Meninggal Dunia
+      'Pensiun Wari/Janda/Duda - Meninggal Dunia_Anak': ['BPPP', 'UDW', 'Tunjangan Yatim/Piatu'],
+      'Pensiun Wari/Janda/Duda - Meninggal Dunia_Ahli Waris Lainnya': ['BPPP', 'UDW'],
+      'Pensiun Wari/Janda/Duda - Meninggal Dunia_Lainnya': ['BPPP', 'UDW'],
+
+      'Pensiun Warakawuri — Meninggal Dunia_Anak': ['BPPP', 'UDW', 'Tunjangan Yatim/Piatu'],
+      'Pensiun Warakawuri — Meninggal Dunia_Lainnya': ['BPPP', 'UDW'],
+      'Pensiun Warakawuri — Meninggal Dunia_Ahli Waris Lainnya': ['BPPP', 'UDW'],
+    };
 
     function formatRupiah(angka) {
       if (isNaN(angka) || angka === null || angka === undefined) return '';
@@ -1544,12 +1788,14 @@
       const thtTypes = ['TA', 'THT', 'NTTA'];
       const jkkJkmTypes = ['JKK', 'JKm'];
 
-      // Cek apakah jenis kejadian termasuk dalam ketentuan Wari/YP minimal 1 bulan gaji (Poin D & G)
+      // Cek apakah jenis kejadian termasuk dalam ketentuan Wari/YP/Ortu minimal 1 bulan gaji (Poin D & G)
       const jkMapped = mapJenisKejadian(jenisKejadian);
       const isWariYpMinSalaryEvent = (
         jkMapped.startsWith('Meninggal Dunia Aktif') ||
         jkMapped.startsWith('Meninggal Dunia Setelah Pensiun') ||
-        jkMapped.startsWith('Pensiun Wari/Janda/Duda - Meninggal Dunia') ||
+        jkMapped.startsWith('Pensiun Wari/Janda/Duda') ||
+        jkMapped.startsWith('Tunjangan Orang Tua') ||
+        jkMapped.startsWith('Tunjangan Yatim Piatu') ||
         jkMapped.startsWith('Meninggal Dunia dalam Dinas Aktif') ||
         jkMapped.startsWith('Pensiun Sendiri') ||
         jkMapped.startsWith('Pensiun Warakawuri')
@@ -1564,9 +1810,9 @@
           // TGR/Non-TGR/Keterlanjuran → potong dari Tunjangan Terbatas, lalu Pensiun/DAPEM
           let target = productTypes.find(pt => pt.includes('Tunjangan Terbatas')) || productTypes.find(pt => pensiunTypes.some(pen => pt.includes(pen)));
           
-          // PENGENDALIAN MINIMAL 1 BULAN GAJI: Jika produk target adalah Pensiun Warakawuri atau Tunjangan Yatim/Piatu
-          // pada pembayaran pertama di 3 kejadian target, potongan hutang = 0
-          if (target && isWariYpMinSalaryEvent && (target.includes('Pensiun Warakawuri') || target.includes('Tunjangan Yatim/Piatu'))) {
+          // PENGENDALIAN MINIMAL 1 BULAN GAJI: Jika produk target adalah Pensiun Warakawuri, Tunjangan Yatim/Piatu, atau Tunjangan Orang Tua
+          // pada pembayaran pertama di kejadian target, potongan hutang = 0
+          if (target && isWariYpMinSalaryEvent && (target.includes('Pensiun Warakawuri') || target.includes('Tunjangan Yatim/Piatu') || target.includes('Tunjangan Orang Tua'))) {
             // Potongan ditunda untuk bulan pertama (0)
           } else if (target) {
             result[target] = (result[target] || 0) + amt;
@@ -1584,9 +1830,9 @@
             else result[productTypes[0]] = (result[productTypes[0]] || 0) + amt;
           }
         } else {
-          // Hutang lain → jika target produk Wari/YP di 3 kejadian target, tunda potongan
+          // Hutang lain → jika target produk Wari/YP/Ortu di kejadian target, tunda potongan
           const firstTarget = productTypes[0];
-          if (firstTarget && isWariYpMinSalaryEvent && (firstTarget.includes('Pensiun Warakawuri') || firstTarget.includes('Tunjangan Yatim/Piatu'))) {
+          if (firstTarget && isWariYpMinSalaryEvent && (firstTarget.includes('Pensiun Warakawuri') || firstTarget.includes('Tunjangan Yatim/Piatu') || firstTarget.includes('Tunjangan Orang Tua'))) {
             // Potongan ditunda untuk bulan pertama (0)
           } else {
             result[productTypes[0]] = (result[productTypes[0]] || 0) + amt;
@@ -2566,6 +2812,13 @@
       }, 1200);
     }
 
+    function onUkpHutangPenerimaChange(cardId, val) {
+      const namaEl = document.getElementById(`${cardId}-ukp-nama-penerima`);
+      const rekEl = document.getElementById(`${cardId}-ukp-nama-rekening`);
+      if (namaEl) namaEl.value = val;
+      if (rekEl) rekEl.value = (val || '').toUpperCase();
+    }
+
     const NOMINAL_BEASISWA = {
       'PP 102/2015': {
         nominal: 30000000, // Rp 30jt per anak
@@ -3427,12 +3680,14 @@
     function hitungNTIP(tmtMasukStr, tmtKlaimStr, jenisKejadian, f1Val, f2Val, p1Val, p2Val) {
       const isKeluar = jenisKejadian.toLowerCase().includes('berhenti') ||
                        jenisKejadian.toLowerCase().includes('keluar') ||
-                       jenisKejadian.toLowerCase().includes('ptdh');
+                       jenisKejadian.toLowerCase().includes('ptdh') ||
+                       jenisKejadian.toLowerCase().includes('tanpa hak pensiun') ||
+                       jenisKejadian === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun';
 
       if (!isKeluar) {
         return {
           valid: false,
-          reason: 'NTIP hanya berlaku untuk kejadian "Keluar" (Berhenti tanpa Hak Pensiun/PTDH).',
+          reason: 'NTIP hanya berlaku untuk kejadian "Keluar" / "Tanpa Hak Pensiun".',
           finalTotal: 0
         };
       }
@@ -3841,7 +4096,7 @@
     function calculatePemakamanProduct(cardId, produk) {
       const breakdownEl = document.getElementById(`${cardId}-breakdown`);
       if (produk === "BPPP") {
-        const val = 7500000;
+        const val = 5000000;
         document.getElementById(`${cardId}-besar`).value = formatRupiah(val);
         if (breakdownEl) {
           breakdownEl.innerHTML = `
@@ -3857,7 +4112,7 @@
           breakdownEl.classList.remove('hidden');
         }
       } else if (produk === "BPI/S") {
-        const val = 6000000;
+        const val = 4000000;
         document.getElementById(`${cardId}-besar`).value = formatRupiah(val);
         if (breakdownEl) {
           breakdownEl.innerHTML = `
@@ -3869,6 +4124,22 @@
             Nominal Ketentuan     : ${formatRupiah(val)}<br>
             -------------------------------------<br>
             <strong>TOTAL MANFAAT BPI/S: ${formatRupiah(val)}</strong>
+          `;
+          breakdownEl.classList.remove('hidden');
+        }
+      } else if (produk === "BPA") {
+        const val = 3000000;
+        document.getElementById(`${cardId}-besar`).value = formatRupiah(val);
+        if (breakdownEl) {
+          breakdownEl.innerHTML = `
+            <strong>Rincian Biaya Pemakaman Anak (BPA)</strong><br>
+            -------------------------------------<br>
+            Regulasi              : PP 102/2015 Jo. PP 54/2020<br>
+            Ketentuan             : Nominal tetap sesuai regulasi<br>
+            -------------------------------------<br>
+            Nominal Ketentuan     : ${formatRupiah(val)}<br>
+            -------------------------------------<br>
+            <strong>TOTAL MANFAAT BPA: ${formatRupiah(val)}</strong>
           `;
           breakdownEl.classList.remove('hidden');
         }
@@ -4316,6 +4587,7 @@
       'Peserta Aktif - Istri/suami meninggal dunia',
       'Peserta Aktif - Anak meninggal Dunia',
       'Meninggal Dunia Aktif Biasa',
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun',
       'Meninggal Dunia Aktif Tewas',
       'Meninggal Dunia Aktif Gugur',
       'Cacat Dinas Biasa',
@@ -4323,12 +4595,15 @@
       'Meninggal Dunia Setelah Pensiun',
       'Istri/suami meninggal Dunia Setelah Pensiun',
       'Anak meninggal Dunia Setelah Pensiun',
+      'Pensiun Wari/Janda/Duda',
       'Pensiun Wari/Janda/Duda - Meninggal Dunia',
       'Tunjangan Yatim Piatu',
       'Tunjangan Orang Tua',
       'Beasiswa JKK',
       'Beasiswa JKM',
       'Uang Kekurangan Pensiun (UKP)',
+      'Meninggal Peserta TASPEN',
+      'Meninggal Istri/Suami Taspen',
     ];
 
     function getGolonganCacatByKejadian(jenisKejadian) {
@@ -4342,7 +4617,7 @@
     }
     window.getGolonganCacatByKejadian = getGolonganCacatByKejadian;
 
-    document.addEventListener("DOMContentLoaded", () => {
+    function initKejadianPage() {
       loadRegistrationData();
       renderTabRejectionButtons();
       
@@ -4351,6 +4626,15 @@
       if (roleSelect) {
         roleSelect.value = currentRole;
       }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener("DOMContentLoaded", initKejadianPage);
+    } else {
+      initKejadianPage();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
       
       const tglKejadianEl = document.getElementById("kejadian-tgl-kejadian");
       if (tglKejadianEl) {
@@ -4586,9 +4870,57 @@
       if (isOrtu) {
         container.classList.remove("hidden");
         container.classList.add("flex");
-        const selStatus = document.getElementById("ortu-status-pasangan-select");
-        if (selStatus) {
-          onOrtuStatusChange(selStatus.value);
+
+        const isStandalone = (val === 'Tunjangan Orang Tua');
+        const fieldsStandalone = document.getElementById("ortu-fields-standalone");
+        const fieldsAlih = document.getElementById("ortu-fields-alih-status");
+        const noticeValidation = document.getElementById("ortu-validation-notice");
+        const noticeAlih = document.getElementById("ortu-status-notice");
+        const titleEl = document.getElementById("ortu-header-title");
+        const subtitleEl = document.getElementById("ortu-header-subtitle");
+
+        if (isStandalone) {
+          if (fieldsStandalone) fieldsStandalone.classList.remove("hidden");
+          if (fieldsAlih) fieldsAlih.classList.add("hidden");
+          if (noticeValidation) noticeValidation.classList.remove("hidden");
+          if (noticeAlih) noticeAlih.classList.add("hidden");
+          if (titleEl) titleEl.innerText = "Form Parameter Tunjangan Orang Tua";
+          if (subtitleEl) subtitleEl.innerText = "Verifikasi kelayakan hak Tunjangan Orang Tua (25% × GPT) bagi Orang Tua yang berhak.";
+
+          // Auto-detect kondisi kematian
+          const jk = claimState?.jenisKejadian || val;
+          const kondisiVal = getKondisiKematian(jk);
+          const badgeKondisi = document.getElementById("ortu-kondisi-kematian-val");
+          if (badgeKondisi) badgeKondisi.innerText = kondisiVal;
+
+          // Check data keluarga (istri/suami & anak)
+          const hasSpouse = currentParticipant?.istri_suami && currentParticipant.istri_suami.length > 0;
+          const hasChildren = currentParticipant?.anak && currentParticipant.anak.length > 0;
+          const isEligible = !hasSpouse && !hasChildren;
+
+          const suksesEl = document.getElementById("ortu-validasi-sukses");
+          const gagalEl = document.getElementById("ortu-validasi-gagal");
+          if (suksesEl && gagalEl) {
+            if (isEligible) {
+              suksesEl.classList.remove("hidden");
+              gagalEl.classList.add("hidden");
+            } else {
+              suksesEl.classList.add("hidden");
+              gagalEl.classList.remove("hidden");
+            }
+          }
+        } else {
+          if (fieldsStandalone) fieldsStandalone.classList.add("hidden");
+          if (fieldsAlih) fieldsAlih.classList.remove("hidden");
+          if (noticeValidation) noticeValidation.classList.add("hidden");
+          if (noticeAlih) noticeAlih.classList.remove("hidden");
+          if (titleEl) titleEl.innerText = "Form Parameter Tunjangan Orang Tua — Meninggal Dunia";
+          if (subtitleEl) subtitleEl.innerText = "Lengkapi data kematian Orang Tua dan sistem akan memverifikasi sisa Orang Tua yang masih berhak.";
+
+          const selStatus = document.getElementById("ortu-status-pasangan-select");
+          if (selStatus) {
+            onOrtuStatusChange(selStatus.value);
+          }
         }
       } else {
         container.classList.add("hidden");
@@ -4614,25 +4946,69 @@
       autoRenderProducts();
     }
 
-    function onPenyebabYatimChange(penyebab) {
-      const kuliahFields = document.getElementById("yatim-kuliah-fields");
-      const meninggalFields = document.getElementById("yatim-meninggal-fields");
-      const isKuliah = (penyebab === "Perpanjangan (Masih Kuliah)");
-      const isMeninggal = (penyebab === "Anak Meninggal Dunia");
+    // Map label Tanggal Kejadian sesuai Penyebab Perubahan
+    function getLabelTanggalKejadian(penyebab) {
+      const labelMap = {
+        'Perpanjangan (Masih Kuliah)': 'Tanggal Kejadian',
+        'Anak Dewasa (Berhenti)':      'Tanggal Kejadian',
+        'Anak Meninggal Dunia':        'Tanggal Meninggal Dunia Anak',
+        'Anak Menikah':                'Tanggal Pernikahan Anak',
+        'Anak Disabilitas':            'Tanggal Kejadian',
+      };
+      return labelMap[penyebab] || 'Tanggal Kejadian';
+    }
 
-      if (kuliahFields) {
-        if (isKuliah) {
-          kuliahFields.classList.remove("hidden");
+    function onPenyebabYatimChange(penyebab) {
+      const kuliahFields     = document.getElementById("yatim-kuliah-fields");
+      const disabilitasFields = document.getElementById("yatim-disabilitas-fields");
+      const disabilitasCheck  = document.getElementById("yatim-disabilitas-check"); // backward-compat
+
+      const isKuliah      = (penyebab === "Perpanjangan (Masih Kuliah)");
+      const isMeninggal   = (penyebab === "Anak Meninggal Dunia");
+      const isMenikah     = (penyebab === "Anak Menikah");
+      const isDisabilitas = (penyebab === "Anak Disabilitas");
+
+      // — Show/hide kuliah fields & disabilitas panel —
+      if (kuliahFields)      kuliahFields.classList.toggle("hidden",     !isKuliah);
+      if (disabilitasFields) disabilitasFields.classList.toggle("hidden", !isDisabilitas);
+      if (disabilitasCheck)  disabilitasCheck.checked = isDisabilitas;
+
+      // — Update label Tanggal Kejadian di Rincian Kejadian (atas) —
+      const labelEl = document.getElementById("label-tanggal-kejadian");
+      if (labelEl) {
+        const newLabel = getLabelTanggalKejadian(penyebab);
+        labelEl.innerHTML = `${newLabel} <span class="text-rose-500">*</span>`;
+      }
+
+      // — Update note kontekstual di bawah field Tanggal Kejadian (atas) —
+      const tglNoteEl = document.getElementById("yatim-tgl-note");
+      if (tglNoteEl) {
+        if (isMeninggal) {
+          tglNoteEl.textContent = '* Wajib melampirkan Fotokopi Akta Kematian dari Dukcapil pada Tab 3 (Persyaratan).';
+          tglNoteEl.className = 'text-[10px] font-semibold italic text-rose-600';
+          tglNoteEl.classList.remove('hidden');
+        } else if (isMenikah) {
+          tglNoteEl.textContent = '* Wajib melampirkan Fotokopi Surat Nikah Anak pada Tab 3 (Persyaratan).';
+          tglNoteEl.className = 'text-[10px] font-semibold italic text-pink-600';
+          tglNoteEl.classList.remove('hidden');
         } else {
-          kuliahFields.classList.add("hidden");
+          tglNoteEl.classList.add('hidden');
         }
       }
 
-      if (meninggalFields) {
+      // — Update note dokumen di Form Parameter (bawah) —
+      const docNoteEl = document.getElementById("yatim-doc-note");
+      if (docNoteEl) {
         if (isMeninggal) {
-          meninggalFields.classList.remove("hidden");
+          docNoteEl.innerHTML = '<i class="fas fa-triangle-exclamation text-rose-500 mt-0.5"></i><span class="text-rose-700">Wajib lampirkan <b>Fotokopi Akta Kematian Anak</b> pada Tab 3. Tanggal Meninggal Dunia Anak diisi di field <b>Tanggal Kejadian</b> bagian atas.</span>';
+          docNoteEl.className = 'text-[11px] font-semibold flex items-start gap-2 p-3 rounded-xl border bg-rose-50 border-rose-200 text-rose-700';
+          docNoteEl.classList.remove('hidden');
+        } else if (isMenikah) {
+          docNoteEl.innerHTML = '<i class="fas fa-rings-wedding text-pink-500 mt-0.5"></i><span class="text-pink-700">Wajib lampirkan <b>Fotokopi Surat Nikah Anak</b> pada Tab 3. Tanggal Pernikahan Anak diisi di field <b>Tanggal Kejadian</b> bagian atas.</span>';
+          docNoteEl.className = 'text-[11px] font-semibold flex items-start gap-2 p-3 rounded-xl border bg-pink-50 border-pink-200 text-pink-700';
+          docNoteEl.classList.remove('hidden');
         } else {
-          meninggalFields.classList.add("hidden");
+          docNoteEl.classList.add('hidden');
         }
       }
 
@@ -4727,16 +5103,38 @@
       }
     }
 
+    function validasiIstriSuamiTaspen(tanggalNikah, tanggalPensiunTaspen) {
+      // Istri/Suami HARUS dinikahi PADA SAAT peserta AKTIF 
+      // (bukan setelah pensiun) — jika tidak sesuai, tampilkan 
+      // notifikasi penolakan otomatis, klaim tidak dapat diproses
+      if (!tanggalNikah || !tanggalPensiunTaspen) {
+        return { valid: false, message: 'Tanggal pernikahan dan tanggal pensiun Taspen wajib diisi untuk validasi hak klaim.' };
+      }
+      const tNikah = new Date(tanggalNikah);
+      const tPensiun = new Date(tanggalPensiunTaspen);
+      if (tNikah > tPensiun) {
+        return {
+          valid: false,
+          message: 'Penolakan Otomatis: Istri/suami dinikahi setelah tanggal pensiun peserta (' + tanggalNikah + ' > ' + tanggalPensiunTaspen + '). Sesuai ketentuan, klaim BPI/S Taspen hanya dapat diproses apabila pernikahan dilakukan pada saat peserta dinas AKTIF.'
+        };
+      }
+      return { valid: true };
+    }
+    window.validasiIstriSuamiTaspen = validasiIstriSuamiTaspen;
+
     function toggleSpouseDeathTMTField(val) {
       const container = document.getElementById("istri-suami-wafat-container");
+      const taspenContainer = document.getElementById("taspen-istri-suami-container");
       if (!container) return;
       const isSpouseDeath = (
         val === 'Peserta Aktif - Istri/suami meninggal dunia' ||
         val === 'Istri/suami meninggal Dunia Setelah Pensiun' ||
         val === 'Istri/Suami Meninggal Dunia' || 
         val === 'Pensiun Sendiri — Istri/Suami Meninggal Dunia' || 
+        val === 'Meninggal Istri/Suami Taspen' ||
         mapJenisKejadian(val) === 'Peserta Aktif - Istri/suami meninggal dunia' ||
-        mapJenisKejadian(val) === 'Istri/suami meninggal Dunia Setelah Pensiun'
+        mapJenisKejadian(val) === 'Istri/suami meninggal Dunia Setelah Pensiun' ||
+        mapJenisKejadian(val) === 'Meninggal Istri/Suami Taspen'
       );
       if (isSpouseDeath) {
         container.classList.remove("hidden");
@@ -4746,6 +5144,23 @@
         container.classList.add("hidden");
         const inputTmt = document.getElementById("istri-suami-wafat-tgl");
         if (inputTmt) inputTmt.required = false;
+      }
+
+      const isTaspenSpouse = (val === 'Meninggal Istri/Suami Taspen' || mapJenisKejadian(val) === 'Meninggal Istri/Suami Taspen');
+      if (taspenContainer) {
+        if (isTaspenSpouse) {
+          taspenContainer.classList.remove("hidden");
+          const inputNikah = document.getElementById("taspen-tgl-nikah");
+          const inputPensiun = document.getElementById("taspen-tgl-pensiun");
+          if (inputNikah && !inputNikah.value) {
+            inputNikah.value = currentParticipant?.istri_suami?.[0]?.tanggal_nikah || "2008-04-12";
+          }
+          if (inputPensiun && !inputPensiun.value) {
+            inputPensiun.value = currentParticipant?.tmt_pensiun || "2020-05-01";
+          }
+        } else {
+          taspenContainer.classList.add("hidden");
+        }
       }
     }
 
@@ -4766,7 +5181,46 @@
       // Deprecated
     }
 
+    function validasiStatusKawinPeserta(jenisKejadian) {
+      const banner = document.getElementById("md-tanpa-hak-warning-banner");
+      if (!banner) return;
+      const rawJk = jenisKejadian || document.getElementById("kejadian-jenis")?.value || claimState?.jenisKejadian || "";
+      const jk = mapJenisKejadian(rawJk);
+      if (jk !== 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun') {
+        banner.classList.add("hidden");
+        return;
+      }
+      const p = claimState?.peserta || currentParticipant || {};
+      const statusKawin = String(p.statusKawin || p.status_kawin || p.statusPernikahan || '').toLowerCase();
+      const hasSpouse = Array.isArray(p.istri_suami) && p.istri_suami.length > 0;
+      const hasChild = Array.isArray(p.anak) && p.anak.length > 0;
+      const isSudahMenikah = (statusKawin.includes('kawin') || statusKawin.includes('menikah')) && !statusKawin.includes('belum');
+      
+      if (isSudahMenikah || hasSpouse || hasChild) {
+        banner.classList.remove("hidden");
+      } else {
+        banner.classList.add("hidden");
+      }
+    }
+
+    function alihkanKeMeninggalBiasa() {
+      const select = document.getElementById("kejadian-jenis");
+      if (select) {
+        select.value = "Meninggal Dunia Aktif Biasa";
+      }
+      if (claimState) {
+        claimState.jenisKejadian = "Meninggal Dunia Aktif Biasa";
+        localStorage.setItem("registrasiKlaim", JSON.stringify(claimState));
+      }
+      validasiStatusKawinPeserta("Meninggal Dunia Aktif Biasa");
+      toggleAhliWarisDropdown("Meninggal Dunia Aktif Biasa");
+      toggleAhliWarisMeninggal("Meninggal Dunia Aktif Biasa");
+      autoRenderProducts();
+      showToast("Pengalihan Kejadian", "Kejadian dialihkan ke 'Meninggal Dunia Aktif Biasa'.", "info");
+    }
+
     function toggleAhliWarisMeninggal(val) {
+      validasiStatusKawinPeserta(val);
       const container = document.getElementById("ahli-waris-penerima-container");
       const select = document.getElementById("ahli-waris-penerima");
       if (!container || !select) return;
@@ -4778,19 +5232,32 @@
       ));
       if (isMeninggalDinas && !val.includes('Istri/suami') && !val.includes('Istri/Suami') && !val.includes('Anak meninggal') && !val.includes('Anak Meninggal')) {
         const currentVal = claimState?.ahliWarisMeninggal?.jenis || select.value;
-        if (val.includes('Tewas') || val.includes('Gugur')) {
+        if (val === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun') {
+          select.innerHTML = `
+            <option value="">-- Pilih Ahli Waris --</option>
+            <option value="Orang Tua">Orang Tua</option>
+            <option value="Ahli Waris Lain">Ahli Waris Lain</option>
+          `;
+          if (currentVal === 'Orang Tua' || currentVal === 'Ahli Waris Lain') {
+            select.value = currentVal;
+          } else {
+            select.value = "Orang Tua";
+          }
+        } else if (val.includes('Tewas') || val.includes('Gugur')) {
           select.innerHTML = `
             <option value="">-- Pilih Ahli Waris --</option>
             <option value="Istri/Suami">Istri/Suami</option>
             <option value="Anak">Anak</option>
             <option value="Orang Tua">Orang Tua</option>
           `;
+          select.value = currentVal || "";
         } else if (val.includes('Warakawuri') || val.includes('Wari/Janda/Duda')) {
           select.innerHTML = `
             <option value="">-- Pilih Ahli Waris --</option>
             <option value="Anak">Anak</option>
             <option value="Ahli Waris Lainnya">Ahli Waris Lainnya</option>
           `;
+          select.value = currentVal || "";
         } else {
           select.innerHTML = `
             <option value="">-- Pilih Ahli Waris --</option>
@@ -4798,8 +5265,8 @@
             <option value="Anak">Anak</option>
             <option value="Ahli Waris Lainnya">Ahli Waris Lainnya</option>
           `;
+          select.value = currentVal || "";
         }
-        select.value = currentVal || "";
         
         container.classList.remove("hidden");
         container.classList.add("flex");
@@ -4823,7 +5290,7 @@
         if (select.value) err.classList.add("hidden");
       }
 
-      if (select && (select.value === "Ahli Waris Lainnya" || select.value === "Orang Tua")) {
+      if (select && (select.value === "Ahli Waris Lainnya" || select.value === "Ahli Waris Lain" || select.value === "Orang Tua")) {
         detailContainer.classList.remove("hidden");
       } else if (detailContainer) {
         detailContainer.classList.add("hidden");
@@ -4916,9 +5383,11 @@
       if (!container) return;
       const kejadianAhliWaris = [
         'Meninggal Dunia Aktif Biasa',
+        'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun',
         'Meninggal Dunia Aktif Tewas',
         'Meninggal Dunia Aktif Gugur',
         'Meninggal Dunia Setelah Pensiun',
+        'Pensiun Wari/Janda/Duda',
         'Pensiun Wari/Janda/Duda - Meninggal Dunia',
         // Legacy aliases:
         'Meninggal Dunia dalam Dinas Aktif (JKm)',
@@ -4956,7 +5425,13 @@
 
       // Map hubungan → category
       let jenisAW = 'Lainnya';
-      if (hubungan === 'Istri' || hubungan === 'Suami' || hubungan === 'Istri/Suami') {
+      if (val === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun') {
+        if (hubungan === 'Orang Tua' || hubungan === 'Ayah' || hubungan === 'Ibu') {
+          jenisAW = 'Orang Tua';
+        } else {
+          jenisAW = 'Ahli Waris Lain';
+        }
+      } else if (hubungan === 'Istri' || hubungan === 'Suami' || hubungan === 'Istri/Suami') {
         jenisAW = 'Istri/Suami';
       } else if (hubungan === 'Anak') {
         jenisAW = 'Anak';
@@ -5009,12 +5484,12 @@
 
     function loadRegistrationData() {
       const urlParams = new URLSearchParams(window.location.search);
-      const noAgendaParam = urlParams.get('noAgenda');
+      const noAgendaParam = urlParams.get('noAgenda') || urlParams.get('noReg') || urlParams.get('noreg') || urlParams.get('noRegistrasi');
 
       const DUMMY_REGISTRASI = {
         noAgenda: noAgendaParam || "REG/000091/0123/VIII/2026",
         jenisKejadian: "Pensiun",
-        sumberPengajuan: "Offline (Kantor Cabang)",
+        sumberPengajuan: "Kantor Cabang",
         peserta: {
           nama: "Ahmad Fauzi",
           nip: "3273120105910003",
@@ -5051,11 +5526,10 @@
         const rawData = localStorage.getItem("registrasiKlaim") || localStorage.getItem("detailRegistrasi") || localStorage.getItem("detailKlaim");
         if (rawData) {
           const parsed = JSON.parse(rawData);
-          if (parsed) {
-            if (!noAgendaParam || parsed.noAgenda === noAgendaParam) {
+          if (parsed && typeof parsed === 'object') {
+            if (!noAgendaParam || parsed.noAgenda === noAgendaParam || parsed.noRegistrasi === noAgendaParam || parsed.noReg === noAgendaParam) {
               data = parsed;
             } else {
-              // If noAgenda in URL is different from stored registrasiKlaim, update noAgenda in state
               data = { ...parsed, noAgenda: noAgendaParam };
             }
           }
@@ -5064,53 +5538,66 @@
         console.error("Failed to parse localStorage:", e);
       }
 
-      if (!data && noAgendaParam) {
-        const claimsList = getClaims();
-        const c = claimsList.find(x => x.noRegistrasi === noAgendaParam || x.noAgenda === noAgendaParam);
-        if (c) {
-          const pes = c.peserta || c.participant || {};
-          data = {
-            noAgenda: c.noRegistrasi || c.noAgenda,
-            noRegistrasi: c.noRegistrasi || c.noAgenda,
-            status: c.status,
-            catatanRevisi: c.catatanRevisi || c.catatan,
-            jenisKejadian: c.jenisKejadian || c.jenisKlaim,
-            sumberPengajuan: c.sumber || c.sumberPengajuan || 'Kantor Cabang',
-            peserta: {
-              nama: pes.nama || c.namaPeserta || '-',
-              nip: pes.nrp_nip || pes.nrp || pes.nik || c.nrp || c.nik || '-',
-              nrp_nip: pes.nrp_nip || pes.nrp || pes.nik || c.nrp || c.nik || '-',
-              ktpa: pes.no_ktpa || pes.noPeserta || '-',
-              noPeserta: pes.noPeserta || pes.no_ktpa || '-',
-              no_ktpa: pes.no_ktpa || pes.noPeserta || '-',
-              angkatan: pes.angkatan || '-',
-              pangkat: pes.pangkat || '-',
-              nik: pes.nik || c.nik || '-',
-              gajiPokok: pes.gaji_pokok || pes.gajiPokok || 3200000,
-              gaji_pokok: pes.gaji_pokok || pes.gajiPokok || 3200000,
-              status: pes.statusKepesertaan || pes.status_kepesertaan || pes.status || 'Aktif',
-              statusKepesertaan: pes.statusKepesertaan || pes.status_kepesertaan || pes.status || 'Aktif',
-              tanggal_lahir: pes.tanggal_lahir || "1980-05-15",
-              tmt_dinas: pes.tmt_dinas || "2005-03-01",
-              istri_suami: pes.istri_suami || [{ nama: "Siti Fatimah", tanggal_lahir: "1983-02-10", nik: "3273120105910901" }],
-              anak: pes.anak || [
-                { nama: "Budi Fauzi", tanggal_lahir: "2010-06-20", nik: "3273120105910902" },
-                { nama: "Ayu Fauzi", tanggal_lahir: "2014-11-12", nik: "3273120105910903" }
-              ]
-            },
-            pengaju: {
-              nama: pes.nama || c.namaPeserta || '-',
-              hubungan: 'Peserta Sendiri',
-              nik: pes.nik || c.nik || '-',
-              telp: '-'
-            },
-            regulasi: c.regulasi || ((c.tanggalRegistrasi || '').includes('2026') ? 'PP 54/2020' : 'PP 102/2015')
-          };
+      if ((!data || !data.peserta || !data.peserta.nama || data.peserta.nama === '-') && noAgendaParam) {
+        try {
+          const claimsList = typeof getClaims === 'function' ? getClaims() : [];
+          const c = claimsList.find(x => x.noRegistrasi === noAgendaParam || x.noAgenda === noAgendaParam || x.noReg === noAgendaParam);
+          if (c) {
+            const pes = c.peserta || c.participant || {};
+            data = {
+              noAgenda: c.noRegistrasi || c.noAgenda || noAgendaParam,
+              noRegistrasi: c.noRegistrasi || c.noAgenda || noAgendaParam,
+              status: c.status || 'Registrasi',
+              catatanRevisi: c.catatanRevisi || c.catatan || '',
+              jenisKejadian: c.jenisKejadian || c.jenisKlaim || 'Pensiun',
+              sumberPengajuan: c.sumber || c.sumberPengajuan || 'Kantor Cabang',
+              peserta: {
+                nama: pes.nama || c.namaPeserta || DUMMY_REGISTRASI.peserta.nama,
+                nip: pes.nrp_nip || pes.nrp || pes.nip || pes.nik || c.nrp || c.nik || DUMMY_REGISTRASI.peserta.nip,
+                nrp_nip: pes.nrp_nip || pes.nrp || pes.nip || pes.nik || c.nrp || c.nik || DUMMY_REGISTRASI.peserta.nrp_nip,
+                ktpa: pes.no_ktpa || pes.noPeserta || pes.ktpa || DUMMY_REGISTRASI.peserta.ktpa,
+                noPeserta: pes.noPeserta || pes.no_ktpa || pes.ktpa || DUMMY_REGISTRASI.peserta.noPeserta,
+                no_ktpa: pes.no_ktpa || pes.noPeserta || pes.ktpa || DUMMY_REGISTRASI.peserta.no_ktpa,
+                angkatan: pes.angkatan || DUMMY_REGISTRASI.peserta.angkatan,
+                pangkat: pes.pangkat || DUMMY_REGISTRASI.peserta.pangkat,
+                nik: pes.nik || c.nik || DUMMY_REGISTRASI.peserta.nik,
+                gajiPokok: pes.gaji_pokok || pes.gajiPokok || 3200000,
+                gaji_pokok: pes.gaji_pokok || pes.gajiPokok || 3200000,
+                status: pes.statusKepesertaan || pes.status_kepesertaan || pes.status || 'Aktif',
+                statusKepesertaan: pes.statusKepesertaan || pes.status_kepesertaan || pes.status || 'Aktif',
+                tanggal_lahir: pes.tanggal_lahir || "1980-05-15",
+                tmt_dinas: pes.tmt_dinas || "2005-03-01",
+                istri_suami: pes.istri_suami || DUMMY_REGISTRASI.peserta.istri_suami,
+                anak: pes.anak || DUMMY_REGISTRASI.peserta.anak
+              },
+              pengaju: c.pengaju || c.tipePengunjung || {
+                nama: pes.nama || c.namaPeserta || DUMMY_REGISTRASI.peserta.nama,
+                hubungan: 'Peserta Sendiri',
+                nik: pes.nik || c.nik || DUMMY_REGISTRASI.peserta.nik,
+                telp: '-'
+              },
+              regulasi: c.regulasi || 'PP 54/2020'
+            };
+          }
+        } catch(err) {
+          console.error("Error fetching claim from getClaims:", err);
         }
       }
 
       if (!data) {
         data = DUMMY_REGISTRASI;
+      }
+      if (!data.peserta) {
+        data.peserta = DUMMY_REGISTRASI.peserta;
+      }
+      if (!data.peserta.nama || data.peserta.nama === '-') {
+        data.peserta.nama = DUMMY_REGISTRASI.peserta.nama;
+      }
+      if (!data.noAgenda || data.noAgenda === '-') {
+        data.noAgenda = DUMMY_REGISTRASI.noAgenda;
+      }
+      if (!data.jenisKejadian || data.jenisKejadian === '-') {
+        data.jenisKejadian = DUMMY_REGISTRASI.jenisKejadian;
       }
 
       try {
@@ -5119,50 +5606,54 @@
           window.claimState = data;
           currentParticipant = data.peserta;
             
-            // Populate sticky summary bar
-            document.getElementById('top-noreg').innerText = data.noAgenda || '-';
-            document.getElementById('top-peserta').innerText = `${currentParticipant?.nama || '-'} / ${currentParticipant?.nrp_nip || currentParticipant?.nik || '-'}`;
-            document.getElementById('top-kejadian').innerText = data.jenisKejadian || '-';
-            
-            // Initialize SLA Timer
-            if (!data.slaStartTime) {
-              // SLA mulai dihitung dari SEKARANG — saat user membuka halaman kejadian ini.
-              // Tidak menggunakan offset elapsedMinutes dari data registrasi,
-              // agar SLA benar-benar mencerminkan waktu proses di halaman ini secara real.
-              data.slaStartTime = Date.now();
-              localStorage.setItem('registrasiKlaim', JSON.stringify(data));
-            }
+          // Populate sticky summary bar
+          const topNoRegEl = document.getElementById('top-noreg');
+          if (topNoRegEl) topNoRegEl.innerText = data.noAgenda || '-';
+          
+          const topPesertaEl = document.getElementById('top-peserta');
+          if (topPesertaEl) topPesertaEl.innerText = `${currentParticipant?.nama || '-'} / ${currentParticipant?.nrp_nip || currentParticipant?.nik || '-'}`;
+          
+          const topKejadianEl = document.getElementById('top-kejadian');
+          if (topKejadianEl) topKejadianEl.innerText = data.jenisKejadian || '-';
+          
+          // Initialize SLA Timer
+          if (!data.slaStartTime) {
+            data.slaStartTime = Date.now();
+            localStorage.setItem('registrasiKlaim', JSON.stringify(data));
+          }
 
-            const isCompleted = ["Selesai", "SP Terbit"].includes(data.status);
-            const topSla = document.getElementById('top-sla');
-            const slaBullet = topSla.previousElementSibling;
+          const isCompleted = ["Selesai", "SP Terbit"].includes(data.status);
+          const topSla = document.getElementById('top-sla');
+          const slaBullet = topSla ? topSla.previousElementSibling : null;
 
-            if (window.slaTimerInterval) {
-              clearInterval(window.slaTimerInterval);
-            }
+          if (window.slaTimerInterval) {
+            if (typeof window.clearInterval === 'function') window.clearInterval(window.slaTimerInterval);
+            else if (typeof clearInterval === 'function') clearInterval(window.slaTimerInterval);
+          }
 
-            function updateTimer() {
-              let elapsedSeconds;
-              if (isCompleted) {
-                if (!data.slaStopSeconds) {
-                  const totalElapsedMinutes = (data.sla && data.sla.waktu) ? parseInt(data.sla.waktu) : 10;
-                  data.slaStopSeconds = totalElapsedMinutes * 60;
-                  localStorage.setItem('registrasiKlaim', JSON.stringify(data));
-                }
-                elapsedSeconds = data.slaStopSeconds;
-              } else {
-                const elapsedMs = Date.now() - data.slaStartTime;
-                elapsedSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+          function updateTimer() {
+            let elapsedSeconds;
+            if (isCompleted) {
+              if (!data.slaStopSeconds) {
+                const totalElapsedMinutes = (data.sla && data.sla.waktu) ? parseInt(data.sla.waktu) : 10;
+                data.slaStopSeconds = totalElapsedMinutes * 60;
+                localStorage.setItem('registrasiKlaim', JSON.stringify(data));
               }
+              elapsedSeconds = data.slaStopSeconds;
+            } else {
+              const elapsedMs = Date.now() - (data.slaStartTime || Date.now());
+              elapsedSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+            }
 
-              const hours = Math.floor(elapsedSeconds / 3600);
-              const minutes = Math.floor((elapsedSeconds % 3600) / 60);
-              const seconds = elapsedSeconds % 60;
+            const hours = Math.floor(elapsedSeconds / 3600);
+            const minutes = Math.floor((elapsedSeconds % 3600) / 60);
+            const seconds = elapsedSeconds % 60;
 
-              const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-              topSla.innerText = timeString;
+            const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            if (topSla) topSla.innerText = timeString;
 
-              const totalMinutes = elapsedSeconds / 60;
+            const totalMinutes = elapsedSeconds / 60;
+            if (slaBullet && topSla) {
               if (totalMinutes >= 60) {
                 slaBullet.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse";
                 topSla.className = "text-rose-600 font-bold";
@@ -5174,16 +5665,27 @@
                 topSla.className = "text-emerald-500 font-bold";
               }
             }
+          }
 
+          try {
             updateTimer();
             if (!isCompleted) {
-              window.slaTimerInterval = setInterval(updateTimer, 1000);
+              if (typeof window.setInterval === 'function') {
+                window.slaTimerInterval = window.setInterval(updateTimer, 1000);
+              } else if (typeof setInterval === 'function') {
+                window.slaTimerInterval = setInterval(updateTimer, 1000);
+              }
             }
+          } catch(timerErr) {
+            console.warn("Timer init error:", timerErr);
+          }
 
-            // Status berkas badge
-            const statusContainer = document.getElementById('top-status-container');
+          const isRevisi = urlParams.get('mode') === 'revisi' || (data && (data.status === 'Revisi' || (data.status || '').toLowerCase().includes('revisi')));
+
+          // Status berkas badge
+          const statusContainer = document.getElementById('top-status-container');
+          if (statusContainer) {
             const isManualPending = data.status === "Pending" || currentParticipant?.isManual;
-            const isRevisi = urlParams.get('mode') === 'revisi' || (data && (data.status === 'Revisi' || (data.status || '').toLowerCase().includes('revisi')));
 
             if (isRevisi) {
               statusContainer.innerHTML = `
@@ -5204,57 +5706,64 @@
                 </span>
               `;
             }
+          }
 
-            // Check Revisi Alert Banner
-            const revisiBanner = document.getElementById("revisi-alert-banner");
-            const revisiCatatanEl = document.getElementById("revisi-alert-catatan");
-            if (isRevisi) {
-              if (revisiBanner) revisiBanner.classList.remove("hidden");
-              const catatan = data.catatanRevisi || "Harap periksa dan perbaiki data / berkas klaim sesuai instruksi verifikator.";
-              if (revisiCatatanEl) revisiCatatanEl.innerText = catatan;
-              // Unlock tabs up to Tab 4 for editing
-              unlockTabUpTo(3);
-            } else if (revisiBanner) {
-              revisiBanner.classList.add("hidden");
+          // Check Revisi Alert Banner
+          const revisiBanner = document.getElementById("revisi-alert-banner");
+          const revisiCatatanEl = document.getElementById("revisi-alert-catatan");
+          if (isRevisi) {
+            if (revisiBanner) revisiBanner.classList.remove("hidden");
+            const catatan = data.catatanRevisi || "Harap periksa dan perbaiki data / berkas klaim sesuai instruksi verifikator.";
+            if (revisiCatatanEl) revisiCatatanEl.innerText = catatan;
+            if (typeof unlockTabUpTo === 'function') unlockTabUpTo(3);
+          } else if (revisiBanner) {
+            revisiBanner.classList.add("hidden");
+          }
+
+          // Populate Panel Kiri (fixed): Detail Peserta
+          if (document.getElementById('side-nama')) document.getElementById('side-nama').innerText = currentParticipant?.nama || '-';
+          if (document.getElementById('side-nip')) document.getElementById('side-nip').innerText = currentParticipant?.nrp_nip || currentParticipant?.nik || '-';
+          if (document.getElementById('side-ktpa')) document.getElementById('side-ktpa').innerText = currentParticipant?.no_ktpa || currentParticipant?.noPeserta || '-';
+          if (document.getElementById('side-angkatan')) document.getElementById('side-angkatan').innerText = currentParticipant?.angkatan || currentParticipant?.unitKerja || '-';
+          if (document.getElementById('side-tgl-lahir')) document.getElementById('side-tgl-lahir').innerText = currentParticipant?.tanggal_lahir || '-';
+          if (document.getElementById('side-pangkat')) document.getElementById('side-pangkat').innerText = currentParticipant?.pangkat || '-';
+
+          // Populate Panel Kiri: Detail Pengaju
+          const pengaju = data.tipePengunjung || data.pengaju || {};
+          if (document.getElementById('side-pengaju-nama')) document.getElementById('side-pengaju-nama').innerText = pengaju.nama || currentParticipant?.nama || '-';
+          if (document.getElementById('side-pengaju-hub')) document.getElementById('side-pengaju-hub').innerText = pengaju.hubungan || (pengaju.jenis === "Peserta" ? "Peserta Sendiri" : '-');
+          if (document.getElementById('side-pengaju-nik')) document.getElementById('side-pengaju-nik').innerText = pengaju.nik || (pengaju.jenis === "Peserta" ? (currentParticipant?.nik || '-') : '-');
+          if (document.getElementById('side-pengaju-telp')) document.getElementById('side-pengaju-telp').innerText = pengaju.telp || '-';
+
+          // Populate Tab 1: Data Peserta Content Cards Immediately
+          populateTab1Data(data);
+
+          // Restore sequential tab state from localStorage
+          if (typeof updateTabNavUI === 'function') {
+            if (typeof window.setTimeout === 'function') {
+              window.setTimeout(() => updateTabNavUI(null), 50);
+            } else if (typeof setTimeout === 'function') {
+              setTimeout(() => updateTabNavUI(null), 50);
+            } else {
+              updateTabNavUI(null);
             }
+          }
 
-            // Populate Panel Kiri (fixed): Detail Peserta
-            document.getElementById('side-nama').innerText = currentParticipant?.nama || '-';
-            document.getElementById('side-nip').innerText = currentParticipant?.nrp_nip || currentParticipant?.nik || '-';
-            document.getElementById('side-ktpa').innerText = currentParticipant?.no_ktpa || currentParticipant?.noPeserta || '-';
-            document.getElementById('side-angkatan').innerText = currentParticipant?.angkatan || currentParticipant?.unitKerja || '-';
-            document.getElementById('side-tgl-lahir').innerText = currentParticipant?.tanggal_lahir || '-';
-            document.getElementById('side-pangkat').innerText = currentParticipant?.pangkat || '-';
-
-            // Populate Panel Kiri: Detail Pengaju
-            const pengaju = data.tipePengunjung || data.pengaju || {};
-            document.getElementById('side-pengaju-nama').innerText = pengaju.nama || currentParticipant?.nama || '-';
-            document.getElementById('side-pengaju-hub').innerText = pengaju.hubungan || (pengaju.jenis === "Peserta" ? "Peserta Sendiri" : '-');
-            document.getElementById('side-pengaju-nik').innerText = pengaju.nik || (pengaju.jenis === "Peserta" ? (currentParticipant?.nik || '-') : '-');
-            document.getElementById('side-pengaju-telp').innerText = pengaju.telp || '-';
-
-            // Populate Tab 1: Data Peserta Content Cards Immediately
-            populateTab1Data(data);
-
-            // Restore sequential tab state from localStorage
-            // updateTabNavUI dipanggil segera agar visual lock/unlock langsung berlaku
-            setTimeout(() => updateTabNavUI(null), 50);
-
-            // Populate Tab 2: Form Data Kejadian
-            // 1. Populate Jenis Kejadian select options
-            const selectJenis = document.getElementById("kejadian-jenis");
-            if (selectJenis) {
-              selectJenis.innerHTML = '<option value="" disabled selected>-- Silahkan Pilih Kejadian --</option>';
-              JENIS_KEJADIAN.forEach(item => {
-                const opt = document.createElement("option");
-                opt.value = item;
-                opt.innerText = item;
-                if (item === mapJenisKejadian(data.jenisKejadian)) {
-                  opt.selected = true;
-                }
-                selectJenis.appendChild(opt);
-              });
-            }
+          // Populate Tab 2: Form Data Kejadian
+          // 1. Populate Jenis Kejadian select options
+          const selectJenis = document.getElementById("kejadian-jenis");
+          if (selectJenis) {
+            selectJenis.innerHTML = '<option value="" disabled selected>-- Silahkan Pilih Kejadian --</option>';
+            JENIS_KEJADIAN.forEach(item => {
+              const opt = document.createElement("option");
+              opt.value = item;
+              opt.innerText = item;
+              if (item === mapJenisKejadian(data.jenisKejadian)) {
+                opt.selected = true;
+              }
+              selectJenis.appendChild(opt);
+            });
+          }
 
             const selectAW = document.getElementById("ahli-waris-jenis");
             if (selectAW && data.ahliWaris) {
@@ -5377,8 +5886,8 @@
             }
 
             // Show main workflow hide warning
-            document.getElementById('no-data-warning').classList.add('hidden');
-            document.getElementById('main-content-flow').classList.remove('hidden');
+            document.getElementById('no-data-warning')?.classList.add('hidden');
+            document.getElementById('main-content-flow')?.classList.remove('hidden');
             return;
           }
       } catch (e) {
@@ -5386,13 +5895,14 @@
       }
 
       // Fallback if no data is found
-      document.getElementById('no-data-warning').classList.add('hidden');
-      document.getElementById('main-content-flow').classList.remove('hidden');
+      document.getElementById('no-data-warning')?.classList.add('hidden');
+      document.getElementById('main-content-flow')?.classList.remove('hidden');
     }
 
     function mapJenisKejadian(rawJenis) {
       if (!rawJenis) return "";
       const cleaned = rawJenis.trim();
+      if (cleaned === "Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun" || (cleaned.includes("Tanpa Hak Pensiun") && cleaned.includes("Meninggal"))) return "Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun";
       if (cleaned === "Pensiun" || cleaned === "Pensiun Pertama" || cleaned === "Pensiun Utama") return "Pensiun";
       if (cleaned === "Berhenti dengan Hak Tunjangan") return "Berhenti dengan Hak Tunjangan";
       if (cleaned.startsWith("Berhenti tanpa Hak Pensiun") || cleaned.startsWith("Berhenti Tanpa Hak Pensiun")) return "Berhenti Tanpa Hak Pensiun";
@@ -5408,6 +5918,7 @@
       if (cleaned.startsWith("Pensiun Sendiri - Meninggal Dunia") || cleaned.startsWith("Pensiun Sendiri — Meninggal Dunia") || cleaned === "Meninggal Dunia Setelah Pensiun") return "Meninggal Dunia Setelah Pensiun";
       if (cleaned.startsWith("Pensiun Sendiri - Istri/Suami") || cleaned.startsWith("Pensiun Sendiri — Istri/Suami") || cleaned === "Istri/suami meninggal Dunia Setelah Pensiun") return "Istri/suami meninggal Dunia Setelah Pensiun";
       if (cleaned.startsWith("Pensiun Sendiri - Anak") || cleaned.startsWith("Pensiun Sendiri — Anak") || cleaned === "Anak meninggal Dunia Setelah Pensiun") return "Anak meninggal Dunia Setelah Pensiun";
+      if (cleaned === "Pensiun Wari/Janda/Duda" || cleaned === "Pensiun Warakawuri" || cleaned === "Klaim Pensiun Warakawuri") return "Pensiun Wari/Janda/Duda";
       if (cleaned.startsWith("Pensiun Warakawuri - Meninggal") || cleaned.startsWith("Pensiun Warakawuri — Meninggal") || cleaned === "Pensiun Wari/Janda/Duda - Meninggal Dunia") return "Pensiun Wari/Janda/Duda - Meninggal Dunia";
       if (cleaned.startsWith("Tunjangan Yatim/Piatu") || cleaned.includes("Yatim-Piatu") || cleaned.includes("YatimPiatu") || cleaned === "Tunjangan Yatim Piatu") return "Tunjangan Yatim Piatu";
       if (cleaned.startsWith("Tunjangan Orang Tua")) return "Tunjangan Orang Tua";
@@ -5415,6 +5926,8 @@
       if (cleaned === "Beasiswa JKM" || cleaned === "Beasiswa JKm") return "Beasiswa JKM";
       if (cleaned === "Beasiswa JKK/JKM") return "Beasiswa JKK";
       if (cleaned.startsWith("UKP") || cleaned.includes("Kekurangan Pensiun")) return "Uang Kekurangan Pensiun (UKP)";
+      if (cleaned === "Meninggal Peserta TASPEN" || cleaned === "Meninggal Peserta Taspen" || cleaned.toLowerCase().includes("meninggal peserta taspen")) return "Meninggal Peserta TASPEN";
+      if (cleaned === "Meninggal Istri/Suami Taspen" || cleaned === "Meninggal Istri/Suami TASPEN" || cleaned.toLowerCase().includes("meninggal istri/suami taspen")) return "Meninggal Istri/Suami Taspen";
       return cleaned;
     }
 
@@ -5577,7 +6090,7 @@
         errJenis.classList.add("hidden");
       }
       
-      const isMeninggalDunia = jenisEl.value.startsWith('Meninggal Dunia Aktif') || jenisEl.value.startsWith('Meninggal Dunia dalam Dinas Aktif') || jenisEl.value.startsWith('Tewas') || jenisEl.value.startsWith('Gugur');
+      const isMeninggalDunia = jenisEl.value.startsWith('Meninggal Dunia Aktif') || jenisEl.value.startsWith('Meninggal Dunia dalam Dinas Aktif') || jenisEl.value.startsWith('Tewas') || jenisEl.value.startsWith('Gugur') || jenisEl.value.startsWith('Meninggal Dunia Setelah Pensiun') || jenisEl.value === 'Meninggal Peserta TASPEN';
       if (isMeninggalDunia) {
         const ahliWarisPenerima = document.getElementById("ahli-waris-penerima");
         const errAhliWaris = document.getElementById("error-ahli-waris-penerima");
@@ -5681,7 +6194,7 @@
         }
       }
 
-      if (jenisEl.value === 'Peserta Aktif - Istri/suami meninggal dunia' || jenisEl.value === 'Istri/suami meninggal Dunia Setelah Pensiun' || jenisEl.value === 'Istri/Suami Meninggal Dunia' || jenisEl.value === 'Pensiun Sendiri — Istri/Suami Meninggal Dunia') {
+      if (jenisEl.value === 'Peserta Aktif - Istri/suami meninggal dunia' || jenisEl.value === 'Istri/suami meninggal Dunia Setelah Pensiun' || jenisEl.value === 'Istri/Suami Meninggal Dunia' || jenisEl.value === 'Pensiun Sendiri — Istri/Suami Meninggal Dunia' || jenisEl.value === 'Meninggal Istri/Suami Taspen') {
         const inputTmtSpouse = document.getElementById("istri-suami-wafat-tgl");
         const errTmtSpouse = document.getElementById("error-istri-suami-wafat-tgl");
         if (!inputTmtSpouse.value) {
@@ -5691,6 +6204,39 @@
         } else {
           inputTmtSpouse.classList.remove("border-rose-500", "focus:ring-rose-500/30");
           errTmtSpouse.classList.add("hidden");
+        }
+
+        if (jenisEl.value === 'Meninggal Istri/Suami Taspen') {
+          const tNikah = document.getElementById("taspen-tgl-nikah")?.value;
+          const tPensiun = document.getElementById("taspen-tgl-pensiun")?.value;
+          const errNikah = document.getElementById("error-taspen-tgl-nikah");
+          const errPensiun = document.getElementById("error-taspen-tgl-pensiun");
+
+          if (!tNikah) {
+            document.getElementById("taspen-tgl-nikah")?.classList.add("border-rose-500");
+            if (errNikah) errNikah.classList.remove("hidden");
+            isValid = false;
+          } else {
+            document.getElementById("taspen-tgl-nikah")?.classList.remove("border-rose-500");
+            if (errNikah) errNikah.classList.add("hidden");
+          }
+
+          if (!tPensiun) {
+            document.getElementById("taspen-tgl-pensiun")?.classList.add("border-rose-500");
+            if (errPensiun) errPensiun.classList.remove("hidden");
+            isValid = false;
+          } else {
+            document.getElementById("taspen-tgl-pensiun")?.classList.remove("border-rose-500");
+            if (errPensiun) errPensiun.classList.add("hidden");
+          }
+
+          if (tNikah && tPensiun) {
+            const valRes = validasiIstriSuamiTaspen(tNikah, tPensiun);
+            if (!valRes.valid) {
+              showToast("Penolakan Otomatis Sistem", valRes.message, "danger");
+              return;
+            }
+          }
         }
       }
 
@@ -5714,12 +6260,18 @@
           const data = JSON.parse(rawData);
           data.jenisKejadian = jenisEl.value;
           data.ahliWaris = isAWVisible && awEl ? awEl.value : "";
+          const isTaspenEvent = (jenisEl.value === 'Meninggal Peserta TASPEN' || jenisEl.value === 'Meninggal Istri/Suami Taspen');
+          data.isTaspen = isTaspenEvent;
+          if (isTaspenEvent) {
+            data.kategoriPengajuan = 'Pengajuan Peserta Taspen';
+            data.tag = 'Pengajuan Peserta Taspen';
+          }
           if (jenisEl.value === 'Pensiun' || jenisEl.value === 'Pensiun Pertama') {
             data.tmtPensiun = document.getElementById("pensiun-tmt").value;
           } else {
             delete data.tmtPensiun;
           }
-          if (jenisEl.value === 'Peserta Aktif - Istri/suami meninggal dunia' || jenisEl.value === 'Istri/suami meninggal Dunia Setelah Pensiun' || jenisEl.value === 'Istri/Suami Meninggal Dunia' || jenisEl.value === 'Pensiun Sendiri — Istri/Suami Meninggal Dunia') {
+          if (jenisEl.value === 'Peserta Aktif - Istri/suami meninggal dunia' || jenisEl.value === 'Istri/suami meninggal Dunia Setelah Pensiun' || jenisEl.value === 'Istri/Suami Meninggal Dunia' || jenisEl.value === 'Pensiun Sendiri — Istri/Suami Meninggal Dunia' || jenisEl.value === 'Meninggal Istri/Suami Taspen') {
             data.tmtMeninggalIstriSuami = document.getElementById("istri-suami-wafat-tgl").value;
           } else {
             delete data.tmtMeninggalIstriSuami;
@@ -5734,7 +6286,9 @@
             mitraBayar: document.getElementById("bayar-mitra").value,
             cabangMitra: document.getElementById("bayar-cabang").value,
             tmtPensiun: (jenisEl.value === 'Pensiun' || jenisEl.value === 'Pensiun Pertama') ? document.getElementById("pensiun-tmt").value : (currentParticipant?.tmt_pensiun || ""),
-            tmtMeninggalIstriSuami: (jenisEl.value === 'Peserta Aktif - Istri/suami meninggal dunia' || jenisEl.value === 'Istri/suami meninggal Dunia Setelah Pensiun' || jenisEl.value === 'Istri/Suami Meninggal Dunia' || jenisEl.value === 'Pensiun Sendiri — Istri/Suami Meninggal Dunia') ? document.getElementById("istri-suami-wafat-tgl").value : "",
+            tmtMeninggalIstriSuami: (jenisEl.value === 'Peserta Aktif - Istri/suami meninggal dunia' || jenisEl.value === 'Istri/suami meninggal Dunia Setelah Pensiun' || jenisEl.value === 'Istri/Suami Meninggal Dunia' || jenisEl.value === 'Pensiun Sendiri — Istri/Suami Meninggal Dunia' || jenisEl.value === 'Meninggal Istri/Suami Taspen') ? document.getElementById("istri-suami-wafat-tgl").value : "",
+            tanggalNikah: jenisEl.value === 'Meninggal Istri/Suami Taspen' ? document.getElementById("taspen-tgl-nikah")?.value : "",
+            tanggalPensiunTaspen: jenisEl.value === 'Meninggal Istri/Suami Taspen' ? document.getElementById("taspen-tgl-pensiun")?.value : "",
             tanggalSkep: currentParticipant?.tanggal_skep || "",
             nomorSkep: currentParticipant?.nomor_skep || "",
             pangkatAkhir: currentParticipant?.pangkat || "",
@@ -6245,6 +6799,13 @@
         { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
         { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
       ],
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun': [
+        { nama: 'Fotokopi Akta Kematian dari Dukcapil', mandatory: true },
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (membuktikan hubungan Orang Tua-Anak)', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false },
+      ],
       'Meninggal Dunia dalam Dinas Aktif': [
         { nama: 'Formulir Pengajuan', mandatory: false },
         { nama: 'Asli Riwayat Hidup Singkat (RHS)', mandatory: false },
@@ -6436,6 +6997,40 @@
         { nama: 'Surat Keterangan Kuliah (khusus Anak usia 21-25 tahun)', mandatory: false },
       ],
 
+      'Meninggal Peserta TASPEN': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Asli Surat Keterangan Ahli Waris (jika diajukan Istri/Suami) / Surat Keterangan Kuasa Ahli Waris (jika diajukan Anak, apabila Istri dan Suami sudah meninggal) disahkan Lurah/Kepala Desa', mandatory: false },
+        { nama: 'Fotokopi Keputusan Pensiun', mandatory: false },
+        { nama: 'Fotokopi Bukti Penerimaan Uang Duka Wafat dari Taspen', mandatory: false },
+        { nama: 'Fotokopi Akta Kematian dari Dukcapil', mandatory: true },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga Pengaju', mandatory: false },
+        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar ASABRI)', mandatory: false },
+      ],
+      'Meninggal Istri/Suami Taspen': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Asli Surat Keterangan Ahli Waris (jika diajukan Istri/Suami) / Surat Keterangan Kuasa Ahli Waris (jika diajukan Anak)', mandatory: false },
+        { nama: 'Fotokopi Keputusan Pensiun', mandatory: false },
+        { nama: 'Fotokopi Bukti Penerimaan Uang Duka Wafat dari Taspen (khusus pengajuan Pensiun Wari/Janda/Duda Meninggal Dunia)', mandatory: false },
+        { nama: 'Fotokopi Akta Kematian dari Dukcapil', mandatory: true },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga Pengaju', mandatory: false },
+        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: true },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar ASABRI)', mandatory: false },
+      ],
+      'Istri/Suami Meninggal Dunia Peserta Taspen': [
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Asli Surat Keterangan Ahli Waris (jika diajukan Istri/Suami) / Surat Keterangan Kuasa Ahli Waris (jika diajukan Anak)', mandatory: false },
+        { nama: 'Fotokopi Keputusan Pensiun', mandatory: false },
+        { nama: 'Fotokopi Bukti Penerimaan Uang Duka Wafat dari Taspen (khusus pengajuan Pensiun Wari/Janda/Duda Meninggal Dunia)', mandatory: false },
+        { nama: 'Fotokopi Akta Kematian dari Dukcapil', mandatory: true },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga Pengaju', mandatory: false },
+        { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU', mandatory: true },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar ASABRI)', mandatory: false },
+      ],
+
       'Istri/suami meninggal Dunia Setelah Pensiun': [
         { nama: 'Formulir Pengajuan' },
         { nama: 'Formulir SP3R' },
@@ -6478,6 +7073,14 @@
         { nama: 'Fotokopi Kartu Keluarga (KK) Pengaju' },
         { nama: 'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU (kecuali untuk pengajuan BPA)' },
         { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)' },
+      ],
+
+      'Pensiun Wari/Janda/Duda': [
+        { nama: 'Fotokopi Akta Kematian dari Dukcapil', mandatory: true },
+        { nama: 'Formulir Pengajuan', mandatory: false },
+        { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+        { nama: 'Fotokopi Kartu Keluarga (KK)', mandatory: false },
+        { nama: 'Fotokopi Buku Rekening Tabungan Pengaju (Mitra Bayar Asabri)', mandatory: false },
       ],
 
       'Pensiun Wari/Janda/Duda - Meninggal Dunia': [
@@ -6524,10 +7127,9 @@
 
       'Tunjangan Orang Tua': [
         { nama: 'Formulir Pengajuan', mandatory: false },
-        { nama: 'Asli Surat Keterangan Ahli Waris disahkan Lurah/Kepala Desa', mandatory: false },
         { nama: 'Fotokopi Akta Kematian dari Dukcapil', mandatory: true },
+        { nama: 'Fotokopi Kartu Keluarga yang membuktikan hubungan Orang Tua-Anak', mandatory: true },
         { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
-        { nama: 'Fotokopi Kartu Keluarga', mandatory: false },
         { nama: 'Fotokopi Buku Rekening Tabungan Pengaju', mandatory: false },
       ],
       'Tunjangan Orang Tua — Meninggal Dunia': [
@@ -6600,6 +7202,10 @@
         'Fotokopi Legalisir Keputusan Pemberhentian Dengan Hormat karena Meninggal Dunia dari PDW atau Fotokopi Legalisir (Usulan) Pemberhentian dengan Hormat dari Dan/Kasatker ke PDW'
       ],
 
+      'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun': [
+        'Fotokopi Akta Kematian dari Dukcapil'
+      ],
+
       'Meninggal Dunia Aktif Tewas': [
         'Fotokopi Legalisir Keputusan Tewas dari Dan/Kasatker',
         'Fotokopi Legalisir Keputusan Gugur/Tewas dari Dan/Kasatker'
@@ -6622,11 +7228,24 @@
         'Fotokopi Akta Kematian dari Dukcapil'
       ],
 
+      'Meninggal Peserta TASPEN': [
+        'Fotokopi Akta Kematian dari Dukcapil'
+      ],
+
+      'Meninggal Istri/Suami Taspen': [
+        'Fotokopi Akta Kematian dari Dukcapil',
+        'Fotokopi Surat Nikah atau KPI/KPS/KARIS/KARSU'
+      ],
+
       'Istri/suami meninggal Dunia Setelah Pensiun': [
         'Fotokopi Akta Kematian dari Dukcapil'
       ],
 
       'Anak meninggal Dunia Setelah Pensiun': [
+        'Fotokopi Akta Kematian dari Dukcapil'
+      ],
+
+      'Pensiun Wari/Janda/Duda': [
         'Fotokopi Akta Kematian dari Dukcapil'
       ],
 
@@ -6643,8 +7262,8 @@
 
       'Tunjangan Orang Tua': [
         'Fotokopi Akta Kematian dari Dukcapil',
-        'Asli Salinan Keputusan Pensiun',
-        'Asli & Salinan Keputusan Pensiun'
+        'Fotokopi Kartu Keluarga yang membuktikan hubungan Orang Tua-Anak',
+        'Fotokopi Kartu Keluarga'
       ],
 
       'Meninggal Dunia dalam Dinas Aktif': [
@@ -6734,7 +7353,10 @@
       'Tunjangan Yatim/Piatu/Yatim-Piatu — Meninggal': 'Tunjangan Yatim Piatu',
       'Tunjangan Yatim/Piatu — Meninggal Dunia': 'Tunjangan Yatim Piatu',
       'Tunjangan Orang Tua — Meninggal Dunia': 'Tunjangan Orang Tua',
-      'Tunjangan Orang Tua — Meninggal': 'Tunjangan Orang Tua'
+      'Tunjangan Orang Tua — Meninggal': 'Tunjangan Orang Tua',
+      'Meninggal Peserta Taspen': 'Meninggal Peserta TASPEN',
+      'Meninggal Istri/Suami TASPEN': 'Meninggal Istri/Suami Taspen',
+      'Istri/Suami Meninggal Dunia Peserta Taspen': 'Meninggal Istri/Suami Taspen'
     };
 
     function getMandatoryDocs(jenisKejadian) {
@@ -6768,36 +7390,66 @@
         list = PERSYARATAN_CONFIG[mappedKey];
       }
       
-      if (jenisKejadian === 'Tunjangan Yatim/Piatu/Yatim-Piatu') {
+      // ── Tunjangan Yatim/Piatu: dokumen dinamis per Penyebab Perubahan ──
+      const YATIM_KEYS = [
+        'Tunjangan Yatim/Piatu/Yatim-Piatu',
+        'Tunjangan Yatim Piatu',
+        'Tunjangan Yatim/Piatu',
+        'Tunjangan Yatim/Piatu/YatimPiatu',
+      ];
+      if (YATIM_KEYS.includes(jenisKejadian)) {
         const penyebab = document.getElementById("yatim-penyebab-select")?.value || "Perpanjangan (Masih Kuliah)";
-        const isDisabilitas = document.getElementById("yatim-disabilitas-check")?.checked || false;
-        
-        if (penyebab === 'Anak Meninggal Dunia') {
-          // Mandatory: Fotokopi Akta Kematian dari Dukcapil
-          return list.filter(item => item.nama !== 'Surat Keterangan Dokter (khusus Anak Disabilitas)').map(item => {
-            if (item.nama === 'Fotokopi Akta Kematian dari Dukcapil') return { ...item, mandatory: true };
-            return { ...item, mandatory: false };
-          });
+
+        // Dokumen non-mandatory yang selalu muncul di semua penyebab
+        const BASE_DOCS = [
+          { nama: 'Formulir Pengajuan', mandatory: false },
+          { nama: 'Fotokopi e-KTP Pengaju', mandatory: false },
+          { nama: 'Fotokopi Kartu Keluarga', mandatory: false },
+          { nama: 'Asli Surat Keterangan Belum Menikah dan Belum Bekerja disahkan Lurah/Kepala Desa', mandatory: false },
+          { nama: 'Pas Foto Ukuran 4x6 sebanyak 2 lembar', mandatory: false },
+        ];
+
+        if (penyebab === 'Perpanjangan (Masih Kuliah)') {
+          // Mandatory: No. & Upload Surat Keterangan Kuliah
+          return [
+            ...BASE_DOCS,
+            { nama: 'Asli Surat Keterangan Kuliah (anak >21 s/d 25 tahun)', mandatory: true },
+            { nama: 'Fotokopi Keterangan Pengampu/Perwalian dari Pengadilan (apabila masih di bawah umur)', mandatory: false },
+          ];
         }
 
         if (penyebab === 'Anak Dewasa (Berhenti)') {
-          // No mandatory docs for Anak Dewasa
-          return list.map(item => ({ ...item, mandatory: false })).filter(item => item.nama !== 'Surat Keterangan Dokter (khusus Anak Disabilitas)');
+          // Tidak ada dokumen mandatory khusus — sistem otomatis berdasarkan usia
+          return BASE_DOCS;
         }
-        
-        if (isDisabilitas) {
-          // Disabilitas: Dokter mandatory, Kuliah non-mandatory/hidden
-          return list.filter(item => item.nama !== 'Asli Surat Keterangan Kuliah (anak >21 s/d 25 tahun)').map(item => {
-            if (item.nama === 'Surat Keterangan Dokter (khusus Anak Disabilitas)') return { ...item, mandatory: true };
-            return { ...item, mandatory: false };
-          });
-        } else {
-          // Normal Perpanjangan: Kuliah mandatory, Dokter hidden
-          return list.filter(item => item.nama !== 'Surat Keterangan Dokter (khusus Anak Disabilitas)').map(item => {
-            if (item.nama === 'Asli Surat Keterangan Kuliah (anak >21 s/d 25 tahun)') return { ...item, mandatory: true };
-            return { ...item, mandatory: false };
-          });
+
+        if (penyebab === 'Anak Meninggal Dunia') {
+          // Mandatory: Fotokopi Akta Kematian Anak
+          return [
+            ...BASE_DOCS,
+            { nama: 'Fotokopi Akta Kematian Anak dari Dukcapil', mandatory: true },
+          ];
         }
+
+        if (penyebab === 'Anak Menikah') {
+          // Mandatory: Fotokopi Surat Nikah Anak
+          return [
+            ...BASE_DOCS,
+            { nama: 'Fotokopi Surat Nikah Anak', mandatory: true },
+          ];
+        }
+
+        if (penyebab === 'Anak Disabilitas') {
+          // Mandatory: Surat Keterangan Dokter
+          return [
+            ...BASE_DOCS,
+            { nama: 'Surat Keterangan Dokter (khusus Anak Disabilitas)', mandatory: true },
+            { nama: 'Fotokopi Keterangan Pengampu/Perwalian dari Pengadilan (apabila masih di bawah umur)', mandatory: false },
+          ];
+        }
+
+        // Fallback: return base docs
+        return BASE_DOCS;
       }
 
       return list;
@@ -7213,6 +7865,17 @@
       document.getElementById("t1-visitor-type").innerText = pengaju.jenis || "Peserta";
       document.getElementById("t1-visitor-name").innerText = pengaju.nama || p.nama || "-";
       document.getElementById("t1-visitor-relation").innerText = pengaju.hubungan || (pengaju.jenis === "Peserta" ? "Peserta Sendiri" : "-");
+
+      // Taspen Banner Indicator
+      const isTaspen = data.isTaspen || (data.jenisKejadian && data.jenisKejadian.includes('Taspen')) || (data.jenisKejadian && data.jenisKejadian.includes('TASPEN'));
+      const taspenBanner = document.getElementById("t1-taspen-banner");
+      if (taspenBanner) {
+        if (isTaspen) {
+          taspenBanner.classList.remove("hidden");
+        } else {
+          taspenBanner.classList.add("hidden");
+        }
+      }
     }
 
     // =============================================
@@ -7402,122 +8065,6 @@
 
       showToast("Perubahan Disimpan", `Data Informasi Tipe Pengunjung berhasil diperbarui menjadi ${newType} (${newName}).`, "success");
     }
-
-    let activeProducts = [];
-
-    const KEJADIAN_PRODUK_MAP = {
-      'Pensiun': ['TA', 'PP'],
-      'Pensiun Pertama': ['TA', 'PP'],
-      'Berhenti dengan Hak Tunjangan': ['NTTA', 'Tunjangan Terbatas'],
-      'Berhenti Tanpa Hak Pensiun': ['NTTA', 'NTIP'],
-      'Berhenti tanpa Hak Pensiun (PTDH)': ['NTTA', 'NTIP'],
-      'Peserta Aktif - Istri/suami meninggal dunia': ['BPI/S'],
-      'Istri/Suami Meninggal Dunia': ['BPI/S'],
-      'Peserta Aktif - Anak meninggal Dunia': ['BPA'],
-      'Anak Meninggal Dunia': ['BPA'],
-      'Meninggal Dunia Aktif Biasa': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
-      'Meninggal Dunia dalam Dinas Aktif (JKm)': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
-      'Meninggal Dunia dalam Dinas Aktif': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm'],
-      'Kecelakaan Kerja — Dirawat': ['Perawatan JKK', 'Biaya Pengangkutan'],
-      'Meninggal Dunia Aktif Tewas': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
-      'Kecelakaan Kerja - Meninggal Dunia - Tewas': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
-      'Meninggal Dunia Aktif Gugur': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
-      'Kecelakaan Kerja - Meninggal Dunia - Gugur': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
-      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK'],
-      'Cacat Dinas Biasa': ['Santunan Cacat'],
-      'Cacat Dinas Khusus': ['Santunan Cacat'],
-      'Kecelakaan Kerja — Cacat': ['Santunan Cacat'],
-      'Kecelakaan Kerja - Cacat': ['Santunan Cacat'],
-      'Meninggal Dunia Setelah Pensiun': ['BPPP', 'UDW'],
-      'Pensiun Sendiri — Meninggal Dunia': ['BPPP', 'UDW'],
-      'Pensiun Sendiri - Meninggal Dunia': ['BPPP', 'UDW'],
-      'Istri/suami meninggal Dunia Setelah Pensiun': ['BPI/S'],
-      'Pensiun Sendiri — Istri/Suami Meninggal Dunia': ['BPI/S'],
-      'Pensiun Sendiri - Istri/Suami Meninggal Dunia': ['BPI/S'],
-      'Anak meninggal Dunia Setelah Pensiun': ['BPA'],
-      'Pensiun Sendiri — Anak Meninggal Dunia': ['BPA'],
-      'Pensiun Sendiri - Anak Meninggal Dunia': ['BPA'],
-      'Pensiun Wari/Janda/Duda - Meninggal Dunia': ['BPI/S', 'UDW'],
-      'Pensiun Warakawuri — Meninggal Dunia': ['BPI/S', 'UDW'],
-      'Pensiun Warakawuri - Meninggal Dunia': ['BPI/S', 'UDW'],
-      'Tunjangan Yatim Piatu': ['Tunjangan Yatim/Piatu'],
-      'Tunjangan Yatim/Piatu/Yatim-Piatu': ['Tunjangan Yatim/Piatu'],
-      'Tunjangan Orang Tua': ['Tunjangan Orang Tua'],
-      'Tunjangan Orang Tua — Meninggal Dunia': ['Tunjangan Orang Tua'],
-      'Tunjangan Orang Tua — Meninggal': ['Tunjangan Orang Tua'],
-      'Beasiswa JKK': ['Beasiswa JKK'],
-      'Beasiswa JKM': ['Beasiswa JKM'],
-      'Beasiswa JKm': ['Beasiswa JKM'],
-      'Beasiswa JKK/JKM': ['Beasiswa JKK'],
-      'Uang Kekurangan Pensiun (UKP)': ['UKP'],
-      'UKP Tanpa Perubahan Data': ['UKP Tanpa Perubahan Data'],
-      'UKP Dengan Perubahan Data': ['UKP Dengan Perubahan Data'],
-      'UKP Pembayaran Tunjangan Cacat': ['UKP Pembayaran Tunjangan Cacat'],
-      'UKP Kelebihan Potongan Hutang': ['UKP Kelebihan Potongan Hutang'],
-    };
-
-    const KEJADIAN_AHLIWARIS_PRODUK_MAP = {
-      // Meninggal Dinas Aktif
-      'Meninggal Dunia Aktif Biasa_Istri/Suami': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm', 'Pensiun Warakawuri'],
-      'Meninggal Dunia Aktif Biasa_Anak': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm', 'Tunjangan Yatim/Piatu'],
-      'Meninggal Dunia Aktif Biasa_Ahli Waris Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
-      'Meninggal Dunia Aktif Biasa_Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
-
-      'Meninggal Dunia dalam Dinas Aktif (JKm)_Istri/Suami': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm', 'Pensiun Warakawuri'],
-      'Meninggal Dunia dalam Dinas Aktif (JKm)_Anak': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm', 'Tunjangan Yatim/Piatu'],
-      'Meninggal Dunia dalam Dinas Aktif (JKm)_Ahli Waris Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
-
-      'Meninggal Dunia dalam Dinas Aktif_Istri/Suami': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm', 'Pensiun Warakawuri'],
-      'Meninggal Dunia dalam Dinas Aktif_Anak': ['NTTA', 'SKS', 'UDW', 'Beasiswa JKm', 'Tunjangan Yatim/Piatu'],
-      'Meninggal Dunia dalam Dinas Aktif_Ahli Waris Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
-      'Meninggal Dunia dalam Dinas Aktif_Lainnya': ['NTTA', 'SKS', 'UDW', 'NTIP'],
-
-      // KK Meninggal - Tewas
-      'Meninggal Dunia Aktif Tewas_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
-      'Meninggal Dunia Aktif Tewas_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
-      'Meninggal Dunia Aktif Tewas_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
-
-      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
-      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
-      'Kecelakaan Kerja - Meninggal Dunia - Tewas_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
-
-      // KK Meninggal - Gugur
-      'Meninggal Dunia Aktif Gugur_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
-      'Meninggal Dunia Aktif Gugur_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
-      'Meninggal Dunia Aktif Gugur_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
-
-      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
-      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
-      'Kecelakaan Kerja - Meninggal Dunia - Gugur_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
-
-      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
-      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
-      'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
-
-      'Kecelakaan Kerja - Gugur/Tewas_Istri/Suami': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Pensiun Warakawuri'],
-      'Kecelakaan Kerja - Gugur/Tewas_Anak': ['NTTA', 'SRKK', 'Biaya Angkut', 'Beasiswa JKK', 'Tunjangan Yatim/Piatu'],
-      'Kecelakaan Kerja - Gugur/Tewas_Orang Tua': ['NTTA', 'SRKK', 'Biaya Angkut', 'Tunjangan Orang Tua'],
-
-      // Pensiun Sendiri Meninggal / Meninggal Dunia Setelah Pensiun
-      'Meninggal Dunia Setelah Pensiun_Istri/Suami': ['BPPP', 'UDW', 'Pensiun Warakawuri'],
-      'Meninggal Dunia Setelah Pensiun_Anak': ['BPPP', 'UDW', 'Tunjangan Yatim/Piatu'],
-      'Meninggal Dunia Setelah Pensiun_Ahli Waris Lainnya': ['BPPP', 'UDW'],
-      'Meninggal Dunia Setelah Pensiun_Lainnya': ['BPPP', 'UDW'],
-
-      'Pensiun Sendiri — Meninggal Dunia_Istri/Suami': ['BPPP', 'UDW', 'Pensiun Warakawuri'],
-      'Pensiun Sendiri — Meninggal Dunia_Anak': ['BPPP', 'UDW', 'Tunjangan Yatim/Piatu'],
-      'Pensiun Sendiri — Meninggal Dunia_Lainnya': ['BPPP', 'UDW'],
-      'Pensiun Sendiri — Meninggal Dunia_Ahli Waris Lainnya': ['BPPP', 'UDW'],
-
-      // Pensiun Warakawuri Meninggal / Pensiun Wari/Janda/Duda - Meninggal Dunia
-      'Pensiun Wari/Janda/Duda - Meninggal Dunia_Anak': ['BPI/S', 'UDW', 'Tunjangan Yatim/Piatu'],
-      'Pensiun Wari/Janda/Duda - Meninggal Dunia_Ahli Waris Lainnya': ['BPI/S', 'UDW'],
-      'Pensiun Wari/Janda/Duda - Meninggal Dunia_Lainnya': ['BPI/S', 'UDW'],
-
-      'Pensiun Warakawuri — Meninggal Dunia_Anak': ['BPI/S', 'UDW', 'Tunjangan Yatim/Piatu'],
-      'Pensiun Warakawuri — Meninggal Dunia_Lainnya': ['BPI/S', 'UDW'],
-      'Pensiun Warakawuri — Meninggal Dunia_Ahli Waris Lainnya': ['BPI/S', 'UDW'],
-    };
 
     let lastRenderedJenisKejadian = null;
 
@@ -7858,10 +8405,49 @@
 
         let childCountHtml = "";
         if (produk === "Tunjangan Yatim/Piatu") {
+          // Auto-calculate sisa anak berhak dari Tab 2
+          const _penyebabTab2 = document.getElementById("yatim-penyebab-select")?.value || "Perpanjangan (Masih Kuliah)";
+          const _anakBerubah  = document.getElementById("yatim-anak-select")?.value || "";
+          // Data keluarga anak (simulated — sama dengan yg ada di dropdown Tab 2)
+          const _allAnak = [
+            { nama: "Ayu Fauzi" },
+            { nama: "Budi Fauzi" },
+          ];
+          const _jumlahSebelum = _allAnak.length;
+          const _jumlahSesudah = _allAnak.filter(a => {
+            if (a.nama !== _anakBerubah) return true; // anak lain tidak terpengaruh
+            // Anak yang mengalami perubahan:
+            if (_penyebabTab2 === 'Perpanjangan (Masih Kuliah)') return true;
+            if (_penyebabTab2 === 'Anak Disabilitas') return true; // FIX — TETAP BERHAK
+            return false; // Dewasa / Meninggal / Menikah → tidak berhak
+          }).length;
+
+          // Kondisi kematian (read-only — sudah fix dari riwayat peserta)
+          const _kondisiLabel = (() => {
+            const jk = claimState?.jenisKejadian || "";
+            if (jk.includes('Tewas') || jk.includes('Gugur')) return 'Gugur/Tewas';
+            return 'Meninggal Biasa';
+          })();
+
           childCountHtml = `
+            <!-- Kondisi Kematian: READ-ONLY untuk kasus Alih Status -->
+            <div class="sm:col-span-3">
+              <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs">
+                <i class="fas fa-info-circle text-slate-400"></i>
+                <span class="text-slate-500 font-semibold">Kondisi Kematian:</span>
+                <span class="font-bold text-slate-700">${_kondisiLabel}</span>
+                <span class="text-[10px] text-slate-400 italic ml-1">(auto-read dari riwayat kejadian)</span>
+              </div>
+            </div>
+            <!-- Jumlah Anak: READ-ONLY auto-calculate dari Tab 2 -->
             <div>
-              <label class="block font-bold text-slate-500 mb-1">Jumlah Anak Berhak <span class="text-rose-500">*</span></label>
-              <input type="number" id="${cardId}-jml-anak" min="1" value="1" onchange="calculateProduct('${cardId}', '${produk}')" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold outline-none focus:border-asabri-blue text-slate-700">
+              <label class="block font-bold text-slate-500 mb-1">Jumlah Anak SEBELUM Perubahan</label>
+              <input type="number" id="${cardId}-jml-anak-sebelum" readonly value="${_jumlahSebelum}" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 font-semibold font-mono text-slate-500 outline-none cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-500 mb-1">Jumlah Anak SESUDAH Perubahan <span class="text-emerald-600">(auto)</span></label>
+              <input type="number" id="${cardId}-jml-anak" readonly value="${_jumlahSesudah}" class="w-full bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 font-semibold font-mono text-emerald-700 outline-none cursor-not-allowed">
+              <span class="text-[10px] text-slate-400 italic block mt-0.5">Dihitung otomatis dari pilihan Tab 2</span>
             </div>
           `;
         }
@@ -8420,7 +9006,7 @@
               <div id="${cardId}-child-card-${i}" class="card-anak-beasiswa p-3.5 bg-white border border-slate-200 rounded-xl space-y-2.5 shadow-xs transition-all hover:border-asabri-blue/40">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-2">
                   <label for="${cardId}-child-chk-${i}" class="flex items-center gap-3 cursor-pointer select-none flex-1">
-                    <input type="checkbox" id="${cardId}-child-chk-${i}" data-child-name="${child.nama}" style="accent-color: #002D62; width: 18px; height: 18px; cursor: pointer;" class="rounded cursor-pointer transition-transform duration-150 active:scale-95 flex-shrink-0 mr-1.5" ${isValid ? '' : 'disabled'} onchange="onBeasiswaChildCheckboxChange('${cardId}', '${produk}')">
+                    <input type="checkbox" id="${cardId}-child-chk-${i}" data-child-name="${child.nama}" style="accent-color: #002D62; width: 18px; height: 18px; cursor: pointer;" class="rounded cursor-pointer transition-transform duration-150 active:scale-95 flex-shrink-0 mr-1.5" ${isValid ? '' : 'disabled'} ${(i === 1 && isValid) ? 'checked' : ''} onchange="onBeasiswaChildCheckboxChange('${cardId}', '${produk}')">
                     <span class="font-bold text-slate-800 text-xs sm:text-sm flex items-center gap-1.5">
                       <i class="fas fa-user-graduate text-asabri-blue"></i> Proses Beasiswa untuk <span class="text-asabri-blue font-black underline decoration-dotted">${child.nama}</span> <span class="text-slate-500 font-normal">(${usiaLabel})</span>
                     </span>
@@ -8529,7 +9115,7 @@
               <div class="sm:col-span-2">
                 <label class="block font-bold text-slate-500 mb-1">Mekanisme Pembayaran <span class="text-rose-500">*</span></label>
                 <select id="${cardId}-mekanisme" onchange="onBeasiswaMekanismeChange('${cardId}', this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700">
-                  <option value="Cash" selected>Cash (ASABRI - Tunai)</option>
+                  <option value="Cash" selected>ASABRI</option>
                   <option value="TPB">TPB (Taspen Life Proteksi Beasiswa)</option>
                 </select>
                 <span id="${cardId}-tpb-info" class="text-[10px] text-slate-400 italic mt-0.5 block hidden text-amber-600 font-semibold">Nominal dialihkan sebagai polis asuransi TPB.</span>
@@ -8549,7 +9135,7 @@
               </div>
               <div>
                 <label class="block font-bold text-slate-500 mb-1">Jumlah Anak Diproses</label>
-                <input type="number" id="${cardId}-jml-anak" min="0" max="${maxAnak}" value="${isPP54 ? 0 : 1}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700" readonly>
+                <input type="number" id="${cardId}-jml-anak" min="0" max="${maxAnak}" value="${(countValid > 0 && isPP54) ? 1 : (isPP54 ? 0 : 1)}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:border-asabri-blue text-slate-700" readonly>
               </div>
               <div class="sm:col-span-2">
                 <label class="block font-bold text-slate-500 mb-1">Maks Anak (${regBeasiswa})</label>
@@ -8762,6 +9348,9 @@
           `;
         } else if (produk === "UKP Kelebihan Potongan Hutang") {
           const isConfirmedPusat = claimState?.ukpHutangConfirmed || false;
+          const optPenerimaHtml = optionsList.map(opt => `<option value="${opt.name}">${opt.label}</option>`).join("");
+          const defaultPenerimaName = optionsList[0]?.name || currentParticipant?.nama || "Ahmad Fauzi";
+
           specificHtml = `
             <div class="space-y-3 text-xs">
               <!-- Banner Hubungi Pusat YANDU NG -->
@@ -8776,7 +9365,7 @@
                   </span>
                 </div>
                 <p class="text-[11px] leading-relaxed">
-                  UKP Kelebihan Potongan Hutang memerlukan klarifikasi data dari <strong>Bidang Layanan Program 1 Kantor Pusat</strong> via YANDU NG.
+                  UKP Kelebihan Potongan Hutang memerlukan verifikasi data dari <strong>Bidang Layanan Program 1 Kantor Pusat</strong> via YANDU NG.
                 </p>
                 ${!isConfirmedPusat ? `
                 <div class="pt-1 flex items-center gap-2">
@@ -8787,23 +9376,89 @@
                 ` : ''}
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div>
-                  <label class="block font-bold text-slate-500 mb-1">Jenis Potongan Hutang</label>
-                  <input type="text" readonly value="Kelebihan Potongan Angsuran Pinjaman" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-600 outline-none text-xs">
+              <!-- Section 1: Data Potongan Hutang (Konteks Hutang) -->
+              <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+                <div class="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <i class="fas fa-file-invoice-dollar text-slate-500"></i>
+                  <span>1. Data Kelebihan Potongan Hutang</span>
                 </div>
-                <div>
-                  <label class="block font-bold text-slate-500 mb-1">Periode Kelebihan Potongan</label>
-                  <input type="text" id="${cardId}-periode-hutang" value="Nov 2025 - Jan 2026 (3 Bulan)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Jenis Potongan Hutang</label>
+                    <input type="text" readonly value="Kelebihan Potongan Angsuran Pinjaman" class="w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-600 outline-none text-xs">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Periode Kelebihan Potongan <span class="text-rose-500">*</span></label>
+                    <input type="text" id="${cardId}-periode-hutang" value="Nov 2025 - Jan 2026 (3 Bulan)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Mitra Bank / Koperasi (Hutang) <span class="text-rose-500">*</span></label>
+                    <input type="text" id="${cardId}-mitra-hutang" value="Bank Mandiri KCP Asabri" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                  </div>
                 </div>
-                <div>
-                  <label class="block font-bold text-slate-500 mb-1">Mitra Bank / Koperasi</label>
-                  <input type="text" value="Bank Mandiri KCP Asabri" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+              </div>
+
+              <!-- Section 2: Rincian Pembayaran UKP (Diisi oleh Bidang Layanan Program 1) -->
+              <div class="p-3.5 bg-blue-50/70 border border-blue-200/80 rounded-xl space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1.5">
+                    <i class="fas fa-money-check-dollar text-asabri-blue"></i>
+                    <span>2. Rincian Objek &amp; Rekening Pembayaran UKP</span>
+                  </span>
+                  <span class="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-md">Diinput Bidang Layanan Program 1</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Objek UKP <span class="text-rose-500">*</span></label>
+                    <select id="${cardId}-ukp-objek" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                      <option value="Pensiun Pokok" selected>Pensiun Pokok (Penspok)</option>
+                      <option value="Tunjangan Istri/Suami">Tunjangan Istri/Suami</option>
+                      <option value="Tunjangan Anak">Tunjangan Anak</option>
+                      <option value="Tunjangan Cacat">Tunjangan Cacat</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Penerima UKP <span class="text-rose-500">*</span></label>
+                    <select id="${cardId}-ukp-penerima-select" onchange="onUkpHutangPenerimaChange('${cardId}', this.value)" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                      ${optPenerimaHtml}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Nama Penerima <span class="text-rose-500">*</span></label>
+                    <input type="text" id="${cardId}-ukp-nama-penerima" value="${defaultPenerimaName}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Nama Rekening <span class="text-rose-500">*</span></label>
+                    <input type="text" id="${cardId}-ukp-nama-rekening" value="${defaultPenerimaName.toUpperCase()}" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Nomor Rekening <span class="text-rose-500">*</span></label>
+                    <input type="text" id="${cardId}-ukp-nomor-rekening" value="128000982310" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold font-mono text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Mitra Bayar (Pembayaran UKP) <span class="text-rose-500">*</span></label>
+                    <select id="${cardId}-ukp-mitra-bayar" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                      <option value="Bank Mandiri" selected>Bank Mandiri</option>
+                      <option value="Bank BRI">Bank BRI</option>
+                      <option value="Bank BNI">Bank BNI</option>
+                      <option value="Bank BTN">Bank BTN</option>
+                      <option value="Bank BSI">Bank BSI</option>
+                      <option value="Bank Bukopin">Bank Bukopin</option>
+                      <option value="PT Pos Indonesia">PT Pos Indonesia</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block font-bold text-slate-500 mb-1">Cabang Mitra Bayar <span class="text-rose-500">*</span></label>
+                    <input type="text" id="${cardId}-ukp-cabang-mitra" value="KCP Asabri Jakarta" class="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 font-semibold text-slate-700 outline-none focus:border-asabri-blue text-xs">
+                  </div>
                 </div>
               </div>
 
               <div class="flex items-center gap-2 pt-1">
-                <button type="button" onclick="calculateProduct('${cardId}', '${produk}')" ${!isConfirmedPusat ? 'disabled class="px-4 py-2 bg-slate-300 text-slate-500 font-bold rounded-xl text-xs cursor-not-allowed"' : 'class="px-4 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow-sm"'}>
+                <button type="button" onclick="calculateProduct('${cardId}', '${produk}')" ${!isConfirmedPusat ? 'disabled class="px-4 py-2 bg-slate-300 text-slate-500 font-bold rounded-xl text-xs cursor-not-allowed"' : 'class="px-4 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5"'}>
                   <i class="fas fa-calculator"></i> Generate Nominal UKP Potongan Hutang
                 </button>
               </div>
@@ -8918,11 +9573,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div>
                 <label class="block font-bold text-slate-500 mb-1">Nominal Biaya Pemakaman</label>
-                <input type="text" readonly value="Rp 7.500.000" class="field-nominal w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono text-slate-500 outline-none">
+                <input type="text" readonly value="Rp 5.000.000" class="field-nominal w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono text-slate-500 outline-none">
               </div>
               <div>
                 <label class="block font-bold text-slate-500 mb-1">Besar Manfaat (Read-Only)</label>
-                <input type="text" readonly id="${cardId}-besar" value="Rp 7.500.000" class="field-nominal w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono text-slate-500 outline-none">
+                <input type="text" readonly id="${cardId}-besar" value="Rp 5.000.000" class="field-nominal w-full bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold font-mono text-slate-500 outline-none">
               </div>
             </div>
           `;
@@ -9024,6 +9679,7 @@
 
       const card = document.createElement("div");
       card.id = cardId;
+      if (!card.dataset) card.dataset = {};
       card.dataset.product = produk;
       card.className = "bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 animate-fade-in relative";
       let headerHtml = "";
@@ -9149,6 +9805,10 @@
       if (category === "Beasiswa" || produk.includes("Beasiswa")) {
         const currentJenis = mapJenisKejadian(claimState?.jenisKejadian || document.getElementById("kejadian-jenis")?.value || "");
         const isStandaloneBeasiswa = (currentJenis === 'Beasiswa JKK' || currentJenis === 'Beasiswa JKM' || currentJenis === 'Beasiswa JKm' || currentJenis === 'Beasiswa JKK/JKM' || produk.includes("Beasiswa"));
+        if (!claimState) claimState = {};
+        if (!claimState.beasiswaState) claimState.beasiswaState = {};
+        claimState.beasiswaState[cardId] = true;
+        
         if (isStandaloneBeasiswa) {
           const chk = document.getElementById(`${cardId}-proses-sekarang`);
           if (chk) {
@@ -9462,49 +10122,67 @@
         }
         const gpt = gp || currentParticipant?.gaji_pokok || currentParticipant?.gajiPokok || 4500000;
         const jenisKejadian = document.getElementById("kejadian-jenis")?.value || claimState?.jenisKejadian || "";
-        const childInput = document.getElementById(`${cardId}-jml-anak`);
-        const jumlahAnak = childInput ? Math.max(1, parseInt(childInput.value) || 1) : 1;
-        const kondisiTerusan = document.getElementById(`${cardId}-kondisi-terusan`)?.value || "Meninggal Biasa";
-        const kondisi = (kondisiTerusan === "Pahlawan Nasional" || kondisiTerusan === "Bintang Jasa") ? "Pahlawan" : getKondisiKematian(jenisKejadian);
 
-        const penyebab = document.getElementById("yatim-penyebab-select")?.value || claimState?.penyebabYatim || "Perpanjangan (Masih Kuliah)";
-        const anakYangBerubah = document.getElementById("yatim-anak-select")?.value || "Ayu Fauzi";
+        // Baca jumlah anak SESUDAH dari read-only field (auto-calc saat card dibuat)
+        const childAfterInput  = document.getElementById(`${cardId}-jml-anak`);
+        const childBeforeInput = document.getElementById(`${cardId}-jml-anak-sebelum`);
+        const jumlahSesudah  = childAfterInput  ? Math.max(0, parseInt(childAfterInput.value)  || 0) : 1;
+        const jumlahSebelum  = childBeforeInput ? Math.max(1, parseInt(childBeforeInput.value) || 1) : 2;
 
-        // Simulated family data cross-check: Ayu Fauzi & Budi Fauzi
-        const semuaAnakData = [
-          { nama: "Ayu Fauzi", masaberhak: (anakYangBerubah === "Ayu Fauzi" ? (penyebab === "Perpanjangan (Masih Kuliah)") : true) },
-          { nama: "Budi Fauzi", masaberhak: (anakYangBerubah === "Budi Fauzi" ? (penyebab === "Perpanjangan (Masih Kuliah)") : true) }
-        ];
+        const penyebab       = document.getElementById("yatim-penyebab-select")?.value || claimState?.penyebabYatim || "Perpanjangan (Masih Kuliah)";
+        const anakYangBerubah = document.getElementById("yatim-anak-select")?.value || "";
 
-        const sisaAnakBerhak = semuaAnakData.filter(a => a.masaberhak).length;
-        const jumlahDihitung = Math.min(sisaAnakBerhak, 2);
+        // Kondisi kematian: auto dari riwayat (read-only di card)
+        const kondisi = (() => {
+          const jk = jenisKejadian;
+          if (jk.includes('Tewas') || jk.includes('Gugur')) return 'Gugur/Tewas';
+          return 'Meninggal Biasa';
+        })();
 
         const TUNJANGAN_YATIM_PIATU_RUMUS = {
-          'Meninggal Biasa': { 2: 0.30, 1: 0.225, 0: 0 },
-          'Gugur/Tewas': { 2: 0.45, 1: 0.30, 0: 0 },
-          'Pahlawan': { 2: 0.45, 1: 0.3375, 0: 0 },
+          'Meninggal Biasa': { 2: 0.30,   1: 0.225,  0: 0 },
+          'Gugur/Tewas':     { 2: 0.45,   1: 0.30,   0: 0 },
+          'Pahlawan':        { 2: 0.45,   1: 0.3375, 0: 0 },
         };
-
         const keyKondisi = TUNJANGAN_YATIM_PIATU_RUMUS[kondisi] ? kondisi : 'Meninggal Biasa';
-        const ratePctNum = TUNJANGAN_YATIM_PIATU_RUMUS[keyKondisi][jumlahDihitung] || 0;
-        computedVal = Math.round(ratePctNum * gpt);
-        inputBesar.value = formatRupiah(computedVal);
+
+        const jmlDihitungSebelum = Math.min(jumlahSebelum, 2);
+        const jmlDihitungSesudah = Math.min(jumlahSesudah, 2);
+
+        const persenLama = TUNJANGAN_YATIM_PIATU_RUMUS[keyKondisi][jmlDihitungSebelum] || 0;
+        const persenBaru = TUNJANGAN_YATIM_PIATU_RUMUS[keyKondisi][jmlDihitungSesudah] || 0;
+
+        const nominalLama = Math.round(persenLama * gpt);
+        const nominalBaru = Math.round(persenBaru * gpt);
+        const selisih = nominalBaru - nominalLama;
+
+        computedVal = nominalBaru;
+        inputBesar.value = formatRupiah(nominalBaru);
 
         const breakdownEl = document.getElementById(`${cardId}-breakdown`);
-
         if (breakdownEl) {
-          const ratePctStr = (ratePctNum * 100).toFixed(1) + '%';
+          const persenLamaStr = (persenLama * 100).toFixed(1) + '%';
+          const persenBaruStr = (persenBaru * 100).toFixed(1) + '%';
+          const selisihStr = selisih >= 0
+            ? `+${formatRupiah(selisih)}`
+            : `-${formatRupiah(Math.abs(selisih))}`;
+          const selisihColor = selisih < 0 ? 'color:salmon' : selisih > 0 ? 'color:#4ade80' : '';
+
           breakdownEl.innerHTML = `
-            <strong>Rincian Perhitungan Tunjangan Yatim/Piatu</strong><br>
-            -------------------------------------<br>
-            Gaji Pokok Terakhir (GPT) : ${formatRupiah(gpt)}<br>
-            Kondisi Kematian          : ${kondisi}<br>
-            Jumlah Anak Dihitung      : ${jumlahDihitung} anak<br>
-            -------------------------------------<br>
-            Persentase Tunjangan      : ${ratePctStr} × GPT<br>
-            Rumus Final               : ${ratePctStr} × ${formatRupiah(gpt)}<br>
-            -------------------------------------<br>
-            <strong>TOTAL TUNJANGAN YATIM/PIATU: ${formatRupiah(computedVal)} / bulan</strong>
+            <strong>Rekalkulasi Tunjangan Yatim/Piatu</strong><br>
+            --------------------------------------<br>
+            Gaji Pokok Terakhir (GPT)   : ${formatRupiah(gpt)}<br>
+            Kondisi Kematian            : ${kondisi}<br>
+            Penyebab Perubahan          : ${penyebab}${anakYangBerubah ? ` — ${anakYangBerubah}` : ''}<br>
+            --------------------------------------<br>
+            Jumlah Anak SEBELUM Perubahan : <strong>${jumlahSebelum} anak</strong> → ${persenLamaStr} × GPT<br>
+            Jumlah Anak SESUDAH Perubahan : <strong>${jumlahSesudah} anak</strong> → ${persenBaruStr} × GPT<br>
+            --------------------------------------<br>
+            Nominal LAMA  : ${persenLamaStr} × ${formatRupiah(gpt)} = <strong>${formatRupiah(nominalLama)} / bulan</strong><br>
+            Nominal BARU  : ${persenBaruStr} × ${formatRupiah(gpt)} = <strong>${formatRupiah(nominalBaru)} / bulan</strong><br>
+            Selisih       : <span style="${selisihColor};font-weight:bold">${selisihStr} / bulan</span><br>
+            --------------------------------------<br>
+            <strong>TOTAL BARU: ${formatRupiah(nominalBaru)} / bulan</strong>
           `;
           breakdownEl.classList.remove('hidden');
         }
@@ -9516,8 +10194,10 @@
           try { gp = JSON.parse(selectGajiEl.value).gaji; } catch(e){}
         }
         const gpt = gp || currentParticipant?.gaji_pokok || currentParticipant?.gajiPokok || 4500000;
+        const jkCurrent = claimState?.jenisKejadian || document.getElementById("kejadian-jenis")?.value || "";
+        const isStandaloneOrtu = (jkCurrent === 'Tunjangan Orang Tua');
         const statusPasangan = document.getElementById("ortu-status-pasangan-select")?.value || "Ada (Hidup)";
-        const isAdaOrtuHidup = (statusPasangan === "Ada (Hidup)");
+        const isAdaOrtuHidup = isStandaloneOrtu ? true : (statusPasangan === "Ada (Hidup)");
 
         if (!isAdaOrtuHidup) {
           computedVal = 0;
@@ -9538,13 +10218,15 @@
           computedVal = Math.round(0.25 * gpt);
           inputBesar.value = formatRupiah(computedVal);
 
+          const kondisiLabel = getKondisiKematian(jkCurrent);
           const breakdownEl = document.getElementById(`${cardId}-breakdown`);
           if (breakdownEl) {
             breakdownEl.innerHTML = `
-              <strong>Rincian Perhitungan Tunjangan Orang Tua (Alih Status Penerima Baru)</strong><br>
+              <strong>Rincian Perhitungan Tunjangan Orang Tua (PP No. 36/1968 &amp; PP 102/2015)</strong><br>
               -------------------------------------<br>
               Gaji Pokok Terakhir (GPT): ${formatRupiah(gpt)}<br>
-              Status Penerima Baru     : Orang Tua Lain (Masih Hidup)<br>
+              Kondisi Kematian         : ${kondisiLabel}<br>
+              Penerima Hak             : Orang Tua Berhak<br>
               Persentase Hak           : 25%<br>
               Rumus                    : 25% &times; ${formatRupiah(gpt)}<br>
               -------------------------------------<br>
@@ -9621,6 +10303,26 @@
         showToast("Tunjangan Terbatas Disimpan", "Rincian Tunjangan Terbatas berhasil disimpan.", "success");
         updateRingkasanKlaim();
       } else if (type === "SKS") {
+        const jkSks = mapJenisKejadian(claimState?.jenisKejadian || "");
+        if (jkSks === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun' || claimState?.jenisKejadian === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun') {
+          computedVal = 5000000;
+          inputBesar.value = formatRupiah(computedVal);
+          const breakdownEl = document.getElementById(`${cardId}-breakdown`);
+          if (breakdownEl) {
+            breakdownEl.innerHTML = `
+              <strong>Rincian Perhitungan Santunan Kematian (SKS)</strong><br>
+              -------------------------------------<br>
+              Jenis Kejadian        : Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun<br>
+              Status Peserta        : Aktif (Belum Menikah / Bujangan)<br>
+              Ketentuan Santunan    : Nominal Tetap Rp 5.000.000 (PP 102)<br>
+              -------------------------------------<br>
+              <strong>TOTAL MANFAAT SKS: ${formatRupiah(computedVal)}</strong>
+            `;
+            breakdownEl.classList.remove('hidden');
+          }
+          updateRingkasanKlaim();
+          return;
+        }
         const tglSks = document.getElementById(`${cardId}-tanggal-sks`)?.value;
         const reg = detectRegulasiCacat(tglSks || claimState?.tanggalKejadian);
         if (reg === 'PP 67/1991') {
@@ -9749,18 +10451,65 @@
             <strong>TOTAL TUNJANGAN CACAT (UKP): ${formatRupiah(nominalUkp)} / bulan</strong>
           `;
         } else if (type === "UKP Kelebihan Potongan Hutang") {
+          const objek = document.getElementById(`${cardId}-ukp-objek`)?.value || "Pensiun Pokok";
+          const penerima = document.getElementById(`${cardId}-ukp-penerima-select`)?.value || "Peserta";
+          const namaPenerima = document.getElementById(`${cardId}-ukp-nama-penerima`)?.value || "Ahmad Fauzi";
+          const namaRekening = document.getElementById(`${cardId}-ukp-nama-rekening`)?.value || "AHMAD FAUZI";
+          const nomorRekening = document.getElementById(`${cardId}-ukp-nomor-rekening`)?.value || "128000982310";
+          const mitraBayar = document.getElementById(`${cardId}-ukp-mitra-bayar`)?.value || "Bank Mandiri";
+          const cabangMitra = document.getElementById(`${cardId}-ukp-cabang-mitra`)?.value || "KCP Asabri Jakarta";
           const periode = document.getElementById(`${cardId}-periode-hutang`)?.value || "Nov 2025 - Jan 2026";
+          const mitraHutang = document.getElementById(`${cardId}-mitra-hutang`)?.value || "Bank Mandiri KCP Asabri";
+
+          // Validasi kelengkapan field wajib yang diisi oleh Bidang Layanan Program 1
+          const requiredList = [
+            { el: document.getElementById(`${cardId}-periode-hutang`), label: "Periode Kelebihan Potongan" },
+            { el: document.getElementById(`${cardId}-ukp-nama-penerima`), label: "Nama Penerima" },
+            { el: document.getElementById(`${cardId}-ukp-nama-rekening`), label: "Nama Rekening" },
+            { el: document.getElementById(`${cardId}-ukp-nomor-rekening`), label: "Nomor Rekening" },
+            { el: document.getElementById(`${cardId}-ukp-cabang-mitra`), label: "Cabang Mitra Bayar" }
+          ];
+
+          const missing = requiredList.filter(f => !f.el || !f.el.value.trim());
+          if (missing.length > 0) {
+            showToast("Field Wajib Belum Diisi", `Field '${missing[0].label}' wajib diisi oleh Bidang Layanan Program 1.`, "warning");
+            missing[0].el.classList.add("border-rose-500");
+            missing[0].el.focus();
+            return;
+          }
+          requiredList.forEach(f => f.el && f.el.classList.remove("border-rose-500"));
+
           nominalUkp = 4500000; // 3 x 1.500.000 kelebihan angsuran
           detailsUkp = `
             <strong>Rincian UKP Kelebihan Potongan Hutang</strong><br>
             -------------------------------------<br>
-            Status Konfirmasi    : Verified Kantor Pusat (Program 1)<br>
-            Periode Kelebihan    : ${periode}<br>
+            Status Konfirmasi    : Verified Bidang Layanan Program 1 (Kantor Pusat)<br>
+            Objek UKP            : ${objek}<br>
+            Penerima UKP         : ${namaPenerima} (${penerima})<br>
+            Rekening Pembayaran  : ${mitraBayar} - ${cabangMitra} (No. ${nomorRekening} a.n ${namaRekening})<br>
+            Mitra Hutang Terkait : ${mitraHutang}<br>
+            Periode Kelebihan    : ${periode} (3 Bulan Bayar)<br>
             -------------------------------------<br>
             Kelebihan Angsuran   : ${formatRupiah(1500000)} / bulan<br>
+            Rumus Final          : 3 Bulan &times; ${formatRupiah(1500000)}<br>
             -------------------------------------<br>
             <strong>TOTAL UKP POTONGAN HUTANG: ${formatRupiah(nominalUkp)}</strong>
           `;
+
+          if (!claimState) claimState = {};
+          claimState.ukpHutangDetails = {
+            objek,
+            penerima,
+            namaPenerima,
+            namaRekening,
+            nomorRekening,
+            mitraBayar,
+            cabangMitra,
+            periode,
+            mitraHutang,
+            nominalUkp
+          };
+          localStorage.setItem("registrasiKlaim", JSON.stringify(claimState));
         }
 
         computedVal = nominalUkp;
@@ -9857,10 +10606,14 @@
       } else if (type === "NTIP") {
         calculateNtipProduct(cardId);
         return;
-      } else if (type === "BPPP" || type === "BPI/S") {
+      } else if (type === "BPPP" || type === "BPI/S" || type === "BPA") {
         calculatePemakamanProduct(cardId, type);
         return;
-      } else if (type === "Beasiswa JKK/JKM" || type === "Beasiswa JKK" || type === "Beasiswa JKm" || type === "Beasiswa JKM" || type === "BPA" || type.includes("Beasiswa")) {
+      } else if (type === "Beasiswa JKK/JKM" || type === "Beasiswa JKK" || type === "Beasiswa JKm" || type === "Beasiswa JKM" || type.includes("Beasiswa")) {
+        if (!claimState) claimState = {};
+        if (!claimState.beasiswaState) claimState.beasiswaState = {};
+        claimState.beasiswaState[cardId] = true;
+
         const reg = claimState?.regulasi || 'PP 54/2020';
         const config = NOMINAL_BEASISWA[reg] || NOMINAL_BEASISWA['PP 54/2020'];
         const maxAnak = config.maksAnak;
@@ -9878,9 +10631,21 @@
               selectedChildrenNames.push(childName);
             }
           });
+
+          // Jika tombol Hitung Beasiswa diklik namun belum ada anak yang dicentang, otomatis centang anak berhak pertama
+          if (count === 0) {
+            const firstEligible = Array.from(chks).find(c => !c.disabled);
+            if (firstEligible) {
+              firstEligible.checked = true;
+              count = 1;
+              const childName = firstEligible.getAttribute('data-child-name') || 'Anak ke-1';
+              selectedChildrenNames.push(childName);
+            }
+          }
         } else {
           const childInput = document.getElementById(`${cardId}-jml-anak`);
           count = childInput ? parseInt(childInput.value) || 0 : (reg === 'PP 54/2020' ? 0 : maxAnak);
+          if (count === 0 && maxAnak > 0) count = 1;
           if (count > maxAnak) count = maxAnak;
         }
 
@@ -10152,8 +10917,12 @@
         const isStaf = currentRole === 'Staf KANCAB';
         const isVerifikator = currentRole === 'Verifikator';
         const isKakancab = currentRole === 'KAKANCAB';
+        const isKabidLayanan = currentRole === 'Kabid Layanan';
         
         const claimStatus = claimState?.status || "Kalkulasi Manfaat";
+        const isTaspenClaim = !!(claimState?.isTaspen || (claimState?.jenisKejadian && (claimState.jenisKejadian.includes('Taspen') || claimState.jenisKejadian.includes('TASPEN'))));
+        const isMdBiasaTanpaHak = (claimState?.jenisKejadian === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun' || mapJenisKejadian(claimState?.jenisKejadian || '') === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun');
+        const canApprove = (isTaspenClaim || isMdBiasaTanpaHak) ? (isKakancab || isKabidLayanan) : isKakancab;
         
         let actionHtml = "";
         
@@ -10316,50 +11085,52 @@
             `;
           }
           
-          // 3. APPROVAL KAKANCAB CARD
+          // 3. APPROVAL KAKANCAB / KABID LAYANAN CARD
           let kakancabCardHtml = "";
+          const approverRoleName = isTaspenClaim ? 'Kabid Layanan / KAKANCAB' : 'KAKANCAB';
           if (isApproved || claimState?.spNumber || claimState?.spNumberTht || claimState?.spNumberPen) {
-            const appLog = (claimState?.logs || []).find(l => l.aksi === "SP Diterbitkan" || l.aksi === "Klaim Disetujui" || l.aksi === "Approval KAKANCAB") || {};
+            const appLog = (claimState?.logs || []).find(l => l.aksi === "SP Diterbitkan" || l.aksi === "SP THT Diterbitkan" || l.aksi === "Klaim Disetujui" || l.aksi === "Approval KAKANCAB" || l.aksi.includes("Approval")) || {};
             const logDate = appLog.tanggal || todayStr;
-            const logCatatan = appLog.keterangan || "Disetujui oleh KAKANCAB.";
+            const logUser = appLog.user || approverRoleName;
+            const logCatatan = appLog.keterangan || `Disetujui oleh ${logUser}.`;
             
             kakancabCardHtml = `
               <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 mb-6 animate-fade-in">
                 <div class="border-b border-slate-100 pb-3 flex items-center justify-between">
                   <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fas fa-user-check text-emerald-500"></i> Approval KAKANCAB — SELESAI
+                    <i class="fas fa-user-check text-emerald-500"></i> Approval ${approverRoleName} — SELESAI
                   </h3>
                   <span class="bg-emerald-100 text-emerald-800 border border-emerald-250 px-2.5 py-0.5 rounded-full font-bold text-[9px]">Disetujui ✅</span>
                 </div>
                 <div class="bg-emerald-50 border border-emerald-150 p-3.5 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
                   <i class="fas fa-circle-check text-emerald-600"></i>
-                  <span><strong>Persetujuan Berhasil Disimpan:</strong> Surat Perintah Bayar (SP) telah diterbitkan.</span>
+                  <span><strong>Persetujuan Berhasil Disimpan:</strong> ${isTaspenClaim ? 'Surat Perintah Bayar THT (SP THT) telah diterbitkan dan data pembayaran otomatis diteruskan ke Portal Pensiun.' : 'Surat Perintah Bayar (SP) telah diterbitkan.'}</span>
                 </div>
                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-600 space-y-2">
-                  <div><strong>Disetujui oleh:</strong> KAKANCAB</div>
+                  <div><strong>Disetujui oleh:</strong> ${logUser}</div>
                   <div><strong>Waktu Approval:</strong> ${logDate}</div>
-                  <div><strong>Catatan KAKANCAB:</strong> <span class="italic text-slate-800">"${logCatatan}"</span></div>
+                  <div><strong>Catatan:</strong> <span class="italic text-slate-800">"${logCatatan}"</span></div>
                 </div>
               </div>
             `;
           } else {
             const statusLower = claimStatus.toLowerCase();
             const sudahVerifikasi = statusLower.includes('approval') || statusLower.includes('terverifikasi') || statusLower.includes('menunggu verifikasi');
-            const approvalDisabled = !isKakancab || !sudahVerifikasi;
-            const approvalTooltip = !isKakancab ? 'Hanya KAKANCAB yang dapat memberikan approval' : (!sudahVerifikasi ? 'Klaim belum diverifikasi oleh Verifikator' : '');
+            const approvalDisabled = !canApprove || !sudahVerifikasi;
+            const approvalTooltip = !canApprove ? (isTaspenClaim ? 'Hanya Kabid Layanan atau KAKANCAB yang dapat memberikan approval klaim Peserta Taspen' : 'Hanya KAKANCAB yang dapat memberikan approval') : (!sudahVerifikasi ? 'Klaim belum diverifikasi oleh Verifikator' : '');
             
             kakancabCardHtml = `
               <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 mb-6 animate-fade-in">
                 <div class="border-b border-slate-100 pb-3">
-                  <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-user-check text-asabri-blue"></i> Approval KAKANCAB</h3>
+                  <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2"><i class="fas fa-user-check text-asabri-blue"></i> Approval ${approverRoleName}</h3>
                 </div>
                 ${getLpkPanelHtml('kakancab')}
                 <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-2 text-xs">
                   <div class="flex items-center gap-2 font-bold text-amber-800">
                     <i class="fas fa-file-signature text-amber-600"></i>
-                    <span class="uppercase tracking-wider text-[10px]">Preview SP Sebelum Approval</span>
+                    <span class="uppercase tracking-wider text-[10px]">Preview ${isTaspenClaim ? 'SP THT' : 'SP'} Sebelum Approval</span>
                   </div>
-                  <p class="text-amber-700 text-[11px]">KAKANCAB wajib mereview isi Surat Pemberitahuan (SP) sebelum memberikan approval. Setelah approve, SP terbit resmi dan tidak dapat dibatalkan.</p>
+                  <p class="text-amber-700 text-[11px]">${approverRoleName} wajib mereview isi Surat Pemberitahuan (SP) sebelum memberikan approval. Setelah approve, ${isTaspenClaim ? 'SP THT terbit dan pembayaran masuk ke Portal Pensiun (H+1 hari kerja)' : 'SP terbit resmi dan tidak dapat dibatalkan'}.</p>
                   <button type="button" onclick="previewSPPreApproval()" class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm">
                     <i class="fas fa-eye text-[10px]"></i> Preview SP (Pratinjau)
                   </button>
@@ -10373,9 +11144,9 @@
                     <button type="button" id="btn-approve" onclick="approveKlaimKakancab()" 
                             class="px-5 py-2.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
                             ${approvalDisabled ? 'disabled style="opacity: 0.4;"' : ''} title="${approvalTooltip}">
-                      <i class="fas fa-circle-check"></i> Approve & Terbitkan SP
+                      <i class="fas fa-circle-check"></i> Approve & Terbitkan ${isTaspenClaim ? 'SP THT' : 'SP'}
                     </button>
-                    <button type="button" id="btn-reject" onclick="showPopupTolak('KAKANCAB', 'Status & Riwayat')" 
+                    <button type="button" id="btn-reject" onclick="showPopupTolak('${currentRole === 'Kabid Layanan' ? 'Kabid Layanan' : 'KAKANCAB'}', 'Status & Riwayat')" 
                             class="px-5 py-2.5 bg-rose-600 hover:bg-rose-750 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
                             ${approvalDisabled ? 'disabled style="opacity: 0.4;"' : ''} title="${approvalTooltip}">
                       <i class="fas fa-circle-xmark"></i> Tolak & Kembalikan
@@ -11213,8 +11984,14 @@
 
     function approveKlaimKakancab() {
       const currentRole = localStorage.getItem('currentRole') || 'Staf KANCAB';
-      if (currentRole !== 'KAKANCAB') {
-        showToast("Error", "Hanya KAKANCAB yang dapat melakukan approval.", "danger");
+      const rawJk = claimState?.jenisKejadian || '';
+      const jk = mapJenisKejadian(rawJk);
+      const isTaspen = !!(claimState?.isTaspen || jk.includes('Taspen') || jk.includes('TASPEN'));
+      const isMdBiasaTanpaHak = (jk === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun' || rawJk === 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun');
+      const canApprove = (isTaspen || isMdBiasaTanpaHak) ? (currentRole === 'KAKANCAB' || currentRole === 'Kabid Layanan') : (currentRole === 'KAKANCAB');
+      
+      if (!canApprove) {
+        showToast("Error", (isTaspen || isMdBiasaTanpaHak) ? "Hanya KAKANCAB atau Kabid Layanan yang dapat melakukan approval klaim ini." : "Hanya KAKANCAB yang dapat melakukan approval.", "danger");
         return;
       }
       
@@ -11228,9 +12005,6 @@
       const romanMonth = formatMonth(now.getMonth());
       const suffix = noAgenda.split('-').pop();
       const spDate = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-      
-      const rawJk = claimState.jenisKejadian || '';
-      const jk = mapJenisKejadian(rawJk);
       
       claimState.status = "Selesai";
       claimState.spDate = spDate;
@@ -11260,14 +12034,12 @@
       } else if (['Meninggal Dunia Aktif Biasa_Istri/Suami', 'Meninggal Dunia dalam Dinas Aktif_Istri/Suami', 'Meninggal Dunia dalam Dinas Aktif (JKm)_Istri/Suami'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         claimState.spNumberJkm = `SP-JKM/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        claimState.spNumberPen = `SP-PEN/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT", "SP JKm", "SP Pensiun Warakawuri"];
+        spNames = ["SP THT", "SP JKm"];
       } else if (['Meninggal Dunia Aktif Biasa_Anak', 'Meninggal Dunia dalam Dinas Aktif_Anak', 'Meninggal Dunia dalam Dinas Aktif (JKm)_Anak'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         claimState.spNumberJkm = `SP-JKM/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        claimState.spNumberAlih = `SP-ALIH/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT", "SP JKm", "SP Tunjangan Yatim/Piatu"];
-      } else if (['Meninggal Dunia Aktif Biasa_Lainnya', 'Meninggal Dunia Aktif Biasa_Ahli Waris Lainnya', 'Meninggal Dunia dalam Dinas Aktif_Lainnya', 'Meninggal Dunia dalam Dinas Aktif_Ahli Waris Lainnya', 'Meninggal Dunia dalam Dinas Aktif (JKm)_Ahli Waris Lainnya'].includes(key)) {
+        spNames = ["SP THT", "SP JKm"];
+      } else if (['Meninggal Dunia Aktif Biasa_Lainnya', 'Meninggal Dunia Aktif Biasa_Ahli Waris Lainnya', 'Meninggal Dunia dalam Dinas Aktif_Lainnya', 'Meninggal Dunia dalam Dinas Aktif_Ahli Waris Lainnya', 'Meninggal Dunia dalam Dinas Aktif (JKm)_Ahli Waris Lainnya'].includes(key) || key.startsWith('Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun')) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         claimState.spNumberJkm = `SP-JKM/JKT/${romanMonth}/${currentYear}/${suffix}`;
         claimState.spNumberNtip = `SP-NTIP/JKT/${romanMonth}/${currentYear}/${suffix}`;
@@ -11275,18 +12047,15 @@
       } else if (['Meninggal Dunia Aktif Tewas_Istri/Suami', 'Meninggal Dunia Aktif Gugur_Istri/Suami', 'Kecelakaan Kerja - Meninggal Dunia - Tewas_Istri/Suami', 'Kecelakaan Kerja - Meninggal Dunia - Gugur_Istri/Suami', 'Kecelakaan Kerja — Meninggal Dunia_Istri/Suami', 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Istri/Suami'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         claimState.spNumberJkk = `SP-JKK/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        claimState.spNumberPen = `SP-PEN/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT", "SP JKK", "SP Pensiun Warakawuri"];
+        spNames = ["SP THT", "SP JKK"];
       } else if (['Meninggal Dunia Aktif Tewas_Anak', 'Meninggal Dunia Aktif Gugur_Anak', 'Kecelakaan Kerja - Meninggal Dunia - Tewas_Anak', 'Kecelakaan Kerja - Meninggal Dunia - Gugur_Anak', 'Kecelakaan Kerja — Meninggal Dunia_Anak', 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Anak'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         claimState.spNumberJkk = `SP-JKK/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        claimState.spNumberAlih = `SP-ALIH/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT", "SP JKK", "SP Tunjangan Yatim/Piatu"];
+        spNames = ["SP THT", "SP JKK"];
       } else if (['Meninggal Dunia Aktif Tewas_Orang Tua', 'Meninggal Dunia Aktif Gugur_Orang Tua', 'Kecelakaan Kerja - Meninggal Dunia - Tewas_Orang Tua', 'Kecelakaan Kerja - Meninggal Dunia - Gugur_Orang Tua', 'Kecelakaan Kerja — Meninggal Dunia_Orang Tua', 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Orang Tua'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         claimState.spNumberJkk = `SP-JKK/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        claimState.spNumberAlih = `SP-ALIH/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT", "SP JKK", "SP Tunjangan Orang Tua"];
+        spNames = ["SP THT", "SP JKK"];
       } else if (['Cacat Dinas Biasa', 'Cacat Dinas Khusus', 'Kecelakaan Kerja — Cacat', 'Kecelakaan Kerja - Cacat'].includes(key)) {
         claimState.spNumberCacat = `SP-CACAT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         spNames = ["SP JKK (Santunan Cacat)"];
@@ -11315,22 +12084,29 @@
         }
       } else if (['Meninggal Dunia Setelah Pensiun_Istri/Suami', 'Pensiun Sendiri — Meninggal Dunia_Istri/Suami', 'Pensiun Sendiri - Meninggal Dunia_Istri/Suami'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        claimState.spNumberPen = `SP-PEN/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT (BPPP+UDW)", "SP Pensiun Warakawuri"];
+        spNames = ["SP THT (BPPP+UDW)"];
       } else if (['Meninggal Dunia Setelah Pensiun_Anak', 'Pensiun Sendiri — Meninggal Dunia_Anak', 'Pensiun Sendiri - Meninggal Dunia_Anak'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        claimState.spNumberAlih = `SP-ALIH/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT (BPPP+UDW)", "SP Tunjangan Yatim/Piatu"];
+        spNames = ["SP THT (BPPP+UDW)"];
       } else if (['Meninggal Dunia Setelah Pensiun_Lainnya', 'Meninggal Dunia Setelah Pensiun_Ahli Waris Lainnya', 'Pensiun Sendiri — Meninggal Dunia_Lainnya', 'Pensiun Sendiri — Meninggal Dunia_Ahli Waris Lainnya', 'Pensiun Sendiri - Meninggal Dunia_Lainnya'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         spNames = ["SP THT (BPPP+UDW)"];
+      } else if (key.startsWith('Meninggal Peserta TASPEN')) {
+        claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
+        spNames = ["SP THT (BPPP)"];
+      } else if (key === 'Meninggal Istri/Suami Taspen' || key === 'Istri/Suami Meninggal Dunia Peserta Taspen') {
+        claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
+        spNames = ["SP THT (BPI/S)"];
       } else if (['Pensiun Wari/Janda/Duda - Meninggal Dunia_Anak', 'Pensiun Warakawuri — Meninggal Dunia_Anak', 'Pensiun Warakawuri - Meninggal Dunia_Anak'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
         claimState.spNumberAlih = `SP-ALIH/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT (BPI/S+UDW)", "SP Tunjangan Yatim/Piatu"];
+        spNames = ["SP THT (BPPP+UDW)", "SP Tunjangan Yatim/Piatu"];
       } else if (['Pensiun Wari/Janda/Duda - Meninggal Dunia_Lainnya', 'Pensiun Wari/Janda/Duda - Meninggal Dunia_Ahli Waris Lainnya', 'Pensiun Warakawuri — Meninggal Dunia_Lainnya', 'Pensiun Warakawuri — Meninggal Dunia_Ahli Waris Lainnya', 'Pensiun Warakawuri - Meninggal Dunia_Lainnya'].includes(key)) {
         claimState.spNumberTht = `SP-THT/JKT/${romanMonth}/${currentYear}/${suffix}`;
-        spNames = ["SP THT (BPI/S+UDW)"];
+        spNames = ["SP THT (BPPP+UDW)"];
+      } else if (['Pensiun Wari/Janda/Duda', 'Pensiun Wari/Janda/Duda_Istri/Suami', 'Pensiun Wari/Janda/Duda_Peserta', 'Pensiun Wari/Janda/Duda_Keluarga', 'Pensiun Wari/Janda/Duda_Lainnya'].includes(key) || key.startsWith('Pensiun Wari/Janda/Duda_')) {
+        claimState.spNumberPen = `SP-PEN/JKT/${romanMonth}/${currentYear}/${suffix}`;
+        spNames = ["SP Pensiun Warakawuri"];
       } else if (['Tunjangan Yatim Piatu', 'Tunjangan Yatim/Piatu/Yatim-Piatu — Meninggal', 'Tunjangan Yatim/Piatu/Yatim-Piatu — Dewasa', 'Tunjangan Yatim/Piatu/YatimPiatu'].includes(key)) {
         claimState.spNumberAlih = `SP-ALIH/JKT/${romanMonth}/${currentYear}/${suffix}`;
         spNames = ["SP Alih Status Tunjangan Yatim/Piatu"];
@@ -11357,38 +12133,58 @@
       }
       
       // Add Activity Log
+      const approverRole = (isTaspen && currentRole === 'Kabid Layanan') ? 'Kabid Layanan' : 'KAKANCAB';
       const todayStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
       const timeStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
       const catatanText = document.getElementById("ap-catatan")?.value || "";
-      const logMsg = `${spNames.join(' & ')} diterbitkan oleh KAKANCAB${catatanText ? (' — Catatan: ' + catatanText) : ''}`;
+      const logMsg = `${spNames.join(' & ')} diterbitkan oleh ${approverRole}${catatanText ? (' — Catatan: ' + catatanText) : ''}`;
       
       if (!claimState.logs) claimState.logs = [];
       claimState.logs.push({
         tanggal: `${todayStr} ${timeStr}`,
-        user: "KAKANCAB",
-        aksi: "SP Diterbitkan",
+        user: approverRole,
+        aksi: isTaspen ? "SP THT Diterbitkan" : "SP Diterbitkan",
         status: "Selesai",
         keterangan: logMsg
       });
       
       localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
       
-      showToast("Approval Sukses & Terkirim ke AP3", "Klaim disetujui, Surat Perintah Bayar diterbitkan, dan data pembayaran otomatis diteruskan ke AP3.", "success");
-      
-      // Trigger simulasi AP3 — kirim data pembayaran ke sistem AP3
-      setTimeout(() => {
-        const ap3Log = {
-          tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
-          user: "SISTEM",
-          aksi: "Kirim ke AP3",
-          status: "Selesai",
-          keterangan: `Data pembayaran ${spNames.join(' & ')} berhasil dikirim ke sistem AP3 untuk diproses.`
-        };
-        if (!claimState.logs) claimState.logs = [];
-        claimState.logs.push(ap3Log);
-        localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
-        showToast("✅ AP3 — Data Pembayaran", `Data pembayaran ${spNames.join(' & ')} berhasil dikirim ke sistem AP3.`, "success");
-      }, 1500);
+      if (isTaspen) {
+        showToast("Approval Sukses & Terkirim ke Portal Pensiun", "Klaim disetujui, SP THT diterbitkan, dan data pembayaran otomatis diteruskan ke Portal Pensiun (diunduh Mitra Bayar H+1).", "success");
+        
+        // Trigger simulasi Portal Pensiun (BUKAN AP3)
+        setTimeout(() => {
+          const portalLog = {
+            tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+            user: "SISTEM",
+            aksi: "Kirim ke Portal Pensiun",
+            status: "Selesai",
+            keterangan: `Data pembayaran ${spNames.join(' & ')} berhasil dikirim ke aplikasi Portal Pensiun (BUKAN AP3) dan siap diunduh Mitra Bayar H+1 hari kerja.`
+          };
+          if (!claimState.logs) claimState.logs = [];
+          claimState.logs.push(portalLog);
+          localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+          showToast("✅ Portal Pensiun — Data Pembayaran", `Data pembayaran ${spNames.join(' & ')} berhasil diteruskan ke Portal Pensiun (diunduh Mitra Bayar H+1 hari kerja).`, "success");
+        }, 1500);
+      } else {
+        showToast("Approval Sukses & Terkirim ke AP3", "Klaim disetujui, Surat Perintah Bayar diterbitkan, dan data pembayaran otomatis diteruskan ke AP3.", "success");
+        
+        // Trigger simulasi AP3 — kirim data pembayaran ke sistem AP3
+        setTimeout(() => {
+          const ap3Log = {
+            tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB',
+            user: "SISTEM",
+            aksi: "Kirim ke AP3",
+            status: "Selesai",
+            keterangan: `Data pembayaran ${spNames.join(' & ')} berhasil dikirim ke sistem AP3 untuk diproses.`
+          };
+          if (!claimState.logs) claimState.logs = [];
+          claimState.logs.push(ap3Log);
+          localStorage.setItem('registrasiKlaim', JSON.stringify(claimState));
+          showToast("✅ AP3 — Data Pembayaran", `Data pembayaran ${spNames.join(' & ')} berhasil dikirim ke sistem AP3.`, "success");
+        }, 1500);
+      }
       
       if (jk === 'Cacat Dinas Biasa' || jk === 'Cacat Dinas Khusus' || jk === 'Kecelakaan Kerja — Cacat') {
         alert("SP Santunan Cacat telah terbit. Silakan ajukan klaim Pensiun untuk mendapatkan Tunjangan Cacat.");
@@ -12267,6 +13063,17 @@
       const ctxSjp = { nomorSJP: sjpNum, tanggalTerbit: spDate, berlakuSd: '30 Hari', nama: pesName, nrp: nrpNip, pangkat: pangkat, kesatuan: '-', provider: '-', jenisKejadian: jenisKejadian, diagnosa: '-', kelasRawat: '-', tglMulaiRawat: spDate, namaKakancab: 'Kepala Kantor Cabang Utama' };
 
       switch(key) {
+        // Pensiun Wari/Janda/Duda
+        case 'Pensiun Wari/Janda/Duda':
+        case 'Pensiun Wari/Janda/Duda_Istri/Suami':
+        case 'Pensiun Wari/Janda/Duda_Peserta':
+        case 'Pensiun Wari/Janda/Duda_Keluarga':
+        case 'Pensiun Wari/Janda/Duda_Lainnya':
+          showSP([
+            { label: 'SP Pensiun Warakawuri', html: () => generateSPPensiun(ctxPen) }
+          ]);
+          break;
+
         // 1. Pensiun
         case 'Pensiun':
         case 'Pensiun Pertama':
@@ -12299,6 +13106,7 @@
         case 'Istri/Suami Meninggal Dunia':
         case 'Pensiun Sendiri — Istri/Suami Meninggal Dunia':
         case 'Pensiun Sendiri - Istri/Suami Meninggal Dunia':
+        case 'Meninggal Istri/Suami Taspen':
           showSP([
             { label: 'SP BPI/S', html: () => generateSPBPIS(ctxBpis) }
           ]);
@@ -12315,14 +13123,43 @@
           ]);
           break;
 
+        // Meninggal Peserta TASPEN (Hanya SP BPPP, Tanpa UDW)
+        case 'Meninggal Peserta TASPEN':
+        case 'Meninggal Peserta TASPEN_Istri/Suami':
+        case 'Meninggal Peserta TASPEN_Anak':
+        case 'Meninggal Peserta TASPEN_Orang Tua':
+        case 'Meninggal Peserta TASPEN_Ahli Waris Lainnya':
+        case 'Meninggal Peserta TASPEN_Lainnya':
+          showSP([
+            { label: 'SP THT (BPPP)', html: () => generateSPTHT(ctxBppp) }
+          ]);
+          break;
+
+        // Istri/Suami Meninggal Dunia Peserta Taspen (Hanya SP BPI/S)
+        case 'Meninggal Istri/Suami Taspen':
+        case 'Meninggal Istri/Suami Taspen_Peserta':
+        case 'Meninggal Istri/Suami Taspen_Istri/Suami':
+        case 'Meninggal Istri/Suami Taspen_Anak':
+        case 'Meninggal Istri/Suami Taspen_Ahli Waris Lainnya':
+        case 'Meninggal Istri/Suami Taspen_Lainnya':
+        case 'Istri/Suami Meninggal Dunia Peserta Taspen':
+        case 'Istri/Suami Meninggal Dunia Peserta Taspen_Peserta':
+        case 'Istri/Suami Meninggal Dunia Peserta Taspen_Istri/Suami':
+        case 'Istri/Suami Meninggal Dunia Peserta Taspen_Anak':
+        case 'Istri/Suami Meninggal Dunia Peserta Taspen_Ahli Waris Lainnya':
+        case 'Istri/Suami Meninggal Dunia Peserta Taspen_Lainnya':
+          showSP([
+            { label: 'SP THT (BPI/S)', html: () => generateSPTHT(ctxBpis) }
+          ]);
+          break;
+
         // 6. Meninggal Dinas Aktif — Istri/Suami
         case 'Meninggal Dunia Aktif Biasa_Istri/Suami':
         case 'Meninggal Dunia dalam Dinas Aktif_Istri/Suami':
         case 'Meninggal Dunia dalam Dinas Aktif (JKm)_Istri/Suami':
           showSP([
             { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
-            { label: 'SP JKm', html: () => generateSPJKm(ctxJkm) },
-            { label: 'SP Pensiun Warakawuri', html: () => generateSPPensiun(ctxPen) }
+            { label: 'SP JKm', html: () => generateSPJKm(ctxJkm) }
           ]);
           break;
 
@@ -12332,17 +13169,21 @@
         case 'Meninggal Dunia dalam Dinas Aktif (JKm)_Anak':
           showSP([
             { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
-            { label: 'SP JKm', html: () => generateSPJKm(ctxJkm) },
-            { label: 'SP Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
+            { label: 'SP JKm', html: () => generateSPJKm(ctxJkm) }
           ]);
           break;
 
-        // 8. Meninggal Dinas Aktif — Lainnya
+        // 8. Meninggal Dinas Aktif — Lainnya / Tanpa Hak Pensiun
         case 'Meninggal Dunia Aktif Biasa_Lainnya':
         case 'Meninggal Dunia Aktif Biasa_Ahli Waris Lainnya':
         case 'Meninggal Dunia dalam Dinas Aktif_Lainnya':
         case 'Meninggal Dunia dalam Dinas Aktif_Ahli Waris Lainnya':
         case 'Meninggal Dunia dalam Dinas Aktif (JKm)_Ahli Waris Lainnya':
+        case 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun':
+        case 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun_Orang Tua':
+        case 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun_Ahli Waris Lain':
+        case 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun_Ahli Waris Lainnya':
+        case 'Meninggal Dunia Aktif Biasa Tanpa Hak Pensiun_Lainnya':
           showSP([
             { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
             { label: 'SP JKm', html: () => generateSPJKm(ctxJkm) },
@@ -12359,8 +13200,7 @@
         case 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Istri/Suami':
           showSP([
             { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
-            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) },
-            { label: 'SP Pensiun Warakawuri', html: () => generateSPPensiun(ctxPen) }
+            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) }
           ]);
           break;
 
@@ -12373,8 +13213,7 @@
         case 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Anak':
           showSP([
             { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
-            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) },
-            { label: 'SP Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
+            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) }
           ]);
           break;
 
@@ -12387,8 +13226,7 @@
         case 'Kecelakaan Kerja — Meninggal (Gugur/Tewas)_Orang Tua':
           showSP([
             { label: 'SP THT', html: () => generateSPTHT(ctxTht) },
-            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) },
-            { label: 'SP Tunjangan Orang Tua', html: () => generateSPAlihStatus(ctxAlih) }
+            { label: 'SP JKK', html: () => generateSPJKK(ctxJkk) }
           ]);
           break;
 
@@ -12408,8 +13246,7 @@
         case 'Pensiun Sendiri - Meninggal Dunia_Istri/Suami':
           showSP([
             { label: '1. SP THT (BPPP)', html: () => generateSPTHT(ctxTht) },
-            { label: '2. SP Pensiun (UDW)', html: () => generateSPPensiun(ctxPen) },
-            { label: '3. Surat Pembayaran Pensiun Terusan', html: () => generateSPPensiun(ctxPen) }
+            { label: '2. SP Pensiun (UDW)', html: () => generateSPPensiun(ctxPen) }
           ]);
           break;
 
@@ -12419,8 +13256,7 @@
         case 'Pensiun Sendiri - Meninggal Dunia_Anak':
           showSP([
             { label: '1. SP THT (BPPP)', html: () => generateSPTHT(ctxTht) },
-            { label: '2. SP Pensiun (UDW)', html: () => generateSPPensiun(ctxPen) },
-            { label: '3. Surat Pembayaran Pensiun Terusan', html: () => generateSPAlihStatus(ctxAlih) }
+            { label: '2. SP Pensiun (UDW)', html: () => generateSPPensiun(ctxPen) }
           ]);
           break;
 
@@ -12432,8 +13268,7 @@
         case 'Pensiun Sendiri - Meninggal Dunia_Lainnya':
           showSP([
             { label: '1. SP THT (BPPP)', html: () => generateSPTHT(ctxTht) },
-            { label: '2. SP Pensiun (UDW)', html: () => generateSPPensiun(ctxPen) },
-            { label: '3. Surat Pemberitahuan Pensiun Punah', html: () => generateSPAlihStatus(ctxAlih) }
+            { label: '2. SP Pensiun (UDW)', html: () => generateSPPensiun(ctxPen) }
           ]);
           break;
 
@@ -12442,7 +13277,7 @@
         case 'Pensiun Warakawuri — Meninggal Dunia_Anak':
         case 'Pensiun Warakawuri - Meninggal Dunia_Anak':
           showSP([
-            { label: 'SP THT (BPI/S + UDW)', html: () => generateSPTHT(ctxTht) },
+            { label: 'SP THT (BPPP + UDW)', html: () => generateSPTHT(ctxTht) },
             { label: 'SP Tunjangan Yatim/Piatu', html: () => generateSPAlihStatus(ctxAlih) }
           ]);
           break;
@@ -12454,7 +13289,7 @@
         case 'Pensiun Warakawuri — Meninggal Dunia_Ahli Waris Lainnya':
         case 'Pensiun Warakawuri - Meninggal Dunia_Lainnya':
           showSP([
-            { label: 'SP THT (BPI/S + UDW)', html: () => generateSPTHT(ctxTht) }
+            { label: 'SP THT (BPPP + UDW)', html: () => generateSPTHT(ctxTht) }
           ]);
           break;
 
@@ -13142,7 +13977,7 @@
   </div>
 
   <script>
-    let isTandaTerimaSaved = false;
+    isTandaTerimaSaved = false;
 
     function openModalTandaTerima() {
       const p = currentParticipant || {};
