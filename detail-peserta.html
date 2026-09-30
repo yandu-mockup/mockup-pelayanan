@@ -304,7 +304,12 @@
 
               <!-- SECTION I: Pensiun (TGR, Non-TGR, Keterlanjuran Bayar) -->
               <div class="space-y-2">
-                <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5"><i class="fas fa-wallet text-amber-500"></i> Section I: Pensiun (TGR, Non-TGR, Keterlanjuran Bayar)</h4>
+                <h4 class="text-xs font-bold text-slate-700 flex items-center justify-between">
+                  <span class="flex items-center gap-1.5"><i class="fas fa-wallet text-amber-500"></i> Section I: Pensiun (TGR, Non-TGR, Keterlanjuran Bayar)</span>
+                  <button type="button" onclick="showPiutangPage2()" class="px-3 py-1 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-[10px] font-bold shadow-sm transition-all flex items-center gap-1.5">
+                    <i class="fas fa-eye text-[9px]"></i> Lihat Detail
+                  </button>
+                </h4>
                 <div class="overflow-x-auto border border-slate-200 rounded-xl">
                   <table class="w-full text-xs text-left text-slate-650 border-collapse">
                     <thead>
@@ -315,7 +320,6 @@
                         <th class="py-2.5 px-3">Jumlah</th>
                         <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
                         <th class="py-2.5 px-3">Jumlah Sisa Hutang</th>
-                        <th class="py-2.5 px-3 text-center">Aksi</th>
                       </tr>
                     </thead>
                     <tbody id="detail-hutang-pensiun-tbody" class="divide-y divide-slate-150">
@@ -477,6 +481,19 @@
                   </div>
                 </div>
 
+                <!-- TOMBOL AKSI: Tambah Pinjaman (di atas) -->
+                <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-2">
+                  <div class="flex items-center gap-3">
+                    <button type="button" onclick="toggleFormTambahPinjaman(true)" class="px-4 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5">
+                      <i class="fas fa-plus-circle"></i> Tambah Pinjaman
+                    </button>
+                    <button type="button" onclick="toggleFormTambahPinjaman(false)" class="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-xs transition-all">
+                      Batal
+                    </button>
+                  </div>
+                  <span class="text-[11px] text-slate-400 font-medium italic">Klik 'Tambah Pinjaman' untuk menampilkan form entri pinjaman baru</span>
+                </div>
+
                 <!-- BAGIAN TENGAH: 4 Section Terpisah -->
                 <div class="space-y-5 pt-2">
                   
@@ -496,6 +513,7 @@
                             <th class="py-2.5 px-3">Jumlah</th>
                             <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
                             <th class="py-2.5 px-3">Jumlah Sisa Hutang</th>
+                            <th class="py-2.5 px-3 text-center">Aksi</th>
                           </tr>
                         </thead>
                         <tbody id="tbody-sec1-istri-suami" class="divide-y divide-slate-150">
@@ -521,6 +539,7 @@
                             <th class="py-2.5 px-3">Jumlah</th>
                             <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
                             <th class="py-2.5 px-3">Jumlah Sisa Hutang</th>
+                            <th class="py-2.5 px-3 text-center">Aksi</th>
                           </tr>
                         </thead>
                         <tbody id="tbody-sec2-anak" class="divide-y divide-slate-150">
@@ -545,6 +564,7 @@
                             <th class="py-2.5 px-3">Jumlah</th>
                             <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
                             <th class="py-2.5 px-3">Jumlah Sisa Hutang</th>
+                            <th class="py-2.5 px-3 text-center">Aksi</th>
                           </tr>
                         </thead>
                         <tbody id="tbody-sec3-tgr" class="divide-y divide-slate-150">
@@ -569,6 +589,7 @@
                             <th class="py-2.5 px-3">Jumlah</th>
                             <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
                             <th class="py-2.5 px-3">Jumlah Sisa Hutang</th>
+                            <th class="py-2.5 px-3 text-center">Aksi</th>
                           </tr>
                         </thead>
                         <tbody id="tbody-sec4-nontgr" class="divide-y divide-slate-150">
@@ -578,21 +599,42 @@
                     </div>
                   </div>
 
+                  <!-- Section Khusus: Hutang Tunjangan Anak pada Pensiun Wari Prajurit : Penspok Yatim/Piatu -->
+                  <div id="sec-khusus-wari-wrapper" class="space-y-2 pt-3 border-t border-slate-100">
+                    <h4 class="text-xs font-bold text-slate-800 flex items-center justify-between">
+                      <span class="flex items-center gap-1.5"><i class="fas fa-users-rays text-indigo-600"></i> Section Khusus: Hutang Tunjangan Anak pada Pensiun Wari Prajurit : Penspok Yatim/Piatu</span>
+                      <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">Kasus Khusus Wari</span>
+                    </h4>
+                    <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                      <table class="w-full text-xs text-left text-slate-650 border-collapse">
+                        <thead>
+                          <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
+                            <th class="py-2.5 px-3 text-center">No</th>
+                            <th class="py-2.5 px-3">Start</th>
+                            <th class="py-2.5 px-3">Periode</th>
+                            <th class="py-2.5 px-3">Penspok</th>
+                            <th class="py-2.5 px-3">Selisih Tunj. Istri</th>
+                            <th class="py-2.5 px-3">Selisih Tunj. Anak</th>
+                            <th class="py-2.5 px-3 text-amber-300">Penspok Yatim/Piatu</th>
+                            <th class="py-2.5 px-3">Selisih Tunj. Beras</th>
+                            <th class="py-2.5 px-3">Selisih Tunj. Lain</th>
+                            <th class="py-2.5 px-3">Selisih Pot. BPJS</th>
+                            <th class="py-2.5 px-3">Total Hutang</th>
+                            <th class="py-2.5 px-3">Status</th>
+                            <th class="py-2.5 px-3 text-center">Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbody-sec-khusus-wari" class="divide-y divide-slate-150">
+                          <!-- Injected -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
                 </div>
 
-                <!-- BAGIAN BAWAH: Tombol Aksi & Form Tambah Pinjaman Dinamis -->
+                <!-- BAGIAN BAWAH: Form Tambah Pinjaman Dinamis -->
                 <div class="pt-4 border-t border-slate-200 space-y-4">
-                  <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                      <button type="button" onclick="toggleFormTambahPinjaman(true)" class="px-4 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5">
-                        <i class="fas fa-plus-circle"></i> Tambah Pinjaman
-                      </button>
-                      <button type="button" onclick="toggleFormTambahPinjaman(false)" class="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-xs transition-all">
-                        Batal
-                      </button>
-                    </div>
-                    <span class="text-[11px] text-slate-400 font-medium italic">Klik 'Tambah Pinjaman' untuk menampilkan form entri pinjaman baru</span>
-                  </div>
 
                   <!-- PANEL FORM TAMBAH PINJAMAN (INLINE DROPDOWN PANEL) -->
                   <div id="form-tambah-pinjaman-panel" class="bg-slate-50 border border-slate-300 rounded-2xl p-5 space-y-4 hidden shadow-sm">
@@ -690,6 +732,390 @@
                         <button type="submit" class="px-5 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow-md transition-all">Simpan Pinjaman</button>
                       </div>
                     </form>
+                  </div>
+
+                </div>
+
+              </div>
+            </div>
+
+            <!-- HALAMAN 3: Detail Spesifik 1 Jenis Hutang (Level 3) -->
+            <div id="piutang-view-page3" class="space-y-6 hidden">
+              <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-6">
+                
+                <!-- Header Halaman 3 & Navigation Back to Level 2 -->
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div class="flex items-center gap-3">
+                    <button type="button" onclick="showPiutangPage2()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-200 shadow-sm">
+                      <i class="fas fa-arrow-left"></i> Kembali ke Level 2
+                    </button>
+                    <div>
+                      <div class="flex items-center gap-2">
+                        <h3 class="text-sm font-bold text-slate-900" id="l3-title-jenis">Rincian &amp; Transaksi Piutang</h3>
+                        <span id="l3-badge-nomor" class="font-mono text-[11px] font-bold px-2 py-0.5 rounded-lg bg-blue-50 text-asabri-blue border border-blue-200">-</span>
+                        <span id="l3-badge-objek" class="text-[10px] font-bold px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700">-</span>
+                      </div>
+                      <p class="text-[11px] text-slate-500 font-medium mt-0.5">Rincian historis keterlanjuran bayar &amp; pembukuan transaksi piutang</p>
+                    </div>
+                  </div>
+                  <span class="px-2.5 py-1 bg-amber-50 text-amber-700 text-[10px] font-bold rounded-lg border border-amber-200 flex items-center gap-1">
+                    <i class="fas fa-layer-group"></i> Halaman 3: Detail Spesifik
+                  </span>
+                </div>
+
+                <!-- 1. SELALU TAMPIL DI ATAS: Profil Peserta & Data Pinjaman -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  
+                  <!-- CARD 1: Profil Peserta (Auto-fill Read-Only) -->
+                  <div class="lg:col-span-2 bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wider">
+                      <i class="fas fa-id-card text-asabri-blue"></i> Profil Peserta (Auto-Fill)
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">No KTPA</span>
+                        <span id="l3-p-kta" class="font-mono font-bold text-slate-800 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">NRP / NOPENS</span>
+                        <span id="l3-p-nrp" class="font-mono font-bold text-slate-800 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200 sm:col-span-2">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">Nama Peserta</span>
+                        <span id="l3-p-nama" class="font-bold text-slate-900 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">Tanggal Lahir</span>
+                        <span id="l3-p-tgl-lahir" class="font-mono text-slate-700 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">TMT Masuk</span>
+                        <span id="l3-p-tmt-masuk" class="font-mono text-slate-700 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">Jenis Kelamin</span>
+                        <span id="l3-p-gender" class="font-semibold text-slate-800 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">NIK</span>
+                        <span id="l3-p-nik" class="font-mono font-bold text-slate-800 truncate block">-</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- CARD 2: Data Pinjaman (Always Visible) -->
+                  <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wider">
+                      <i class="fas fa-file-invoice-dollar text-indigo-600"></i> Data Pinjaman
+                    </h4>
+                    <div class="grid grid-cols-2 gap-2.5 text-xs">
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200 col-span-2">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">No Permohonan (Nama Hutang)</span>
+                        <span id="l3-d-nomor" class="font-mono font-bold text-indigo-900 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200 col-span-2">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">Jenis Pinjaman</span>
+                        <span id="l3-d-jenis" class="font-bold text-slate-800 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">Kategori Pinjaman</span>
+                        <span id="l3-d-kategori" class="font-semibold text-slate-700 block">Reguler</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">Total Pinjaman</span>
+                        <span id="l3-d-total" class="font-mono font-bold text-slate-900 block">Rp 0</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- 2. DROPDOWN 'PILIH TAMPILAN' -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-asabri-blue/10 text-asabri-blue flex items-center justify-center text-sm font-bold shrink-0">
+                      <i class="fas fa-filter"></i>
+                    </div>
+                    <div>
+                      <label for="l3-view-selector" class="block text-xs font-bold text-slate-800">Pilih Tampilan</label>
+                      <p class="text-[11px] text-slate-500 font-medium">Tentukan rincian data yang ingin ditampilkan</p>
+                    </div>
+                  </div>
+                  <div class="sm:w-72">
+                    <select id="l3-view-selector" onchange="handleLevel3ViewChange(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2 text-xs font-bold text-slate-800 outline-none focus:border-asabri-blue shadow-sm cursor-pointer">
+                      <option value="" selected>— Pilih —</option>
+                      <option value="rincian-hutang">Rincian Hutang</option>
+                      <option value="rincian-pembayaran">Rincian Pembayaran</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- 3. PLACEHOLDER (SEBELUM DROPDOWN DIPILIH) -->
+                <div id="l3-view-empty-placeholder" class="bg-slate-50/70 border-2 border-dashed border-slate-200 rounded-2xl p-10 text-center space-y-2">
+                  <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mx-auto flex items-center justify-center text-xl">
+                    <i class="fas fa-list-check"></i>
+                  </div>
+                  <h4 class="text-xs font-bold text-slate-700">Belum Ada Tampilan Dipilih</h4>
+                  <p class="text-[11px] text-slate-400">Silakan pilih opsi pada dropdown <strong>'Pilih Tampilan'</strong> di atas untuk melihat data.</p>
+                </div>
+
+                <!-- 4. CARD ESTIMASI & STATUS SISA HUTANG (HANYA TAMPIL SETELAH DROPDOWN DIPILIH) -->
+                <div id="l3-estimasi-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+                  <div class="bg-gradient-to-br from-blue-50 to-indigo-50/40 border border-blue-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                    <div>
+                      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Estimasi Potongan per Bulan</span>
+                      <span id="l3-estimasi-potongan" class="text-lg font-extrabold text-slate-900 font-mono">Rp 0</span>
+                      <p class="text-[10px] text-slate-400 mt-0.5">Disesuaikan batas maks. 30% Dapem (Rp 3.000.000)</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-asabri-blue/10 text-asabri-blue flex items-center justify-center text-lg">
+                      <i class="fas fa-calendar-minus"></i>
+                    </div>
+                  </div>
+
+                  <div class="bg-gradient-to-br from-purple-50 to-pink-50/40 border border-purple-100 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                    <div>
+                      <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Estimasi Bulan/Tahun Selesai</span>
+                      <span id="l3-estimasi-selesai" class="text-lg font-extrabold text-slate-900">-</span>
+                      <p class="text-[10px] text-slate-400 mt-0.5">Target pelunasan berdasarkan angsuran</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-lg">
+                      <i class="fas fa-hourglass-half"></i>
+                    </div>
+                  </div>
+
+                  <div class="bg-gradient-to-br from-rose-50 to-red-50/40 border border-rose-200 rounded-2xl p-4 flex items-center justify-between shadow-sm">
+                    <div>
+                      <span class="text-[10px] font-bold text-rose-600 uppercase tracking-wider block mb-1">Total Hutang (Sisa Terakhir)</span>
+                      <span id="l3-total-sisa-hutang" class="text-lg font-black text-rose-700 font-mono">Rp 0</span>
+                      <span id="l3-badge-status-lunas" class="inline-block text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 mt-1">BELUM LUNAS</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-lg shadow-inner">
+                      <i class="fas fa-receipt"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BAGIAN 1: TABEL RINCIAN HUTANG (10 TERATAS) -->
+                <div id="l3-section-rincian-hutang" class="space-y-3 pt-2 hidden">
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2.5 h-2.5 rounded-full bg-asabri-blue"></span>
+                      <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Tabel Rincian Hutang (10 Data Teratas)</h4>
+                      <span id="l3-table-type-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">Tabel Umum</span>
+                    </div>
+                    <span class="text-[11px] text-slate-400 font-medium italic">Rincian breakdown selisih per periode</span>
+                  </div>
+
+                  <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-xs text-left text-slate-650 border-collapse">
+                      <thead id="l3-rincian-hutang-thead">
+                        <!-- Dynamic columns injected here based on regular vs Tunjangan Cacat -->
+                      </thead>
+                      <tbody id="l3-rincian-hutang-tbody" class="divide-y divide-slate-150">
+                        <!-- Injected dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Pagination Controls Rincian Hutang -->
+                  <div id="l3-rincian-hutang-pagination" class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs hidden">
+                    <!-- Injected dynamically -->
+                  </div>
+
+                  <!-- MODAL EDIT RINCIAN HUTANG -->
+                  <div id="modal-edit-rincian-hutang" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden p-4">
+                    <div class="bg-white border border-slate-200 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-150">
+                      <div class="px-5 py-3.5 bg-slate-800 text-white flex items-center justify-between">
+                        <h3 class="text-xs font-bold flex items-center gap-2">
+                          <i class="fas fa-edit text-asabri-blue"></i> Edit Rincian Periode Hutang
+                        </h3>
+                        <button type="button" onclick="closeModalEditRincianHutang()" class="text-slate-400 hover:text-white transition-colors">
+                          <i class="fas fa-times"></i>
+                        </button>
+                      </div>
+                      <form id="form-edit-rincian-hutang" onsubmit="simpanEditRincianHutang(event)" class="p-5 space-y-4 text-xs">
+                        <input type="hidden" id="merh-item-id">
+                        
+                        <div class="grid grid-cols-2 gap-3">
+                          <div>
+                            <label class="block font-bold text-slate-700 mb-1">Periode</label>
+                            <input type="text" id="merh-periode" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 outline-none focus:border-asabri-blue">
+                          </div>
+                          <div>
+                            <label class="block font-bold text-slate-700 mb-1">Tanggal Mulai (Start)</label>
+                            <input type="date" id="merh-start-date" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-800 outline-none focus:border-asabri-blue">
+                          </div>
+                        </div>
+
+                        <!-- Field umum 11 kolom -->
+                        <div id="merh-fields-umum" class="space-y-3">
+                          <div class="grid grid-cols-2 gap-3">
+                            <div>
+                              <label class="block font-bold text-slate-600 mb-1">Penspok</label>
+                              <input type="text" id="merh-penspok" oninput="hitungTotalModalRincian()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-800 outline-none focus:border-asabri-blue">
+                            </div>
+                            <div>
+                              <label class="block font-bold text-slate-600 mb-1">Selisih Tunj. Istri</label>
+                              <input type="text" id="merh-tunj-istri" oninput="hitungTotalModalRincian()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-800 outline-none focus:border-asabri-blue">
+                            </div>
+                            <div>
+                              <label class="block font-bold text-slate-600 mb-1">Selisih Tunj. Anak</label>
+                              <input type="text" id="merh-tunj-anak" oninput="hitungTotalModalRincian()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-800 outline-none focus:border-asabri-blue">
+                            </div>
+                            <div>
+                              <label class="block font-bold text-slate-600 mb-1">Selisih Tunj. Beras</label>
+                              <input type="text" id="merh-tunj-beras" oninput="hitungTotalModalRincian()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-800 outline-none focus:border-asabri-blue">
+                            </div>
+                            <div>
+                              <label class="block font-bold text-slate-600 mb-1">Selisih Tunj. Lain</label>
+                              <input type="text" id="merh-tunj-lain" oninput="hitungTotalModalRincian()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-800 outline-none focus:border-asabri-blue">
+                            </div>
+                            <div>
+                              <label class="block font-bold text-slate-600 mb-1">Selisih Pot. BPJS</label>
+                              <input type="text" id="merh-pot-bpjs" oninput="hitungTotalModalRincian()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 font-mono text-slate-800 outline-none focus:border-asabri-blue">
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Field spesifik Cacat -->
+                        <div id="merh-fields-cacat" class="space-y-3 hidden">
+                          <div>
+                            <label class="block font-bold text-slate-600 mb-1">Tunjangan Cacat</label>
+                            <input type="text" id="merh-tunj-cacat" oninput="hitungTotalModalRincian()" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 font-mono font-bold text-slate-800 outline-none focus:border-asabri-blue">
+                          </div>
+                        </div>
+
+                        <!-- Total Hutang Preview -->
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 flex items-center justify-between">
+                          <span class="text-slate-700 font-semibold">Total Hutang Periode Ini:</span>
+                          <span id="merh-total-preview" class="font-mono font-bold text-rose-700 text-sm">Rp 0</span>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+                          <button type="button" onclick="closeModalEditRincianHutang()" class="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition-colors">Batal</button>
+                          <button type="submit" class="px-4 py-2 rounded-xl bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold transition-all shadow-md flex items-center gap-1.5">
+                            <i class="fas fa-save"></i> Simpan Perubahan
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- BAGIAN 2: FORM TRANSAKSI PIUTANG & TABEL RINCIAN PEMBAYARAN -->
+                <div id="l3-section-rincian-pembayaran" class="space-y-5 pt-4 border-t border-slate-200 hidden">
+                  
+                  <!-- Header & Form Toggle Button -->
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+                      <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Tabel Rincian Pembayaran &amp; Histori Transaksi (10 Teratas)</h4>
+                    </div>
+                    <button type="button" onclick="toggleFormTransaksi(true)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow-sm transition-all flex items-center gap-1.5">
+                      <i class="fas fa-plus"></i> Tambah Transaksi Piutang
+                    </button>
+                  </div>
+
+                  <!-- FORM TRANSAKSI PIUTANG (INLINE PANEL) -->
+                  <div id="form-transaksi-piutang-panel" class="bg-slate-50 border border-slate-300 rounded-2xl p-5 space-y-4 hidden shadow-sm">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
+                      <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-cash-register text-emerald-600"></i> Form Transaksi Piutang
+                      </h4>
+                      <button type="button" onclick="toggleFormTransaksi(false)" class="text-slate-400 hover:text-slate-600 text-sm">
+                        <i class="fas fa-xmark"></i>
+                      </button>
+                    </div>
+
+                    <form onsubmit="simpanTransaksiPiutang(event)" class="space-y-4 text-xs">
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label class="block font-bold text-slate-600 mb-1">Tipe Transaksi <span class="text-rose-500">*</span></label>
+                          <select id="ft-tipe-transaksi" required onchange="handleTipeTransaksiChange(this.value)" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-emerald-600 font-bold text-slate-800">
+                            <option value="Pembayaran" selected>Pembayaran</option>
+                            <option value="Migrasi">Migrasi</option>
+                            <option value="Pengambilan">Pengambilan</option>
+                            <option value="Ralat">Ralat</option>
+                            <option value="Pengembalian">Pengembalian</option>
+                            <option value="Pembatalan">Pembatalan</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label class="block font-bold text-slate-600 mb-1">Tanggal Transaksi <span class="text-rose-500">*</span></label>
+                          <input type="date" id="ft-tgl-transaksi" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-emerald-600 font-semibold">
+                        </div>
+                        <div>
+                          <label class="block font-bold text-slate-600 mb-1">Tanggal Bukti Setor <span class="text-rose-500">*</span></label>
+                          <input type="date" id="ft-tgl-bukti-setor" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-emerald-600 font-semibold">
+                        </div>
+                      </div>
+
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label class="block font-bold text-slate-600 mb-1">Potongan (Rp)</label>
+                          <input type="number" id="ft-potongan" placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-emerald-600 font-mono font-bold">
+                        </div>
+                        <div>
+                          <label class="block font-bold text-slate-600 mb-1">Total Nominal Transaksi (Rp) <span class="text-rose-500">*</span></label>
+                          <input type="number" id="ft-total" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-emerald-600 font-mono font-bold text-slate-900">
+                        </div>
+                        <div>
+                          <label class="block font-bold text-slate-600 mb-1">
+                            Dokumen Bukti Setor <span id="ft-doc-required-badge" class="text-rose-500 font-bold">* (Wajib untuk Pembayaran Manual)</span>
+                          </label>
+                          <input type="file" id="ft-dokumen" class="w-full bg-white border border-slate-300 rounded-xl px-2.5 py-1.5 text-[11px] outline-none file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                        </div>
+                      </div>
+
+                      <div>
+                        <label class="block font-bold text-slate-600 mb-1">Keterangan Transaksi</label>
+                        <input type="text" id="ft-keterangan" placeholder="Contoh: Pembayaran setoran kas cabang / transfer bank" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-emerald-600">
+                      </div>
+
+                      <!-- Total Hutang Preview & Info -->
+                      <div class="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                          <i class="fas fa-calculator text-emerald-600"></i>
+                          <span class="text-slate-700 font-semibold text-[11px]">Total Hutang (Sisa Terakhir): <strong id="ft-preview-sisa-saat-ini" class="text-rose-700 font-mono font-bold">Rp 0</strong></span>
+                        </div>
+                        <span class="text-[10px] text-emerald-800 font-bold">Sisa hutang akan ter-update otomatis secara realtime</span>
+                      </div>
+
+                      <div class="flex items-center justify-end gap-3 pt-2">
+                        <button type="button" onclick="toggleFormTransaksi(false)" class="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-xs transition-all">Batal</button>
+                        <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
+                          <i class="fas fa-check"></i> Simpan Transaksi
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- TABEL RINCIAN PEMBAYARAN -->
+                  <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-xs text-left text-slate-650 border-collapse">
+                      <thead>
+                        <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
+                          <th class="py-2.5 px-3 text-center">No</th>
+                          <th class="py-2.5 px-3">Tipe Transaksi</th>
+                          <th class="py-2.5 px-3">Tgl Transaksi</th>
+                          <th class="py-2.5 px-3">Tgl Bukti Setor</th>
+                          <th class="py-2.5 px-3">Keterangan</th>
+                          <th class="py-2.5 px-3 text-right">Potongan</th>
+                          <th class="py-2.5 px-3 text-right">Total Transaksi</th>
+                          <th class="py-2.5 px-3 text-center">Dokumen</th>
+                          <th class="py-2.5 px-3 text-right">Sisa Hutang</th>
+                          <th class="py-2.5 px-3 text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody id="l3-rincian-pembayaran-tbody" class="divide-y divide-slate-150">
+                        <!-- Injected dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Pagination Controls Rincian Pembayaran -->
+                  <div id="l3-rincian-pembayaran-pagination" class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs hidden">
+                    <!-- Injected dynamically -->
                   </div>
 
                 </div>
@@ -1182,29 +1608,49 @@
     }
 
     let hutangData = null;
+    let activeLevel3Nomor = null;
 
     function getHutangData() {
       const p = currentParticipant || {};
       const activeNopens = p.nopens || '-';
       const activeKtpa = p.no_ktpa || p.noPeserta || p.kpa || p.nrp || '-';
+      const isSitiNurhaliza = (p.nama && p.nama.toUpperCase().includes('SITI NURHALIZA')) || p.nopens === '8839201993' || p.nik === '3273120105910088';
 
       if (p.nik) {
         const localHutang = localStorage.getItem("hutangData_" + p.nik);
         if (localHutang) {
           try {
-            return JSON.parse(localHutang);
+            const parsed = JSON.parse(localHutang);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              if (isSitiNurhaliza && !parsed.some(h => (h.nomor || '').includes('SITI') || (h.jumlah === 2500000 && h.objekPensiun === 'Peserta'))) {
+                // Refresh cache for Siti Nurhaliza with specific dummy
+              } else {
+                return parsed;
+              }
+            }
           } catch(e) {}
         }
       }
 
       if (hutangData !== null) return hutangData;
 
-      const initialData = [
-        { tmt: '2026-09-01', nomor: 'HUT-2026/001', nopens: activeNopens, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Istri/Suami', jumlah: 2500000, dibayar: 2500000, status: 'Lunas' },
-        { tmt: '2026-08-15', nomor: 'HUT-2026/002', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG TGR', objekPensiun: 'Peserta Sendiri', jumlah: 750000, dibayar: 0, status: 'Belum Lunas' },
-        { tmt: '2026-07-10', nomor: 'HUT-2026/003', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG NON TGR', objekPensiun: 'Peserta Sendiri', jumlah: 15000000, dibayar: 3000000, status: 'Dalam Cicilan' },
-        { tmt: '2026-06-05', nomor: 'HUT-2026/004', nopens: activeNopens, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR PENSIUN', objekPensiun: 'Anak', jumlah: 1200000, dibayar: 0, status: 'Belum Lunas' }
-      ];
+      let initialData = [];
+      if (isSitiNurhaliza) {
+        initialData = [
+          { tmt: '2026-09-01', nomor: 'HUT-2026/SITI-01', nopens: activeNopens, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Peserta', jumlah: 2500000, dibayar: 2500000, sisaHutang: 0, status: 'Lunas', angsuranPerbulan: 900000 },
+          { tmt: '2026-08-15', nomor: 'HUT-2026/SITI-02', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG TGR', objekPensiun: 'Peserta', jumlah: 500000, dibayar: 0, sisaHutang: 500000, status: 'Belum Lunas' },
+          { tmt: '2026-07-10', nomor: 'HUT-2026/SITI-03', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG NON TGR', objekPensiun: 'Peserta', jumlah: 5000000, dibayar: 1000000, sisaHutang: 4000000, status: 'Dalam Cicilan' }
+        ];
+      } else {
+        initialData = [
+          { tmt: '2026-09-01', nomor: 'HUT-2026/001', nopens: activeNopens, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Istri/Suami', jumlah: 8000000, dibayar: 3000000, sisaHutang: 5000000, status: 'Dalam Cicilan' },
+          { tmt: '2026-08-15', nomor: 'HUT-2026/002', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG TGR', objekPensiun: 'Peserta Sendiri', jumlah: 750000, dibayar: 0, sisaHutang: 750000, status: 'Belum Lunas' },
+          { tmt: '2026-07-10', nomor: 'HUT-2026/003', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG NON TGR', objekPensiun: 'Peserta Sendiri', jumlah: 15000000, dibayar: 3000000, sisaHutang: 12000000, status: 'Dalam Cicilan' },
+          { tmt: '2026-06-05', nomor: 'HUT-2026/004', nopens: activeNopens, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR PENSIUN', objekPensiun: 'Anak', jumlah: 1200000, dibayar: 0, sisaHutang: 1200000, status: 'Belum Lunas' },
+          { tmt: '2026-05-20', nomor: 'HUT-2026/005', nopens: activeNopens, ktpa: activeKtpa, jenis: 'TUNJANGAN CACAT', objekPensiun: 'Peserta Sendiri', jumlah: 3600000, dibayar: 600000, sisaHutang: 3000000, status: 'Dalam Cicilan' },
+          { tmt: '2026-04-12', nomor: 'HUT-2026/006', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG TUNJANGAN ANAK WARI PRAJURIT', objekPensiun: 'Anak', jumlah: 4800000, dibayar: 800000, sisaHutang: 4000000, status: 'Dalam Cicilan' }
+        ];
+      }
 
       if (p.nik) {
         localStorage.setItem("hutangData_" + p.nik, JSON.stringify(initialData));
@@ -1220,7 +1666,7 @@
         const tbody = document.getElementById(tbodyId);
         if (!tbody) return;
         if (!list || list.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-400 font-medium italic">Tidak ada data piutang pada section ini.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-400 font-medium italic">Tidak ada data piutang pada section ini.</td></tr>`;
           return;
         }
         tbody.innerHTML = list.map(h => {
@@ -1236,11 +1682,6 @@
               <td class="py-2.5 px-3 font-mono font-bold text-slate-800">${formatRupiah(jumlah)}</td>
               <td class="py-2.5 px-3 font-mono text-emerald-600 font-semibold">${formatRupiah(dibayar)}</td>
               <td class="py-2.5 px-3 font-mono text-rose-600 font-bold">${formatRupiah(sisa)}</td>
-              <td class="py-2.5 px-3 text-center">
-                <button type="button" onclick="showPiutangPage2()" class="px-3 py-1 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded text-[10px] font-bold shadow-sm transition-all flex items-center gap-1 mx-auto">
-                  <i class="fas fa-eye text-[9px]"></i> Lihat Detail
-                </button>
-              </td>
             </tr>
           `;
         }).join('');
@@ -1284,16 +1725,20 @@
     function showPiutangPage1() {
       const page1 = document.getElementById('piutang-view-page1');
       const page2 = document.getElementById('piutang-view-page2');
+      const page3 = document.getElementById('piutang-view-page3');
       if (page1) page1.classList.remove('hidden');
       if (page2) page2.classList.add('hidden');
+      if (page3) page3.classList.add('hidden');
       renderPiutangTables();
     }
 
     function showPiutangPage2() {
       const page1 = document.getElementById('piutang-view-page1');
       const page2 = document.getElementById('piutang-view-page2');
+      const page3 = document.getElementById('piutang-view-page3');
       if (page1) page1.classList.add('hidden');
       if (page2) page2.classList.remove('hidden');
+      if (page3) page3.classList.add('hidden');
 
       // Populate Profil Peserta Read-Only
       const p = currentParticipant || {};
@@ -1317,7 +1762,7 @@
         const tbody = document.getElementById(elementId);
         if (!tbody) return;
         if (list.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="6" class="py-3.5 text-center text-slate-400 font-medium italic">Tidak ada data piutang pada section ini.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="7" class="py-3.5 text-center text-slate-400 font-medium italic">Tidak ada data piutang pada section ini.</td></tr>`;
           return;
         }
         tbody.innerHTML = list.map(h => {
@@ -1333,16 +1778,21 @@
               <td class="py-2.5 px-3 font-mono text-slate-800 font-bold">${formatRupiah(jumlahVal)}</td>
               <td class="py-2.5 px-3 font-mono text-emerald-600 font-semibold">${formatRupiah(sudahBayarVal)}</td>
               <td class="py-2.5 px-3 font-mono text-rose-600 font-bold">${formatRupiah(sisaHutangVal)}</td>
+              <td class="py-2.5 px-3 text-center">
+                <button type="button" onclick="showPiutangPage3('${h.nomor}')" class="px-2.5 py-1 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-[10px] font-bold shadow-sm transition-all flex items-center gap-1 mx-auto" title="Buka Detail Spesifik (Level 3)">
+                  <i class="fas fa-eye text-[9px]"></i> Rincian
+                </button>
+              </td>
             </tr>
           `;
         }).join('');
       };
 
       // Auto-routing logic untuk 4 Sub-Section Halaman 2:
-      // Sub-Section I: Keterlanjuran Bayar Istri/Suami
+      // Sub-Section I: Keterlanjuran Bayar (Istri/Suami / Peserta Sendiri)
       const sec1List = hutangData.filter(h => 
         (h.jenis || '').toUpperCase().includes('KETERLANJURAN') && 
-        (h.objekPensiun === 'Istri/Suami' || !h.objekPensiun)
+        (h.objekPensiun === 'Istri/Suami' || h.objekPensiun === 'Peserta' || h.objekPensiun === 'Peserta Sendiri' || !h.objekPensiun)
       );
 
       // Sub-Section II: Keterlanjuran Bayar Anak
@@ -1356,15 +1806,908 @@
         (h.jenis || '').toUpperCase().includes('TGR') && !(h.jenis || '').toUpperCase().includes('NON')
       );
 
-      // Sub-Section IV: Hutang Non-TGR (termasuk sisa jenis hutang lain)
+      // Sub-Section IV: Hutang Non-TGR (termasuk sisa jenis hutang lain seperti Tunjangan Cacat)
       const sec4List = hutangData.filter(h => 
-        !sec1List.includes(h) && !sec2List.includes(h) && !sec3List.includes(h)
+        !sec1List.includes(h) && !sec2List.includes(h) && !sec3List.includes(h) &&
+        !(h.jenis || '').toUpperCase().includes('WARI PRAJURIT')
+      );
+
+      // Section Khusus: Hutang Tunjangan Anak pada Pensiun Wari Prajurit : Penspok Yatim/Piatu
+      const secKhususList = hutangData.filter(h => 
+        (h.jenis || '').toUpperCase().includes('WARI PRAJURIT') ||
+        (h.objekPensiun === 'Anak' && (h.kategoriPinjaman === 'Khusus' || (h.jenis || '').toUpperCase().includes('YATIM')))
       );
 
       renderSectionTable(sec1List, 'tbody-sec1-istri-suami');
       renderSectionTable(sec2List, 'tbody-sec2-anak');
       renderSectionTable(sec3List, 'tbody-sec3-tgr');
       renderSectionTable(sec4List, 'tbody-sec4-nontgr');
+
+      // Render Section Khusus Wari Prajurit
+      const wariTbody = document.getElementById('tbody-sec-khusus-wari');
+      if (wariTbody) {
+        if (secKhususList.length === 0) {
+          wariTbody.innerHTML = `<tr><td colspan="13" class="py-3.5 text-center text-slate-400 font-medium italic">Tidak ada data piutang wari prajurit pada section ini.</td></tr>`;
+        } else {
+          wariTbody.innerHTML = secKhususList.map((h, idx) => {
+            const penspok = 2400000;
+            const tunjIstri = 240000;
+            const tunjAnak = 48000;
+            const penspokYatim = 1800000;
+            const tunjBeras = 144000;
+            const tunjLain = 0;
+            const potBPJS = 24000;
+            const totHutang = h.sisaHutang !== undefined ? h.sisaHutang : h.jumlah;
+
+            return `
+              <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
+                <td class="py-2.5 px-3 text-center font-bold text-slate-400">${idx + 1}</td>
+                <td class="py-2.5 px-3 font-mono text-slate-600">${formatDateString(h.tmt)}</td>
+                <td class="py-2.5 px-3 font-mono text-slate-700">2026-01</td>
+                <td class="py-2.5 px-3 font-mono text-slate-800 font-semibold">${formatRupiah(penspok)}</td>
+                <td class="py-2.5 px-3 font-mono text-slate-700">${formatRupiah(tunjIstri)}</td>
+                <td class="py-2.5 px-3 font-mono text-slate-700">${formatRupiah(tunjAnak)}</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-amber-700 bg-amber-50/60">${formatRupiah(penspokYatim)}</td>
+                <td class="py-2.5 px-3 font-mono text-slate-700">${formatRupiah(tunjBeras)}</td>
+                <td class="py-2.5 px-3 font-mono text-slate-700">${formatRupiah(tunjLain)}</td>
+                <td class="py-2.5 px-3 font-mono text-slate-700">${formatRupiah(potBPJS)}</td>
+                <td class="py-2.5 px-3 font-mono font-bold text-rose-600">${formatRupiah(totHutang)}</td>
+                <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">${h.status || 'Aktif'}</span></td>
+                <td class="py-2.5 px-3 text-center">
+                  <button type="button" onclick="showPiutangPage3('${h.nomor}')" class="px-2.5 py-1 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-[10px] font-bold shadow-sm transition-all flex items-center gap-1 mx-auto" title="Buka Detail Spesifik (Level 3)">
+                    <i class="fas fa-eye text-[9px]"></i> Rincian
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      }
+    }
+
+    // ==========================================
+    // LEVEL 3: DETAIL SPESIFIK 1 JENIS HUTANG
+    // ==========================================
+
+    function showPiutangPage3(nomorOrObj) {
+      const page1 = document.getElementById('piutang-view-page1');
+      const page2 = document.getElementById('piutang-view-page2');
+      const page3 = document.getElementById('piutang-view-page3');
+      if (page1) page1.classList.add('hidden');
+      if (page2) page2.classList.add('hidden');
+      if (page3) page3.classList.remove('hidden');
+
+      hutangData = getHutangData();
+      let targetHutang = null;
+      if (typeof nomorOrObj === 'string') {
+        targetHutang = hutangData.find(h => h.nomor === nomorOrObj || h.noHutangPiutang === nomorOrObj);
+      } else if (nomorOrObj && typeof nomorOrObj === 'object') {
+        targetHutang = nomorOrObj;
+      }
+      if (!targetHutang && hutangData.length > 0) targetHutang = hutangData[0];
+      if (!targetHutang) {
+        targetHutang = { nomor: 'HUT-2026/001', jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Istri/Suami', jumlah: 2500000, dibayar: 500000, sisaHutang: 2000000 };
+      }
+
+      activeLevel3Nomor = targetHutang.nomor;
+
+      // Header Badges
+      const titleEl = document.getElementById('l3-title-jenis');
+      const badgeNomorEl = document.getElementById('l3-badge-nomor');
+      const badgeObjekEl = document.getElementById('l3-badge-objek');
+      if (titleEl) titleEl.textContent = targetHutang.jenis || 'Rincian & Transaksi Piutang';
+      if (badgeNomorEl) badgeNomorEl.textContent = targetHutang.nomor || '-';
+      if (badgeObjekEl) badgeObjekEl.textContent = 'Objek: ' + (targetHutang.objekPensiun || 'Peserta');
+
+      // 1. Auto-fill Profil Peserta (Card 1)
+      const p = currentParticipant || {};
+      const setTxt = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt || '-'; };
+      setTxt('l3-p-kta', p.no_ktpa || p.noPeserta || p.kpa || 'KTPA-991283');
+      setTxt('l3-p-nrp', p.nopens || p.nrp || p.nrp_nip || '800012345');
+      setTxt('l3-p-nama', (p.nama || 'Ahmad Fauzi').toUpperCase());
+      setTxt('l3-p-tgl-lahir', formatDateString(p.tanggalLahir || p.tanggal_lahir || p.tglLahir || '1975-05-12'));
+      setTxt('l3-p-tmt-masuk', formatDateString(p.tmtPengangkatan || p.tmt_masuk || p.tmtPrajurit || p.tmtMasuk || '1998-01-01'));
+      setTxt('l3-p-gender', (p.jenis_kelamin === 'P' || p.jenisKelamin === 'Perempuan' || p.jenis_kelamin === 'PEREMPUAN') ? 'PEREMPUAN' : 'LAKI-LAKI');
+      setTxt('l3-p-nik', p.nik || p.nomorIdentitas || '3174012345670001');
+
+      // 2. Auto-fill Data Pinjaman (Card 2)
+      setTxt('l3-d-nomor', targetHutang.nomor || targetHutang.noHutangPiutang || '-');
+      setTxt('l3-d-jenis', targetHutang.jenis || '-');
+      setTxt('l3-d-kategori', targetHutang.kategoriPinjaman || 'Reguler');
+      setTxt('l3-d-total', formatRupiah(targetHutang.jumlah || 0));
+
+      // Reset Dropdown Selector to default ("" / "— Pilih —")
+      const selector = document.getElementById('l3-view-selector');
+      if (selector) selector.value = '';
+      handleLevel3ViewChange('');
+      
+      // Scroll to top of Level 3 smoothly
+      page3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Rumus Estimasi Potongan per Bulan (Maksimal 30% dari Dapem Bulanan)
+    function hitungEstimasiPotonganPerBulan(dapemBulanan, sisaHutang) {
+      const batasMaksimalPotong = (dapemBulanan || 3000000) * 0.30; // 30% dari Dapem bulanan
+      const estimasiPotongan = Math.min(batasMaksimalPotong, sisaHutang);
+      return estimasiPotongan;
+    }
+
+    // Rumus Estimasi Bulan / Tahun Selesai Pelunasan
+    function hitungEstimasiBulanTahunSelesai(sisaHutang, estimasiPotonganPerBulan) {
+      if (sisaHutang <= 0 || estimasiPotonganPerBulan <= 0) return 'Sudah Lunas';
+      const jumlahBulan = Math.ceil(sisaHutang / estimasiPotonganPerBulan);
+      const targetDate = new Date();
+      targetDate.setMonth(targetDate.getMonth() + jumlahBulan);
+      const monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      return `${monthNames[targetDate.getMonth()]} ${targetDate.getFullYear()} (${jumlahBulan} bln)`;
+    }
+
+    // Update Card Estimasi & Sisa Hutang
+    function updateLevel3Estimasi(targetHutang) {
+      if (!targetHutang) return;
+      
+      const txList = getTransaksiList(targetHutang.nomor);
+      let sisaVal = targetHutang.sisaHutang !== undefined ? targetHutang.sisaHutang : Math.max(0, (targetHutang.jumlah || 0) - (targetHutang.dibayar || 0));
+      if (txList && txList.length > 0) {
+        const lastTx = txList[txList.length - 1];
+        if (lastTx && lastTx.sisaHutang !== undefined) {
+          sisaVal = lastTx.sisaHutang;
+        }
+      }
+      
+      const p = currentParticipant || {};
+      const dapemBulanan = p.dapemBulanan || p.penspok || p.gajiPokok || 3000000;
+      
+      const potPerBulan = hitungEstimasiPotonganPerBulan(dapemBulanan, (sisaVal > 0 ? sisaVal : (targetHutang.jumlah || 2500000)));
+      let targetSelesaiStr = hitungEstimasiBulanTahunSelesai(sisaVal, potPerBulan);
+      
+      if (sisaVal === 0) {
+        targetSelesaiStr = 'Desember 2026 (3 bln)';
+      }
+      
+      const estimasiPotonganEl = document.getElementById('l3-estimasi-potongan');
+      const estimasiSelesaiEl = document.getElementById('l3-estimasi-selesai');
+      const totalSisaEl = document.getElementById('l3-total-sisa-hutang');
+      const statusBadgeEl = document.getElementById('l3-badge-status-lunas');
+
+      if (estimasiPotonganEl) estimasiPotonganEl.textContent = formatRupiah(potPerBulan) + ' / bln';
+      if (estimasiSelesaiEl) estimasiSelesaiEl.textContent = targetSelesaiStr;
+      if (totalSisaEl) totalSisaEl.textContent = formatRupiah(sisaVal);
+      
+      if (statusBadgeEl) {
+        if (sisaVal === 0) {
+          statusBadgeEl.textContent = 'LUNAS';
+          statusBadgeEl.className = 'inline-block text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 mt-1';
+        } else {
+          statusBadgeEl.textContent = targetHutang.dibayar > 0 ? 'DALAM CICILAN' : 'BELUM LUNAS';
+          statusBadgeEl.className = 'inline-block text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 mt-1';
+        }
+      }
+    }
+
+    // Handler Dropdown Selector: Show/Hide Tables & Estimasi Card
+    function handleLevel3ViewChange(view) {
+      const placeholder = document.getElementById('l3-view-empty-placeholder');
+      const estimasiContainer = document.getElementById('l3-estimasi-container');
+      const secHutang = document.getElementById('l3-section-rincian-hutang');
+      const secPembayaran = document.getElementById('l3-section-rincian-pembayaran');
+      
+      hutangData = getHutangData();
+      const targetHutang = hutangData.find(h => h.nomor === activeLevel3Nomor) || hutangData[0];
+
+      if (view === 'rincian-hutang') {
+        if (placeholder) placeholder.classList.add('hidden');
+        if (estimasiContainer) estimasiContainer.classList.remove('hidden');
+        if (secHutang) secHutang.classList.remove('hidden');
+        if (secPembayaran) secPembayaran.classList.add('hidden');
+        if (targetHutang) {
+          updateLevel3Estimasi(targetHutang);
+          renderLevel3RincianHutangTable(targetHutang);
+        }
+      } else if (view === 'rincian-pembayaran') {
+        if (placeholder) placeholder.classList.add('hidden');
+        if (estimasiContainer) estimasiContainer.classList.remove('hidden');
+        if (secHutang) secHutang.classList.add('hidden');
+        if (secPembayaran) secPembayaran.classList.remove('hidden');
+        if (targetHutang) {
+          updateLevel3Estimasi(targetHutang);
+          renderLevel3RincianPembayaranTable(targetHutang);
+        }
+      } else {
+        // Default: Sembunyikan Estimasi & kedua tabel, tampilkan placeholder
+        if (placeholder) placeholder.classList.remove('hidden');
+        if (estimasiContainer) estimasiContainer.classList.add('hidden');
+        if (secHutang) secHutang.classList.add('hidden');
+        if (secPembayaran) secPembayaran.classList.add('hidden');
+      }
+    }
+
+    let l3HutangCurrentPage = 1;
+    let l3PembayaranCurrentPage = 1;
+    const L3_ITEMS_PER_PAGE = 10;
+
+    // Helper Generator Kontrol Pagination
+    function renderPaginationControls(containerId, currentPage, totalItems, itemsPerPage, callbackFnName) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      const totalPages = Math.ceil(totalItems / itemsPerPage);
+      if (totalItems <= itemsPerPage || totalPages <= 1) {
+        container.innerHTML = '';
+        container.classList.add('hidden');
+        return;
+      }
+
+      container.classList.remove('hidden');
+
+      const startItem = (currentPage - 1) * itemsPerPage + 1;
+      const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+      // Build page numbers array with ellipsis if > 7 pages
+      let pageNumbers = [];
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+      } else {
+        if (currentPage <= 4) {
+          pageNumbers = [1, 2, 3, 4, 5, '...', totalPages];
+        } else if (currentPage >= totalPages - 3) {
+          pageNumbers = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+        } else {
+          pageNumbers = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+        }
+      }
+
+      const prevDisabled = currentPage === 1;
+      const nextDisabled = currentPage === totalPages;
+
+      const buttonsHtml = pageNumbers.map(p => {
+        if (p === '...') {
+          return `<span class="px-2 py-1 text-slate-400 font-bold select-none">...</span>`;
+        }
+        const isActive = p === currentPage;
+        if (isActive) {
+          return `<button type="button" class="px-3 py-1.5 rounded-lg bg-asabri-blue text-white font-bold text-xs shadow-sm">${p}</button>`;
+        } else {
+          return `<button type="button" onclick="${callbackFnName}(${p})" class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs transition-colors">${p}</button>`;
+        }
+      }).join('');
+
+      container.innerHTML = `
+        <div class="text-[11px] text-slate-500 font-medium">
+          Menampilkan <span class="font-bold text-slate-800">${startItem}</span> - <span class="font-bold text-slate-800">${endItem}</span> dari <span class="font-bold text-slate-800">${totalItems}</span> data
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" ${prevDisabled ? 'disabled' : `onclick="${callbackFnName}(${currentPage - 1})"`} class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold transition-all flex items-center gap-1 ${prevDisabled ? 'bg-slate-50 text-slate-300 cursor-not-allowed border-slate-100' : 'bg-white hover:bg-slate-50 text-slate-700 shadow-sm'}">
+            <i class="fas fa-chevron-left text-[9px]"></i> Sebelumnya
+          </button>
+          <div class="flex items-center gap-1">
+            ${buttonsHtml}
+          </div>
+          <button type="button" ${nextDisabled ? 'disabled' : `onclick="${callbackFnName}(${currentPage + 1})"`} class="px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-bold transition-all flex items-center gap-1 ${nextDisabled ? 'bg-slate-50 text-slate-300 cursor-not-allowed border-slate-100' : 'bg-white hover:bg-slate-50 text-slate-700 shadow-sm'}">
+            Selanjutnya <i class="fas fa-chevron-right text-[9px]"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    function changeL3HutangPage(page) {
+      l3HutangCurrentPage = page;
+      hutangData = getHutangData();
+      const targetHutang = hutangData.find(h => h.nomor === activeLevel3Nomor) || hutangData[0];
+      if (targetHutang) renderLevel3RincianHutangTable(targetHutang);
+    }
+
+    function changeL3PembayaranPage(page) {
+      l3PembayaranCurrentPage = page;
+      hutangData = getHutangData();
+      const targetHutang = hutangData.find(h => h.nomor === activeLevel3Nomor) || hutangData[0];
+      if (targetHutang) renderLevel3RincianPembayaranTable(targetHutang);
+    }
+
+    // Storage & State Data Rincian Hutang (Breakdown per Periode)
+    function getRincianHutangList(nomor, hutang) {
+      if (!nomor) return [];
+      const key = "rincianHutangList_" + nomor;
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        } catch(e) {}
+      }
+
+      // Initial breakdown generation
+      const isTunjanganCacat = (hutang.jenis || '').toUpperCase().includes('CACAT');
+      const totalMonths = 24;
+      const list = [];
+
+      if (isTunjanganCacat) {
+        const baseMonthly = Math.round((hutang.jumlah || 3000000) / totalMonths);
+        for (let i = 1; i <= totalMonths; i++) {
+          const year = 2024 + Math.floor((i + 9) / 12);
+          const m = ((i + 9) % 12) + 1;
+          const monthStr = (m < 10 ? '0' + m : m);
+          const periodStr = `${year}-${monthStr}`;
+          list.push({
+            id: i,
+            startDate: `${periodStr}-01`,
+            periode: periodStr,
+            tunjanganCacat: baseMonthly,
+            totalHutang: baseMonthly,
+            isCacat: true
+          });
+        }
+      } else {
+        const baseTot = Math.round((hutang.jumlah || 2500000) / totalMonths);
+        const penspok = 2400000;
+        const tunjIstri = Math.round(baseTot * 0.45);
+        const tunjAnak = Math.round(baseTot * 0.25);
+        const tunjBeras = Math.round(baseTot * 0.15);
+        const tunjLain = Math.round(baseTot * 0.10);
+        const potBPJS = Math.round(baseTot * 0.05);
+
+        for (let i = 1; i <= totalMonths; i++) {
+          const year = 2024 + Math.floor((i + 9) / 12);
+          const m = ((i + 9) % 12) + 1;
+          const monthStr = (m < 10 ? '0' + m : m);
+          const periodStr = `${year}-${monthStr}`;
+          list.push({
+            id: i,
+            startDate: `${periodStr}-01`,
+            periode: periodStr,
+            penspok: penspok,
+            selisihTunjIstri: tunjIstri,
+            selisihTunjAnak: tunjAnak,
+            selisihTunjBeras: tunjBeras,
+            selisihTunjLain: tunjLain,
+            selisihPotBPJS: potBPJS,
+            totalHutang: baseTot,
+            isCacat: false
+          });
+        }
+      }
+
+      localStorage.setItem(key, JSON.stringify(list));
+      return list;
+    }
+
+    // Modal Edit Rincian Hutang Handlers
+    function editRincianHutang(rowId) {
+      hutangData = getHutangData();
+      const targetHutang = hutangData.find(h => h.nomor === activeLevel3Nomor) || hutangData[0];
+      if (!targetHutang) return;
+      
+      const list = getRincianHutangList(targetHutang.nomor, targetHutang);
+      const row = list.find(r => r.id === rowId);
+      if (!row) return;
+
+      const modal = document.getElementById('modal-edit-rincian-hutang');
+      if (!modal) return;
+
+      document.getElementById('merh-item-id').value = row.id;
+      document.getElementById('merh-periode').value = row.periode || '';
+      document.getElementById('merh-start-date').value = row.startDate || (row.periode ? `${row.periode}-01` : '');
+
+      const isCacat = row.isCacat || (targetHutang.jenis || '').toUpperCase().includes('CACAT');
+      const fUmum = document.getElementById('merh-fields-umum');
+      const fCacat = document.getElementById('merh-fields-cacat');
+
+      if (isCacat) {
+        if (fUmum) fUmum.classList.add('hidden');
+        if (fCacat) fCacat.classList.remove('hidden');
+        document.getElementById('merh-tunj-cacat').value = formatRupiah(row.tunjanganCacat || row.totalHutang || 0);
+      } else {
+        if (fUmum) fUmum.classList.remove('hidden');
+        if (fCacat) fCacat.classList.add('hidden');
+        document.getElementById('merh-penspok').value = formatRupiah(row.penspok || 2400000);
+        document.getElementById('merh-tunj-istri').value = formatRupiah(row.selisihTunjIstri || 0);
+        document.getElementById('merh-tunj-anak').value = formatRupiah(row.selisihTunjAnak || 0);
+        document.getElementById('merh-tunj-beras').value = formatRupiah(row.selisihTunjBeras || 0);
+        document.getElementById('merh-tunj-lain').value = formatRupiah(row.selisihTunjLain || 0);
+        document.getElementById('merh-pot-bpjs').value = formatRupiah(row.selisihPotBPJS || 0);
+      }
+
+      hitungTotalModalRincian();
+      modal.classList.remove('hidden');
+    }
+
+    function closeModalEditRincianHutang() {
+      const modal = document.getElementById('modal-edit-rincian-hutang');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function hitungTotalModalRincian() {
+      const fCacat = document.getElementById('merh-fields-cacat');
+      const isCacat = fCacat && !fCacat.classList.contains('hidden');
+      let tot = 0;
+      if (isCacat) {
+        tot = parseRupiah(document.getElementById('merh-tunj-cacat')?.value) || 0;
+      } else {
+        const tunjIstri = parseRupiah(document.getElementById('merh-tunj-istri')?.value) || 0;
+        const tunjAnak = parseRupiah(document.getElementById('merh-tunj-anak')?.value) || 0;
+        const tunjBeras = parseRupiah(document.getElementById('merh-tunj-beras')?.value) || 0;
+        const tunjLain = parseRupiah(document.getElementById('merh-tunj-lain')?.value) || 0;
+        const potBPJS = parseRupiah(document.getElementById('merh-pot-bpjs')?.value) || 0;
+        tot = tunjIstri + tunjAnak + tunjBeras + tunjLain + potBPJS;
+      }
+      const preview = document.getElementById('merh-total-preview');
+      if (preview) preview.textContent = formatRupiah(tot);
+    }
+
+    function simpanEditRincianHutang(e) {
+      e.preventDefault();
+      hutangData = getHutangData();
+      const targetHutang = hutangData.find(h => h.nomor === activeLevel3Nomor) || hutangData[0];
+      if (!targetHutang) return;
+
+      const idVal = parseInt(document.getElementById('merh-item-id')?.value, 10);
+      const list = getRincianHutangList(targetHutang.nomor, targetHutang);
+      const row = list.find(r => r.id === idVal);
+      if (!row) return;
+
+      row.periode = document.getElementById('merh-periode')?.value || row.periode;
+      row.startDate = document.getElementById('merh-start-date')?.value || row.startDate;
+
+      const isCacat = row.isCacat;
+      if (isCacat) {
+        row.tunjanganCacat = parseRupiah(document.getElementById('merh-tunj-cacat')?.value) || 0;
+        row.totalHutang = row.tunjanganCacat;
+      } else {
+        row.penspok = parseRupiah(document.getElementById('merh-penspok')?.value) || 0;
+        row.selisihTunjIstri = parseRupiah(document.getElementById('merh-tunj-istri')?.value) || 0;
+        row.selisihTunjAnak = parseRupiah(document.getElementById('merh-tunj-anak')?.value) || 0;
+        row.selisihTunjBeras = parseRupiah(document.getElementById('merh-tunj-beras')?.value) || 0;
+        row.selisihTunjLain = parseRupiah(document.getElementById('merh-tunj-lain')?.value) || 0;
+        row.selisihPotBPJS = parseRupiah(document.getElementById('merh-pot-bpjs')?.value) || 0;
+        row.totalHutang = row.selisihTunjIstri + row.selisihTunjAnak + row.selisihTunjBeras + row.selisihTunjLain + row.selisihPotBPJS;
+      }
+
+      localStorage.setItem("rincianHutangList_" + targetHutang.nomor, JSON.stringify(list));
+      closeModalEditRincianHutang();
+      renderLevel3RincianHutangTable(targetHutang);
+      showToast("Rincian Diperbarui", `Rincian periode ${row.periode} berhasil diperbarui.`, "success");
+    }
+
+    function hapusRincianHutang(rowId) {
+      if (!confirm("Apakah Anda yakin ingin menghapus data rincian periode ini?")) return;
+      hutangData = getHutangData();
+      const targetHutang = hutangData.find(h => h.nomor === activeLevel3Nomor) || hutangData[0];
+      if (!targetHutang) return;
+
+      const list = getRincianHutangList(targetHutang.nomor, targetHutang);
+      const filtered = list.filter(r => r.id !== rowId);
+      localStorage.setItem("rincianHutangList_" + targetHutang.nomor, JSON.stringify(filtered));
+
+      renderLevel3RincianHutangTable(targetHutang);
+      showToast("Rincian Dihapus", "Data rincian periode berhasil dihapus dari daftar.", "warning");
+    }
+
+    // Render Tabel Rincian Hutang (dengan Pagination jika > 10)
+    function renderLevel3RincianHutangTable(hutang) {
+      const thead = document.getElementById('l3-rincian-hutang-thead');
+      const tbody = document.getElementById('l3-rincian-hutang-tbody');
+      const badgeType = document.getElementById('l3-table-type-badge');
+      if (!thead || !tbody) return;
+
+      const allRows = getRincianHutangList(hutang.nomor, hutang);
+      const isTunjanganCacat = (hutang.jenis || '').toUpperCase().includes('CACAT');
+
+      if (isTunjanganCacat) {
+        if (badgeType) badgeType.textContent = 'Tunjangan Cacat (Spesifik)';
+        thead.innerHTML = `
+          <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
+            <th class="py-2.5 px-3 text-center">No</th>
+            <th class="py-2.5 px-3">Start</th>
+            <th class="py-2.5 px-3">Periode</th>
+            <th class="py-2.5 px-3 text-right">Tunjangan Cacat</th>
+            <th class="py-2.5 px-3 text-right">Total Hutang Keterlanjuran Bayar</th>
+            <th class="py-2.5 px-3 text-center">Aksi</th>
+          </tr>
+        `;
+
+        if (allRows.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-400 font-medium italic">Tidak ada data rincian hutang.</td></tr>`;
+          renderPaginationControls('l3-rincian-hutang-pagination', 1, 0, L3_ITEMS_PER_PAGE, 'changeL3HutangPage');
+          return;
+        }
+
+        // Slice pagination
+        const startIndex = (l3HutangCurrentPage - 1) * L3_ITEMS_PER_PAGE;
+        const pageRows = allRows.slice(startIndex, startIndex + L3_ITEMS_PER_PAGE);
+
+        tbody.innerHTML = pageRows.map((r, idx) => {
+          const rowNo = startIndex + idx + 1;
+          return `
+            <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
+              <td class="py-2.5 px-3 text-center font-bold text-slate-400">${rowNo}</td>
+              <td class="py-2.5 px-3 font-mono text-slate-600">${r.startDate || '-'}</td>
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-800">${r.periode || '-'}</td>
+              <td class="py-2.5 px-3 text-right font-mono text-slate-700 font-semibold">${formatRupiah(r.tunjanganCacat || r.totalHutang || 0)}</td>
+              <td class="py-2.5 px-3 text-right font-mono font-bold text-rose-600">${formatRupiah(r.totalHutang || 0)}</td>
+              <td class="py-2.5 px-3 text-center">
+                <div class="inline-flex items-center gap-1.5 justify-center">
+                  <button type="button" onclick="editRincianHutang(${r.id})" class="p-1 hover:text-asabri-blue text-slate-400 transition-colors" title="Edit Rincian Periode"><i class="fas fa-edit"></i></button>
+                  <button type="button" onclick="hapusRincianHutang(${r.id})" class="p-1 hover:text-rose-600 text-slate-400 transition-colors" title="Hapus Rincian Periode"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        // Render pagination controls
+        renderPaginationControls('l3-rincian-hutang-pagination', l3HutangCurrentPage, allRows.length, L3_ITEMS_PER_PAGE, 'changeL3HutangPage');
+
+      } else {
+        if (badgeType) badgeType.textContent = 'Tabel Umum (11 Kolom)';
+        thead.innerHTML = `
+          <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
+            <th class="py-2.5 px-3 text-center">No</th>
+            <th class="py-2.5 px-3">Start</th>
+            <th class="py-2.5 px-3">Periode</th>
+            <th class="py-2.5 px-3 text-right">Penspok</th>
+            <th class="py-2.5 px-3 text-right">Selisih Tunj. Istri</th>
+            <th class="py-2.5 px-3 text-right">Selisih Tunj. Anak</th>
+            <th class="py-2.5 px-3 text-right">Selisih Tunj. Beras</th>
+            <th class="py-2.5 px-3 text-right">Selisih Tunj. Lain</th>
+            <th class="py-2.5 px-3 text-right">Selisih Pot. BPJS</th>
+            <th class="py-2.5 px-3 text-right">Total Hutang</th>
+            <th class="py-2.5 px-3 text-center">Aksi</th>
+          </tr>
+        `;
+
+        if (allRows.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="11" class="py-4 text-center text-slate-400 font-medium italic">Tidak ada data rincian hutang.</td></tr>`;
+          renderPaginationControls('l3-rincian-hutang-pagination', 1, 0, L3_ITEMS_PER_PAGE, 'changeL3HutangPage');
+          return;
+        }
+
+        // Slice pagination
+        const startIndex = (l3HutangCurrentPage - 1) * L3_ITEMS_PER_PAGE;
+        const pageRows = allRows.slice(startIndex, startIndex + L3_ITEMS_PER_PAGE);
+
+        tbody.innerHTML = pageRows.map((r, idx) => {
+          const rowNo = startIndex + idx + 1;
+          return `
+            <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
+              <td class="py-2.5 px-3 text-center font-bold text-slate-400">${rowNo}</td>
+              <td class="py-2.5 px-3 font-mono text-slate-600">${r.startDate || '-'}</td>
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-800">${r.periode || '-'}</td>
+              <td class="py-2.5 px-3 text-right font-mono text-slate-600">${formatRupiah(r.penspok || 0)}</td>
+              <td class="py-2.5 px-3 text-right font-mono text-slate-700">${formatRupiah(r.selisihTunjIstri || 0)}</td>
+              <td class="py-2.5 px-3 text-right font-mono text-slate-700">${formatRupiah(r.selisihTunjAnak || 0)}</td>
+              <td class="py-2.5 px-3 text-right font-mono text-slate-700">${formatRupiah(r.selisihTunjBeras || 0)}</td>
+              <td class="py-2.5 px-3 text-right font-mono text-slate-700">${formatRupiah(r.selisihTunjLain || 0)}</td>
+              <td class="py-2.5 px-3 text-right font-mono text-slate-700">${formatRupiah(r.selisihPotBPJS || 0)}</td>
+              <td class="py-2.5 px-3 text-right font-mono font-bold text-rose-600">${formatRupiah(r.totalHutang || 0)}</td>
+              <td class="py-2.5 px-3 text-center">
+                <div class="inline-flex items-center gap-1.5 justify-center">
+                  <button type="button" onclick="editRincianHutang(${r.id})" class="p-1 hover:text-asabri-blue text-slate-400 transition-colors" title="Edit Rincian Periode"><i class="fas fa-edit"></i></button>
+                  <button type="button" onclick="hapusRincianHutang(${r.id})" class="p-1 hover:text-rose-600 text-slate-400 transition-colors" title="Hapus Rincian Periode"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        // Render pagination controls
+        renderPaginationControls('l3-rincian-hutang-pagination', l3HutangCurrentPage, allRows.length, L3_ITEMS_PER_PAGE, 'changeL3HutangPage');
+      }
+    }
+
+    // Transaksi Storage & Rendering (dengan Pembayaran Otomatis Dapem & Pagination)
+    function getTransaksiList(nomor) {
+      if (!nomor) return [];
+      const p = currentParticipant || {};
+      const isSiti = (p.nama && p.nama.toUpperCase().includes('SITI NURHALIZA')) || p.nopens === '8839201993' || p.nik === '3273120105910088';
+
+      // Dummy Khusus Siti Nurhaliza (Keterlanjuran Bayar Rp 2.500.000)
+      if (isSiti && (nomor === 'HUT-2026/SITI-01' || (nomor || '').includes('SITI') || (nomor || '').includes('001'))) {
+        const localSiti = localStorage.getItem("transaksiPiutang_SITI_" + (p.nik || '8839201993'));
+        if (localSiti) {
+          try { return JSON.parse(localSiti); } catch(e) {}
+        }
+        const DUMMY_PEMBAYARAN_SITI_NURHALIZA = [
+          {
+            id: 1,
+            no: 1,
+            tipeTransaksi: 'Pembayaran',
+            tipe: 'Pembayaran',
+            tglTransaksi: '2026-10-01',
+            tglBuktiSetor: '-',
+            keterangan: 'POTONG_DAPEM_INDUK_BLNBYR',
+            potongan: 900000,
+            totalTransaksi: 900000,
+            total: 900000,
+            dokumen: null,
+            sisaHutang: 1600000, // 2.500.000 - 900.000
+            sumber: 'OTOMATIS',
+            editable: false
+          },
+          {
+            id: 2,
+            no: 2,
+            tipeTransaksi: 'Pembayaran',
+            tipe: 'Pembayaran',
+            tglTransaksi: '2026-11-01',
+            tglBuktiSetor: '-',
+            keterangan: 'POTONG_DAPEM_INDUK_BLNBYR',
+            potongan: 900000,
+            totalTransaksi: 900000,
+            total: 900000,
+            dokumen: null,
+            sisaHutang: 700000, // 1.600.000 - 900.000
+            sumber: 'OTOMATIS',
+            editable: false
+          },
+          {
+            id: 3,
+            no: 3,
+            tipeTransaksi: 'Pembayaran',
+            tipe: 'Pembayaran',
+            tglTransaksi: '2026-12-01',
+            tglBuktiSetor: '-',
+            keterangan: 'POTONG_DAPEM_INDUK_BLNBYR',
+            potongan: 700000, // sisa hutang < 900rb, disesuaikan
+            totalTransaksi: 700000,
+            total: 700000,
+            dokumen: null,
+            sisaHutang: 0, // LUNAS
+            sumber: 'OTOMATIS',
+            editable: false
+          }
+        ];
+        return DUMMY_PEMBAYARAN_SITI_NURHALIZA;
+      }
+
+      const key = "transaksiPiutang_" + nomor;
+      const raw = localStorage.getItem(key);
+      if (raw) {
+        try { return JSON.parse(raw); } catch(e) {}
+      }
+      // Dataset default umum
+      const initialTransactions = [
+        { id: 14, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-09-15', tglBuktiSetor: '2026-09-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 5000000 },
+        { id: 13, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-08-15', tglBuktiSetor: '2026-08-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 5900000 },
+        { id: 12, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-07-15', tglBuktiSetor: '2026-07-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 6800000 },
+        { id: 11, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'MANUAL', editable: true, tglTransaksi: '2026-06-25', tglBuktiSetor: '2026-06-25', keterangan: 'Pembayaran tunai kas di loket kancab', potongan: 0, total: 500000, totalTransaksi: 500000, dokumen: 'Kwitansi_Kas_Loket.pdf', sisaHutang: 7700000 },
+        { id: 10, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-06-15', tglBuktiSetor: '2026-06-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 8200000 },
+        { id: 9, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-05-15', tglBuktiSetor: '2026-05-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 9100000 },
+        { id: 8, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-04-15', tglBuktiSetor: '2026-04-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 10000000 },
+        { id: 7, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-03-15', tglBuktiSetor: '2026-03-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 10900000 },
+        { id: 6, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'MANUAL', editable: true, tglTransaksi: '2026-02-28', tglBuktiSetor: '2026-02-28', keterangan: 'Setoran transfer antar bank peserta', potongan: 0, total: 1000000, totalTransaksi: 1000000, dokumen: 'Bukti_Transfer_Bank.pdf', sisaHutang: 11800000 },
+        { id: 5, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-02-15', tglBuktiSetor: '2026-02-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 12800000 },
+        { id: 4, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2026-01-15', tglBuktiSetor: '2026-01-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 13700000 },
+        { id: 3, tipe: 'Pembayaran', tipeTransaksi: 'Pembayaran', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2025-12-15', tglBuktiSetor: '2025-12-15', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 900000, total: 900000, totalTransaksi: 900000, dokumen: null, sisaHutang: 14600000 },
+        { id: 2, tipe: 'Pengambilan', tipeTransaksi: 'Pengambilan', sumber: 'MANUAL', editable: true, tglTransaksi: '2025-11-01', tglBuktiSetor: '2025-11-01', keterangan: 'Penyesuaian koreksi saldo debet piutang', potongan: 0, total: 500000, totalTransaksi: 500000, dokumen: 'SK_Koreksi_Debet.pdf', sisaHutang: 15500000 },
+        { id: 1, tipe: 'Migrasi', tipeTransaksi: 'Migrasi', sumber: 'OTOMATIS', editable: false, tglTransaksi: '2025-10-01', tglBuktiSetor: '2025-10-01', keterangan: 'POTONG_DAPEM_INDUK_BLNBYR', potongan: 0, total: 0, totalTransaksi: 0, dokumen: null, sisaHutang: 15000000 }
+      ];
+      return initialTransactions;
+    }
+
+    function renderLevel3RincianPembayaranTable(hutang) {
+      const tbody = document.getElementById('l3-rincian-pembayaran-tbody');
+      const previewSisa = document.getElementById('ft-preview-sisa-saat-ini');
+      if (!tbody) return;
+
+      const txList = getTransaksiList(hutang.nomor);
+      const sisaVal = hutang.sisaHutang !== undefined ? hutang.sisaHutang : Math.max(0, (hutang.jumlah || 0) - (hutang.dibayar || 0));
+
+      if (previewSisa) previewSisa.textContent = formatRupiah(sisaVal);
+
+      // Reset form default values
+      const today = new Date().toISOString().split('T')[0];
+      const tglTx = document.getElementById('ft-tgl-transaksi');
+      const tglSetor = document.getElementById('ft-tgl-bukti-setor');
+      if (tglTx && !tglTx.value) tglTx.value = today;
+      if (tglSetor && !tglSetor.value) tglSetor.value = today;
+
+      if (txList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="10" class="py-4 text-center text-slate-400 font-medium italic">Belum ada transaksi pembayaran yang tercatat.</td></tr>`;
+        renderPaginationControls('l3-rincian-pembayaran-pagination', 1, 0, L3_ITEMS_PER_PAGE, 'changeL3PembayaranPage');
+        return;
+      }
+
+      // Slice pagination
+      const startIndex = (l3PembayaranCurrentPage - 1) * L3_ITEMS_PER_PAGE;
+      const pageTransactions = txList.slice(startIndex, startIndex + L3_ITEMS_PER_PAGE);
+
+      // Display paginated transactions
+      tbody.innerHTML = pageTransactions.map((tx, idx) => {
+        const rowNumber = tx.no !== undefined ? tx.no : (startIndex + idx + 1);
+        const isOtomatis = tx.sumber === 'OTOMATIS' || tx.editable === false || (tx.keterangan || '').includes('POTONG_DAPEM');
+        const tipeVal = tx.tipeTransaksi || tx.tipe || 'Pembayaran';
+        const totalVal = tx.totalTransaksi !== undefined ? tx.totalTransaksi : (tx.total || 0);
+
+        const badgeColors = {
+          'Pembayaran': 'bg-emerald-100 text-emerald-800',
+          'Migrasi': 'bg-blue-100 text-blue-800',
+          'Pengambilan': 'bg-amber-100 text-amber-800',
+          'Ralat': 'bg-purple-100 text-purple-800',
+          'Pengembalian': 'bg-indigo-100 text-indigo-800',
+          'Pembatalan': 'bg-rose-100 text-rose-800'
+        };
+        const badgeClass = badgeColors[tipeVal] || 'bg-slate-100 text-slate-800';
+
+        let ketDisplay = tx.keterangan || '-';
+        if (isOtomatis) {
+          ketDisplay = `<span class="font-mono text-slate-800">${tx.keterangan || 'POTONG_DAPEM_INDUK_BLNBYR'}</span>`;
+        } else {
+          ketDisplay = `<span class="text-slate-700 font-medium">${tx.keterangan || '-'}</span>`;
+        }
+
+        let docDisplay = '<span class="text-slate-300">-</span>';
+        if (tx.dokumen) {
+          docDisplay = `<span class="inline-flex items-center gap-1 text-[10px] font-bold text-asabri-blue bg-blue-50 px-2 py-0.5 rounded border border-blue-200 cursor-pointer hover:bg-blue-100 transition-colors" onclick="showToast('Dokumen', 'Melihat berkas: ${tx.dokumen}', 'info')"><i class="fas fa-file-pdf"></i> Bukti</span>`;
+        }
+
+        const aksiDisplay = `
+          <div class="inline-flex items-center gap-1.5 justify-center">
+            <button type="button" onclick="editTransaksiPiutang(${tx.id || idx})" class="text-slate-400 hover:text-asabri-blue p-1 transition-colors" title="Edit Transaksi">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button type="button" onclick="hapusTransaksiPiutang(${tx.id || idx})" class="text-slate-400 hover:text-rose-600 p-1 transition-colors" title="Hapus Transaksi">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        `;
+
+        return `
+          <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
+            <td class="py-2.5 px-3 text-center font-bold text-slate-400">${rowNumber}</td>
+            <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full font-bold text-[10px] ${badgeClass}">${tipeVal}</span></td>
+            <td class="py-2.5 px-3 font-mono text-slate-600">${formatDateString(tx.tglTransaksi)}</td>
+            <td class="py-2.5 px-3 font-mono text-slate-600">${formatDateString(tx.tglBuktiSetor)}</td>
+            <td class="py-2.5 px-3 max-w-xs">${ketDisplay}</td>
+            <td class="py-2.5 px-3 text-right font-mono text-slate-600">${formatRupiah(tx.potongan || 0)}</td>
+            <td class="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">${formatRupiah(totalVal)}</td>
+            <td class="py-2.5 px-3 text-center">${docDisplay}</td>
+            <td class="py-2.5 px-3 text-right font-mono font-black text-rose-600">${formatRupiah(tx.sisaHutang || 0)}</td>
+            <td class="py-2.5 px-3 text-center">${aksiDisplay}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Render pagination controls
+      renderPaginationControls('l3-rincian-pembayaran-pagination', l3PembayaranCurrentPage, txList.length, L3_ITEMS_PER_PAGE, 'changeL3PembayaranPage');
+    }
+
+    function editTransaksiPiutang(txId) {
+      const txList = getTransaksiList(activeLevel3Nomor);
+      const target = txList.find((t, idx) => (t.id ? t.id === txId : idx === txId));
+      if (!target) return;
+      toggleFormTransaksi(true);
+      const getEl = (id) => document.getElementById(id);
+      if (getEl('ft-tipe-transaksi')) getEl('ft-tipe-transaksi').value = target.tipeTransaksi || target.tipe || 'Pembayaran';
+      if (getEl('ft-tgl-transaksi')) getEl('ft-tgl-transaksi').value = target.tglTransaksi || '';
+      if (getEl('ft-tgl-bukti-setor')) getEl('ft-tgl-bukti-setor').value = target.tglBuktiSetor && target.tglBuktiSetor !== '-' ? target.tglBuktiSetor : (target.tglTransaksi || '');
+      if (getEl('ft-potongan')) getEl('ft-potongan').value = target.potongan ? formatRupiah(target.potongan) : '';
+      const totalNum = target.totalTransaksi !== undefined ? target.totalTransaksi : (target.total || 0);
+      if (getEl('ft-total')) getEl('ft-total').value = totalNum ? formatRupiah(totalNum) : '';
+      if (getEl('ft-keterangan')) getEl('ft-keterangan').value = target.keterangan || '';
+      showToast("Mode Edit Transaksi", "Silakan sesuaikan data transaksi pada form di atas.", "info");
+    }
+
+    function toggleFormTransaksi(show) {
+      const panel = document.getElementById('form-transaksi-piutang-panel');
+      if (!panel) return;
+      if (show) {
+        panel.classList.remove('hidden');
+        panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        panel.classList.add('hidden');
+      }
+    }
+
+    function handleTipeTransaksiChange(tipe) {
+      const docBadge = document.getElementById('ft-doc-required-badge');
+      const docInput = document.getElementById('ft-dokumen');
+      if (!docBadge || !docInput) return;
+
+      if (tipe === 'Pembayaran') {
+        docBadge.textContent = '* (Wajib untuk Pembayaran Manual)';
+        docBadge.className = 'text-rose-500 font-bold';
+        docInput.required = true;
+      } else {
+        docBadge.textContent = '(Opsional)';
+        docBadge.className = 'text-slate-400 font-normal';
+        docInput.required = false;
+      }
+    }
+
+    function simpanTransaksiPiutang(e) {
+      e.preventDefault();
+      if (!activeLevel3Nomor) return;
+
+      const getVal = (id) => document.getElementById(id)?.value || '';
+      const tipe = getVal('ft-tipe-transaksi') || 'Pembayaran';
+      const tglTx = getVal('ft-tgl-transaksi') || new Date().toISOString().split('T')[0];
+      const tglSetor = getVal('ft-tgl-bukti-setor') || tglTx;
+      const potongan = parseRupiah(getVal('ft-potongan')) || 0;
+      const total = parseRupiah(getVal('ft-total')) || 0;
+      const ket = getVal('ft-keterangan') || (tipe + ' via setoran transaksi');
+      const fileInput = document.getElementById('ft-dokumen');
+      const docName = fileInput?.files?.[0]?.name || (tipe === 'Pembayaran' ? 'Bukti_Setor_Manual.pdf' : null);
+
+      hutangData = getHutangData();
+      const targetHutang = hutangData.find(h => h.nomor === activeLevel3Nomor);
+      if (!targetHutang) return;
+
+      let currentSisa = targetHutang.sisaHutang !== undefined ? targetHutang.sisaHutang : Math.max(0, (targetHutang.jumlah || 0) - (targetHutang.dibayar || 0));
+
+      // Adjust sisa hutang based on transaction type
+      if (tipe === 'Pembayaran' || tipe === 'Potongan') {
+        currentSisa = Math.max(0, currentSisa - total);
+        targetHutang.dibayar = (targetHutang.dibayar || 0) + total;
+      } else if (tipe === 'Pengembalian' || tipe === 'Pengambilan') {
+        currentSisa = currentSisa + total;
+        targetHutang.dibayar = Math.max(0, (targetHutang.dibayar || 0) - total);
+      } else if (tipe === 'Pembatalan') {
+        currentSisa = targetHutang.jumlah;
+        targetHutang.dibayar = 0;
+      }
+
+      targetHutang.sisaHutang = currentSisa;
+      targetHutang.status = currentSisa === 0 ? 'Lunas' : (targetHutang.dibayar > 0 ? 'Dalam Cicilan' : 'Belum Lunas');
+
+      const txList = getTransaksiList(activeLevel3Nomor);
+      const newTx = {
+        id: Date.now(),
+        no: txList.length + 1,
+        tipe: tipe,
+        tipeTransaksi: tipe,
+        sumber: 'MANUAL',
+        editable: true,
+        tglTransaksi: tglTx,
+        tglBuktiSetor: tglSetor,
+        keterangan: ket,
+        potongan: potongan,
+        total: total,
+        totalTransaksi: total,
+        dokumen: docName,
+        sisaHutang: currentSisa
+      };
+
+      txList.push(newTx);
+      
+      const p = currentParticipant || {};
+      const isSiti = (p.nama && p.nama.toUpperCase().includes('SITI NURHALIZA')) || p.nopens === '8839201993' || p.nik === '3273120105910088';
+      if (isSiti) {
+        localStorage.setItem("transaksiPiutang_SITI_" + (p.nik || '8839201993'), JSON.stringify(txList));
+      } else {
+        localStorage.setItem("transaksiPiutang_" + activeLevel3Nomor, JSON.stringify(txList));
+      }
+
+      if (currentParticipant && currentParticipant.nik) {
+        localStorage.setItem("hutangData_" + currentParticipant.nik, JSON.stringify(hutangData));
+      }
+
+      // Update Estimasi values & refresh active view
+      updateLevel3Estimasi(targetHutang);
+      renderLevel3RincianPembayaranTable(targetHutang);
+      toggleFormTransaksi(false);
+      showToast("Transaksi Berhasil Disimpan", `Transaksi ${tipe} sebesar ${formatRupiah(total)} berhasil dicatat. Sisa hutang kini: ${formatRupiah(currentSisa)}.`, "success");
+    }
+
+    function hapusTransaksiPiutang(txId) {
+      if (!confirm("Apakah Anda yakin ingin menghapus catatan transaksi ini?")) return;
+      const txList = getTransaksiList(activeLevel3Nomor);
+      const filtered = txList.filter((t, idx) => (t.id ? t.id !== txId : idx !== txId));
+      
+      const p = currentParticipant || {};
+      const isSiti = (p.nama && p.nama.toUpperCase().includes('SITI NURHALIZA')) || p.nopens === '8839201993' || p.nik === '3273120105910088';
+      if (isSiti) {
+        localStorage.setItem("transaksiPiutang_SITI_" + (p.nik || '8839201993'), JSON.stringify(filtered));
+      } else {
+        localStorage.setItem("transaksiPiutang_" + activeLevel3Nomor, JSON.stringify(filtered));
+      }
+      
+      hutangData = getHutangData();
+      const targetHutang = hutangData.find(h => h.nomor === activeLevel3Nomor);
+      if (targetHutang) {
+        updateLevel3Estimasi(targetHutang);
+        renderLevel3RincianPembayaranTable(targetHutang);
+      }
+      showToast("Transaksi Dihapus", "Catatan transaksi telah dihapus dari riwayat.", "warning");
     }
 
     function toggleFormTambahPinjaman(show) {
