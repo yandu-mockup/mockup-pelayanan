@@ -149,6 +149,15 @@
             </div>
           </div>
         </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider hidden sm:inline"><i class="fas fa-user-check text-asabri-blue"></i> Simulasi Peserta:</span>
+          <select id="quick-peserta-switcher" onchange="switchParticipantQuick(this.value)" class="bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 outline-none focus:border-asabri-blue cursor-pointer shadow-sm">
+            <option value="ASB-2024-001235">✨ Siti Nurhaliza (3 NOPENS: Sendiri, Wari, Yatim Piatu)</option>
+            <option value="ASB-2026-009981">✨ Hj. Ratna Juwita (2 NOPENS: Wari &amp; Yatim)</option>
+            <option value="ASB-2024-001234">👤 Ahmad Fauzi (1 NOPENS Aktif)</option>
+            <option value="ASB-2025-001073">👤 Astuti (Peserta Aktif / 0 NOPENS)</option>
+          </select>
+        </div>
       </div>
 
       <!-- MAIN SCROLLABLE CONTENT -->
@@ -481,17 +490,17 @@
                   </div>
                 </div>
 
-                <!-- TOMBOL AKSI: Tambah Pinjaman (di atas) -->
+                <!-- TOMBOL AKSI: Tambah Pinjaman/Hutang Baru (di atas) -->
                 <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-2">
                   <div class="flex items-center gap-3">
                     <button type="button" onclick="toggleFormTambahPinjaman(true)" class="px-4 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-xl font-bold text-xs shadow-md transition-all flex items-center gap-1.5">
-                      <i class="fas fa-plus-circle"></i> Tambah Pinjaman
+                      <i class="fas fa-plus-circle"></i> Tambah Pinjaman/Hutang Baru
                     </button>
                     <button type="button" onclick="toggleFormTambahPinjaman(false)" class="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-xs transition-all">
                       Batal
                     </button>
                   </div>
-                  <span class="text-[11px] text-slate-400 font-medium italic">Klik 'Tambah Pinjaman' untuk menampilkan form entri pinjaman baru</span>
+                  <span class="text-[11px] text-slate-400 font-medium italic">Klik 'Tambah Pinjaman/Hutang Baru' untuk menampilkan form entri pinjaman/hutang baru</span>
                 </div>
 
                 <!-- BAGIAN TENGAH: 4 Section Terpisah -->
@@ -509,6 +518,7 @@
                           <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
                             <th class="py-2.5 px-3">TMT</th>
                             <th class="py-2.5 px-3">No Piutang</th>
+                            <th class="py-2.5 px-3">NOPENS</th>
                             <th class="py-2.5 px-3">Jenis Piutang</th>
                             <th class="py-2.5 px-3">Jumlah</th>
                             <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
@@ -535,6 +545,7 @@
                           <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
                             <th class="py-2.5 px-3">TMT</th>
                             <th class="py-2.5 px-3">No Piutang</th>
+                            <th class="py-2.5 px-3">NOPENS</th>
                             <th class="py-2.5 px-3">Jenis Piutang</th>
                             <th class="py-2.5 px-3">Jumlah</th>
                             <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
@@ -560,6 +571,7 @@
                           <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
                             <th class="py-2.5 px-3">TMT</th>
                             <th class="py-2.5 px-3">No Piutang</th>
+                            <th class="py-2.5 px-3">NOPENS</th>
                             <th class="py-2.5 px-3">Jenis Piutang</th>
                             <th class="py-2.5 px-3">Jumlah</th>
                             <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
@@ -585,6 +597,7 @@
                           <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
                             <th class="py-2.5 px-3">TMT</th>
                             <th class="py-2.5 px-3">No Piutang</th>
+                            <th class="py-2.5 px-3">NOPENS</th>
                             <th class="py-2.5 px-3">Jenis Piutang</th>
                             <th class="py-2.5 px-3">Jumlah</th>
                             <th class="py-2.5 px-3">Jumlah Sudah Bayar</th>
@@ -610,7 +623,8 @@
                         <thead>
                           <tr class="bg-slate-800 text-white font-bold border-b border-slate-200">
                             <th class="py-2.5 px-3 text-center">No</th>
-                            <th class="py-2.5 px-3">Start</th>
+                            <th class="py-2.5 px-3">TMT</th>
+                            <th class="py-2.5 px-3">NOPENS</th>
                             <th class="py-2.5 px-3">Periode</th>
                             <th class="py-2.5 px-3">Penspok</th>
                             <th class="py-2.5 px-3">Selisih Tunj. Istri</th>
@@ -639,9 +653,12 @@
                   <!-- PANEL FORM TAMBAH PINJAMAN (INLINE DROPDOWN PANEL) -->
                   <div id="form-tambah-pinjaman-panel" class="bg-slate-50 border border-slate-300 rounded-2xl p-5 space-y-4 hidden shadow-sm">
                     <div class="flex items-center justify-between border-b border-slate-200 pb-2.5">
-                      <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fas fa-edit text-asabri-blue"></i> Form Tambah Pinjaman Baru
-                      </h4>
+                      <div>
+                        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+                          <i class="fas fa-edit text-asabri-blue"></i> Form Tambah Pinjaman/Hutang Baru
+                        </h4>
+                        <p class="text-[11px] text-slate-500 font-medium mt-0.5">Satu wadah terpadu untuk pencatatan hutang pensiun, keterlanjuran bayar, dan PUM/BUM.</p>
+                      </div>
                       <button type="button" onclick="toggleFormTambahPinjaman(false)" class="text-slate-400 hover:text-slate-600 text-sm">
                         <i class="fas fa-xmark"></i>
                       </button>
@@ -650,21 +667,21 @@
                     <form onsubmit="simpanPinjamanBaru(event)" class="space-y-4 text-xs">
                       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                          <label class="block font-bold text-slate-600 mb-1">Objek Pensiun <span class="text-rose-500">*</span></label>
-                          <select id="fp-objek-pensiun" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-semibold">
-                            <option value="Istri/Suami" selected>Istri/Suami</option>
-                            <option value="Anak">Anak</option>
-                            <option value="Peserta Sendiri">Peserta Sendiri</option>
+                          <label class="block font-bold text-slate-600 mb-1" id="fp-label-objek-pensiun">
+                            Objek Pensiun (NOPENS) <span class="text-rose-500" id="fp-req-star">*</span>
+                          </label>
+                          <select id="fp-objek-pensiun" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-semibold text-xs">
+                            <!-- Populated dynamically based on participant NOPENS -->
                           </select>
                         </div>
                         <div>
-                          <label class="block font-bold text-slate-600 mb-1">Nomor Pinjaman <span class="text-rose-500">*</span></label>
-                          <input type="text" id="fp-nomor-pinjaman" required placeholder="Contoh: PINJ-2026/001" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-mono">
+                          <label class="block font-bold text-slate-600 mb-1">Nomor Pinjaman/Hutang <span class="text-rose-500">*</span></label>
+                          <input type="text" id="fp-nomor-pinjaman" required placeholder="Contoh: HUT-2026/001" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-mono font-semibold">
                         </div>
                         <div>
-                          <label class="block font-bold text-slate-600 mb-1">Jenis Pinjaman (19 Jenis) <span class="text-rose-500">*</span></label>
+                          <label class="block font-bold text-slate-600 mb-1">Jenis Pinjaman/Hutang (19 Jenis) <span class="text-rose-500">*</span></label>
                           <select id="fp-jenis-pinjaman" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-semibold">
-                            <option value="KETERLANJURAN BAYAR">KETERLANJURAN BAYAR</option>
+                            <option value="KETERLANJURAN BAYAR" selected>KETERLANJURAN BAYAR</option>
                             <option value="HUTANG TGR">HUTANG TGR</option>
                             <option value="HUTANG NON TGR">HUTANG NON TGR</option>
                             <option value="HUTANG MIGRASI">HUTANG MIGRASI</option>
@@ -690,14 +707,17 @@
                       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
                           <label class="block font-bold text-slate-600 mb-1">Kategori Pinjaman</label>
-                          <select id="fp-kategori-pinjaman" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue">
+                          <select id="fp-kategori-pinjaman" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-semibold">
                             <option value="Reguler" selected>Reguler</option>
                             <option value="Khusus">Khusus</option>
                           </select>
                         </div>
                         <div>
-                          <label class="block font-bold text-slate-600 mb-1">Jumlah Pinjaman <span class="text-rose-500">*</span></label>
-                          <input type="number" id="fp-jumlah-pinjaman" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-bold text-slate-800 font-mono">
+                          <label class="block font-bold text-slate-600 mb-1">
+                            Jumlah Pinjaman/Hutang <span class="text-rose-500">*</span>
+                            <span class="text-[10px] text-emerald-600 font-medium ml-1">(Autofill sistem, dapat diedit)</span>
+                          </label>
+                          <input type="number" id="fp-jumlah-pinjaman" oninput="handleJumlahInputChange(this.value)" required placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-bold text-slate-800 font-mono">
                         </div>
                         <div>
                           <label class="block font-bold text-slate-600 mb-1">Bunga Perbulan (%)</label>
@@ -707,16 +727,22 @@
 
                       <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                         <div>
-                          <label class="block font-bold text-slate-600 mb-1">Angsuran Perbulan</label>
+                          <label class="block font-bold text-slate-600 mb-1">
+                            Angsuran Perbulan
+                            <span class="text-[10px] text-emerald-600 font-medium ml-1">(Autofill)</span>
+                          </label>
                           <input type="number" id="fp-angsuran-perbulan" placeholder="0" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-bold font-mono">
                         </div>
                         <div>
-                          <label class="block font-bold text-slate-600 mb-1">TMT Pinjaman <span class="text-rose-500">*</span></label>
-                          <input type="date" id="fp-tmt-pinjaman" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue">
+                          <label class="block font-bold text-slate-600 mb-1">TMT Pinjaman/Hutang <span class="text-rose-500">*</span></label>
+                          <input type="date" id="fp-tmt-pinjaman" onchange="handleTmtInputChange(this.value)" required class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-semibold">
                         </div>
                         <div>
-                          <label class="block font-bold text-slate-600 mb-1">Tanggal Jatuh Tempo</label>
-                          <input type="date" id="fp-jatuh-tempo" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue">
+                          <label class="block font-bold text-slate-600 mb-1">
+                            Tanggal Jatuh Tempo
+                            <span class="text-[10px] text-emerald-600 font-medium ml-1">(Autofill)</span>
+                          </label>
+                          <input type="date" id="fp-jatuh-tempo" class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 outline-none focus:border-asabri-blue font-semibold">
                         </div>
                         <div>
                           <label class="block font-bold text-slate-600 mb-1">Tipe Transaksi <span class="text-rose-500">*</span></label>
@@ -729,7 +755,9 @@
 
                       <div class="flex items-center justify-end gap-3 pt-2">
                         <button type="button" onclick="toggleFormTambahPinjaman(false)" class="px-4 py-2 border border-slate-300 hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-xs transition-all">Batal</button>
-                        <button type="submit" class="px-5 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow-md transition-all">Simpan Pinjaman</button>
+                        <button type="submit" class="px-5 py-2 bg-asabri-blue hover:bg-asabri-blueDark text-white font-bold rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
+                          <i class="fas fa-save"></i> Simpan Pinjaman/Hutang
+                        </button>
                       </div>
                     </form>
                   </div>
@@ -812,6 +840,10 @@
                       <div class="bg-white p-2.5 rounded-xl border border-slate-200 col-span-2">
                         <span class="block text-[10px] font-bold text-slate-400 uppercase">No Permohonan (Nama Hutang)</span>
                         <span id="l3-d-nomor" class="font-mono font-bold text-indigo-900 truncate block">-</span>
+                      </div>
+                      <div class="bg-white p-2.5 rounded-xl border border-slate-200 col-span-2">
+                        <span class="block text-[10px] font-bold text-slate-400 uppercase">NOPENS &amp; Objek Pensiun</span>
+                        <span id="l3-d-nopens" class="font-mono font-bold text-slate-800 truncate block">-</span>
                       </div>
                       <div class="bg-white p-2.5 rounded-xl border border-slate-200 col-span-2">
                         <span class="block text-[10px] font-bold text-slate-400 uppercase">Jenis Pinjaman</span>
@@ -1425,10 +1457,54 @@
       if (localCustom) {
         try {
           const list = JSON.parse(localCustom);
-          if (Array.isArray(list) && list.length > 0) return list;
+          if (Array.isArray(list) && list.length > 0) {
+            if (typeof MOCK_PESERTA !== 'undefined') {
+              MOCK_PESERTA.forEach(baseP => {
+                const idx = list.findIndex(x => x.nik === baseP.nik || (x.nrp && x.nrp === baseP.nrp));
+                if (idx !== -1) {
+                  if (baseP.nopensList && (!list[idx].nopensList || list[idx].nopensList.length < baseP.nopensList.length)) {
+                    list[idx].nopensList = baseP.nopensList;
+                  }
+                  if (baseP.keluargaLengkap && (!list[idx].keluargaLengkap || list[idx].keluargaLengkap.length < baseP.keluargaLengkap.length)) {
+                    list[idx].keluargaLengkap = baseP.keluargaLengkap;
+                  }
+                  if (baseP.statusPeserta && baseP.statusPeserta !== 'AKTIF' && list[idx].statusPeserta === 'AKTIF') {
+                    list[idx].statusPeserta = baseP.statusPeserta;
+                    list[idx].statusKepesertaan = baseP.statusKepesertaan;
+                    list[idx].status_kepesertaan = baseP.status_kepesertaan;
+                  }
+                } else {
+                  list.push(baseP);
+                }
+              });
+            }
+            return list;
+          }
         } catch(e) {}
       }
       return typeof MOCK_PESERTA !== 'undefined' ? MOCK_PESERTA : [];
+    }
+
+    function switchParticipantQuick(kpa) {
+      const source = getPesertaListSource();
+      const p = source.find(item => item.kpa === kpa || item.no_ktpa === kpa || item.noPeserta === kpa || item.nrp === kpa || item.nik === kpa);
+      if (p) {
+        currentParticipant = p;
+        hutangData = null; // force reload hutang data
+        renderDetailData(p);
+        
+        // Update URL query
+        const newUrl = window.location.pathname + '?kpa=' + encodeURIComponent(p.kpa || p.nrp || '');
+        window.history.replaceState({ path: newUrl }, '', newUrl);
+
+        const piutangContent = document.getElementById('tab-piutang-content');
+        if (piutangContent && !piutangContent.classList.contains('hidden')) {
+          renderPiutangTables();
+          renderPiutangPage2Sections();
+          populateObjekPensiunSelect();
+        }
+        showToast("Peserta Terpilih", `Beralih ke data peserta: ${p.nama}`, "info");
+      }
     }
 
     function initDetailPeserta() {
@@ -1450,7 +1526,8 @@
       }
 
       if (!p && source.length > 0) {
-        p = source[0];
+        // Default to Siti Nurhaliza if exists, else Ratna Juwita or first participant
+        p = source.find(x => x.nik === '3273120105910088') || source.find(x => x.nik === '3201015504820002') || source[0];
       }
 
       currentParticipant = p;
@@ -1468,6 +1545,12 @@
       const tglLahir = formatIndoDate(p.tanggalLahir || p.tanggal_lahir || '1984-11-01');
       const pangkatAkhir = p.pangkatAkhir || p.pangkat || 'GOL. V';
       const statusPensiun = (p.statusPeserta || p.statusKepesertaan || 'BELUM PENSIUN').toUpperCase();
+
+      // Sync Quick Switcher Dropdown
+      const quickSel = document.getElementById('quick-peserta-switcher');
+      if (quickSel) {
+        quickSel.value = p.kpa || p.no_ktpa || p.noPeserta || '';
+      }
 
       // Topbar & Breadcrumb
       document.getElementById('top-title-nama').innerText = nama;
@@ -1610,11 +1693,66 @@
     let hutangData = null;
     let activeLevel3Nomor = null;
 
+    function getActiveNopensList(p) {
+      if (!p) p = currentParticipant || {};
+      
+      // 1. If explicit nopensList array exists with valid items
+      if (Array.isArray(p.nopensList) && p.nopensList.length > 0) {
+        return p.nopensList.filter(item => item && item.status !== 'Non-Aktif' && item.nopens && item.nopens !== '-');
+      }
+
+      const list = [];
+      const rawNopens = p.nopens || '';
+      if (rawNopens && rawNopens !== '-' && rawNopens !== '') {
+        list.push({
+          nopens: rawNopens,
+          namaPemilik: p.nama || 'Peserta',
+          jenisPensiun: p.jenisPensiun || 'Pensiun Sendiri',
+          status: 'Aktif',
+          wali: null
+        });
+      }
+
+      // 2. Check family members in keluargaLengkap or keluarga
+      const keluarga = p.keluargaLengkap || p.keluarga || [];
+      if (Array.isArray(keluarga)) {
+        keluarga.forEach(k => {
+          if (k.nopens && k.nopens !== '-' && k.nopens !== '' && k.status !== 'Non-Aktif') {
+            if (!list.some(item => item.nopens === k.nopens)) {
+              let jenis = k.jenisPensiun;
+              if (!jenis) {
+                const hub = (k.hubungan || '').toUpperCase();
+                if (hub.includes('SUAMI') || hub.includes('ISTRI') || hub.includes('WARI')) {
+                  jenis = 'Pensiun Wari';
+                } else if (hub.includes('ANAK') || hub.includes('YATIM')) {
+                  jenis = 'Yatim Piatu';
+                } else if (hub.includes('ORANG TUA') || hub.includes('AYAH') || hub.includes('IBU')) {
+                  jenis = 'Pensiun Orang Tua';
+                } else {
+                  jenis = 'Pensiun Keluarga';
+                }
+              }
+              list.push({
+                nopens: k.nopens,
+                namaPemilik: k.nama,
+                jenisPensiun: jenis,
+                status: k.status || 'Aktif',
+                wali: k.wali || null
+              });
+            }
+          }
+        });
+      }
+
+      return list;
+    }
+
     function getHutangData() {
       const p = currentParticipant || {};
       const activeNopens = p.nopens || '-';
       const activeKtpa = p.no_ktpa || p.noPeserta || p.kpa || p.nrp || '-';
       const isSitiNurhaliza = (p.nama && p.nama.toUpperCase().includes('SITI NURHALIZA')) || p.nopens === '8839201993' || p.nik === '3273120105910088';
+      const isRatnaJuwita = (p.nama && p.nama.toUpperCase().includes('RATNA JUWITA')) || p.nopens === '8839202001' || p.nik === '3201015504820002';
 
       if (p.nik) {
         const localHutang = localStorage.getItem("hutangData_" + p.nik);
@@ -1622,8 +1760,10 @@
           try {
             const parsed = JSON.parse(localHutang);
             if (Array.isArray(parsed) && parsed.length > 0) {
-              if (isSitiNurhaliza && !parsed.some(h => (h.nomor || '').includes('SITI') || (h.jumlah === 2500000 && h.objekPensiun === 'Peserta'))) {
-                // Refresh cache for Siti Nurhaliza with specific dummy
+              if (isSitiNurhaliza && (!parsed.some(h => h.nopens === '8839201994' || h.nopens === '8839201995') || !parsed.some(h => (h.nomor || '').includes('SITI')))) {
+                // Refresh cache for Siti Nurhaliza with 3 NOPENS dummy
+              } else if (isRatnaJuwita && !parsed.some(h => (h.nomor || '').includes('WARI') || (h.nomor || '').includes('YATM'))) {
+                // Refresh cache for Ratna Juwita (2 NOPENS)
               } else {
                 return parsed;
               }
@@ -1635,20 +1775,26 @@
       if (hutangData !== null) return hutangData;
 
       let initialData = [];
-      if (isSitiNurhaliza) {
+      if (isRatnaJuwita) {
         initialData = [
-          { tmt: '2026-09-01', nomor: 'HUT-2026/SITI-01', nopens: activeNopens, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Peserta', jumlah: 2500000, dibayar: 2500000, sisaHutang: 0, status: 'Lunas', angsuranPerbulan: 900000 },
-          { tmt: '2026-08-15', nomor: 'HUT-2026/SITI-02', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG TGR', objekPensiun: 'Peserta', jumlah: 500000, dibayar: 0, sisaHutang: 500000, status: 'Belum Lunas' },
-          { tmt: '2026-07-10', nomor: 'HUT-2026/SITI-03', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG NON TGR', objekPensiun: 'Peserta', jumlah: 5000000, dibayar: 1000000, sisaHutang: 4000000, status: 'Dalam Cicilan' }
+          { tmt: '2026-09-01', nomor: 'HUT-2026/WARI-01', nopens: '8839202001', pemilikNopens: 'HJ. RATNA JUWITA', jenisPensiun: 'Warakawuri', wali: null, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Warakawuri', jumlah: 6000000, dibayar: 2000000, sisaHutang: 4000000, status: 'Dalam Cicilan', angsuranPerbulan: 500000, tanggalJatuhTempo: '2026-10-10' },
+          { tmt: '2026-08-10', nomor: 'HUT-2026/YATM-02', nopens: '8839202002', pemilikNopens: 'BAGAS SUGENG PRATAMA', jenisPensiun: 'Yatim', wali: 'HJ. RATNA JUWITA', ktpa: activeKtpa, jenis: 'HUTANG TUNJANGAN ANAK WARI PRAJURIT', objekPensiun: 'Anak (Yatim / Wali: HJ. RATNA JUWITA)', jumlah: 4800000, dibayar: 800000, sisaHutang: 4000000, status: 'Dalam Cicilan', angsuranPerbulan: 400000, tanggalJatuhTempo: '2026-09-10' },
+          { tmt: '2026-07-15', nomor: 'HUT-2026/WARI-03', nopens: '8839202001', pemilikNopens: 'HJ. RATNA JUWITA', jenisPensiun: 'Warakawuri', wali: null, ktpa: activeKtpa, jenis: 'HUTANG TGR', objekPensiun: 'Warakawuri', jumlah: 750000, dibayar: 0, sisaHutang: 750000, status: 'Belum Lunas', angsuranPerbulan: 150000, tanggalJatuhTempo: '2026-08-10' }
+        ];
+      } else if (isSitiNurhaliza) {
+        initialData = [
+          { tmt: '2026-09-01', nomor: 'HUT-2026/SITI-01', nopens: '8839201993', pemilikNopens: 'Siti Nurhaliza', jenisPensiun: 'Pensiun Sendiri', ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Peserta Sendiri', jumlah: 2500000, dibayar: 2500000, sisaHutang: 0, status: 'Lunas', angsuranPerbulan: 900000, tanggalJatuhTempo: '2026-10-10' },
+          { tmt: '2026-08-15', nomor: 'HUT-2026/SITI-02', nopens: '8839201994', pemilikNopens: 'Wirata Atmaja', jenisPensiun: 'Pensiun Wari', ktpa: activeKtpa, jenis: 'HUTANG TGR', objekPensiun: 'Pensiun Wari', jumlah: 500000, dibayar: 0, sisaHutang: 500000, status: 'Belum Lunas', angsuranPerbulan: 250000, tanggalJatuhTempo: '2026-09-10' },
+          { tmt: '2026-07-10', nomor: 'HUT-2026/SITI-03', nopens: '8839201995', pemilikNopens: 'Ayu Fauzi', jenisPensiun: 'Yatim Piatu', wali: 'Siti Fatimah', ktpa: activeKtpa, jenis: 'HUTANG TUNJANGAN ANAK WARI PRAJURIT', objekPensiun: 'Anak (Yatim Piatu / Wali: Siti Fatimah)', jumlah: 4800000, dibayar: 800000, sisaHutang: 4000000, status: 'Dalam Cicilan', angsuranPerbulan: 400000, tanggalJatuhTempo: '2026-08-10' }
         ];
       } else {
         initialData = [
-          { tmt: '2026-09-01', nomor: 'HUT-2026/001', nopens: activeNopens, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Istri/Suami', jumlah: 8000000, dibayar: 3000000, sisaHutang: 5000000, status: 'Dalam Cicilan' },
-          { tmt: '2026-08-15', nomor: 'HUT-2026/002', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG TGR', objekPensiun: 'Peserta Sendiri', jumlah: 750000, dibayar: 0, sisaHutang: 750000, status: 'Belum Lunas' },
-          { tmt: '2026-07-10', nomor: 'HUT-2026/003', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG NON TGR', objekPensiun: 'Peserta Sendiri', jumlah: 15000000, dibayar: 3000000, sisaHutang: 12000000, status: 'Dalam Cicilan' },
-          { tmt: '2026-06-05', nomor: 'HUT-2026/004', nopens: activeNopens, ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR PENSIUN', objekPensiun: 'Anak', jumlah: 1200000, dibayar: 0, sisaHutang: 1200000, status: 'Belum Lunas' },
-          { tmt: '2026-05-20', nomor: 'HUT-2026/005', nopens: activeNopens, ktpa: activeKtpa, jenis: 'TUNJANGAN CACAT', objekPensiun: 'Peserta Sendiri', jumlah: 3600000, dibayar: 600000, sisaHutang: 3000000, status: 'Dalam Cicilan' },
-          { tmt: '2026-04-12', nomor: 'HUT-2026/006', nopens: activeNopens, ktpa: activeKtpa, jenis: 'HUTANG TUNJANGAN ANAK WARI PRAJURIT', objekPensiun: 'Anak', jumlah: 4800000, dibayar: 800000, sisaHutang: 4000000, status: 'Dalam Cicilan' }
+          { tmt: '2026-09-01', nomor: 'HUT-2026/001', nopens: activeNopens, pemilikNopens: p.nama || 'Ahmad Fauzi', jenisPensiun: 'Pensiun Sendiri', ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR', objekPensiun: 'Istri/Suami', jumlah: 8000000, dibayar: 3000000, sisaHutang: 5000000, status: 'Dalam Cicilan', angsuranPerbulan: 500000, tanggalJatuhTempo: '2026-10-10' },
+          { tmt: '2026-08-15', nomor: 'HUT-2026/002', nopens: activeNopens, pemilikNopens: p.nama || 'Ahmad Fauzi', jenisPensiun: 'Pensiun Sendiri', ktpa: activeKtpa, jenis: 'HUTANG TGR', objekPensiun: 'Peserta Sendiri', jumlah: 750000, dibayar: 0, sisaHutang: 750000, status: 'Belum Lunas', angsuranPerbulan: 150000, tanggalJatuhTempo: '2026-09-10' },
+          { tmt: '2026-07-10', nomor: 'HUT-2026/003', nopens: activeNopens, pemilikNopens: p.nama || 'Ahmad Fauzi', jenisPensiun: 'Pensiun Sendiri', ktpa: activeKtpa, jenis: 'HUTANG NON TGR', objekPensiun: 'Peserta Sendiri', jumlah: 15000000, dibayar: 3000000, sisaHutang: 12000000, status: 'Dalam Cicilan', angsuranPerbulan: 1000000, tanggalJatuhTempo: '2026-08-10' },
+          { tmt: '2026-06-05', nomor: 'HUT-2026/004', nopens: activeNopens, pemilikNopens: p.nama || 'Ahmad Fauzi', jenisPensiun: 'Pensiun Sendiri', ktpa: activeKtpa, jenis: 'KETERLANJURAN BAYAR PENSIUN', objekPensiun: 'Anak', jumlah: 1200000, dibayar: 0, sisaHutang: 1200000, status: 'Belum Lunas', angsuranPerbulan: 200000, tanggalJatuhTempo: '2026-07-10' },
+          { tmt: '2026-05-20', nomor: 'HUT-2026/005', nopens: activeNopens, pemilikNopens: p.nama || 'Ahmad Fauzi', jenisPensiun: 'Pensiun Sendiri', ktpa: activeKtpa, jenis: 'TUNJANGAN CACAT', objekPensiun: 'Peserta Sendiri', jumlah: 3600000, dibayar: 600000, sisaHutang: 3000000, status: 'Dalam Cicilan', angsuranPerbulan: 300000, tanggalJatuhTempo: '2026-06-10' },
+          { tmt: '2026-04-12', nomor: 'HUT-2026/006', nopens: activeNopens, pemilikNopens: p.nama || 'Ahmad Fauzi', jenisPensiun: 'Pensiun Sendiri', ktpa: activeKtpa, jenis: 'HUTANG TUNJANGAN ANAK WARI PRAJURIT', objekPensiun: 'Anak', jumlah: 4800000, dibayar: 800000, sisaHutang: 4000000, status: 'Dalam Cicilan', angsuranPerbulan: 400000, tanggalJatuhTempo: '2026-05-10' }
         ];
       }
 
@@ -1762,18 +1908,22 @@
         const tbody = document.getElementById(elementId);
         if (!tbody) return;
         if (list.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="7" class="py-3.5 text-center text-slate-400 font-medium italic">Tidak ada data piutang pada section ini.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8" class="py-3.5 text-center text-slate-400 font-medium italic">Tidak ada data piutang pada section ini.</td></tr>`;
           return;
         }
         tbody.innerHTML = list.map(h => {
           const jumlahVal = h.jumlah || 0;
           const sudahBayarVal = h.dibayar !== undefined ? h.dibayar : (h.jumlahDibayar || 0);
           const sisaHutangVal = h.sisaHutang !== undefined ? h.sisaHutang : Math.max(0, jumlahVal - sudahBayarVal);
+          const nopensDisplay = h.nopens && h.nopens !== '-' 
+            ? `<span class="font-mono font-bold text-slate-800">${h.nopens}</span>${h.pemilikNopens ? `<br><span class="text-[10px] text-slate-500 font-medium">${h.pemilikNopens}${h.wali ? ' (Wali: ' + h.wali + ')' : ''}</span>` : ''}` 
+            : `<span class="text-slate-400 font-mono">-</span>`;
 
           return `
             <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
               <td class="py-2.5 px-3 font-mono text-slate-600">${formatDateString(h.tmt)}</td>
               <td class="py-2.5 px-3 font-mono font-semibold text-slate-800">${h.nomor || h.noHutangPiutang || 'PIU-MOCK'}</td>
+              <td class="py-2.5 px-3">${nopensDisplay}</td>
               <td class="py-2.5 px-3 font-bold text-slate-800">${h.jenis || '-'}</td>
               <td class="py-2.5 px-3 font-mono text-slate-800 font-bold">${formatRupiah(jumlahVal)}</td>
               <td class="py-2.5 px-3 font-mono text-emerald-600 font-semibold">${formatRupiah(sudahBayarVal)}</td>
@@ -1792,13 +1942,13 @@
       // Sub-Section I: Keterlanjuran Bayar (Istri/Suami / Peserta Sendiri)
       const sec1List = hutangData.filter(h => 
         (h.jenis || '').toUpperCase().includes('KETERLANJURAN') && 
-        (h.objekPensiun === 'Istri/Suami' || h.objekPensiun === 'Peserta' || h.objekPensiun === 'Peserta Sendiri' || !h.objekPensiun)
+        (h.objekPensiun === 'Istri/Suami' || h.objekPensiun === 'Peserta' || h.objekPensiun === 'Peserta Sendiri' || (h.jenisPensiun || '').includes('Wari') || (h.objekPensiun || '').includes('Wari') || !h.objekPensiun)
       );
 
       // Sub-Section II: Keterlanjuran Bayar Anak
       const sec2List = hutangData.filter(h => 
         (h.jenis || '').toUpperCase().includes('KETERLANJURAN') && 
-        h.objekPensiun === 'Anak'
+        (h.objekPensiun === 'Anak' || (h.objekPensiun || '').includes('Yatim'))
       );
 
       // Sub-Section III: Hutang TGR
@@ -1815,7 +1965,7 @@
       // Section Khusus: Hutang Tunjangan Anak pada Pensiun Wari Prajurit : Penspok Yatim/Piatu
       const secKhususList = hutangData.filter(h => 
         (h.jenis || '').toUpperCase().includes('WARI PRAJURIT') ||
-        (h.objekPensiun === 'Anak' && (h.kategoriPinjaman === 'Khusus' || (h.jenis || '').toUpperCase().includes('YATIM')))
+        ((h.objekPensiun === 'Anak' || (h.objekPensiun || '').includes('Yatim')) && (h.kategoriPinjaman === 'Khusus' || (h.jenis || '').toUpperCase().includes('YATIM')))
       );
 
       renderSectionTable(sec1List, 'tbody-sec1-istri-suami');
@@ -1827,7 +1977,7 @@
       const wariTbody = document.getElementById('tbody-sec-khusus-wari');
       if (wariTbody) {
         if (secKhususList.length === 0) {
-          wariTbody.innerHTML = `<tr><td colspan="13" class="py-3.5 text-center text-slate-400 font-medium italic">Tidak ada data piutang wari prajurit pada section ini.</td></tr>`;
+          wariTbody.innerHTML = `<tr><td colspan="14" class="py-3.5 text-center text-slate-400 font-medium italic">Tidak ada data piutang wari prajurit pada section ini.</td></tr>`;
         } else {
           wariTbody.innerHTML = secKhususList.map((h, idx) => {
             const penspok = 2400000;
@@ -1838,11 +1988,15 @@
             const tunjLain = 0;
             const potBPJS = 24000;
             const totHutang = h.sisaHutang !== undefined ? h.sisaHutang : h.jumlah;
+            const nopensDisplay = h.nopens && h.nopens !== '-' 
+              ? `<span class="font-mono font-bold text-slate-800">${h.nopens}</span>${h.pemilikNopens ? `<br><span class="text-[10px] text-slate-500 font-medium">${h.pemilikNopens}${h.wali ? ' (Wali: ' + h.wali + ')' : ''}</span>` : ''}` 
+              : `<span class="text-slate-400 font-mono">-</span>`;
 
             return `
               <tr class="hover:bg-slate-50 text-xs border-b border-slate-100">
                 <td class="py-2.5 px-3 text-center font-bold text-slate-400">${idx + 1}</td>
                 <td class="py-2.5 px-3 font-mono text-slate-600">${formatDateString(h.tmt)}</td>
+                <td class="py-2.5 px-3">${nopensDisplay}</td>
                 <td class="py-2.5 px-3 font-mono text-slate-700">2026-01</td>
                 <td class="py-2.5 px-3 font-mono text-slate-800 font-semibold">${formatRupiah(penspok)}</td>
                 <td class="py-2.5 px-3 font-mono text-slate-700">${formatRupiah(tunjIstri)}</td>
@@ -1897,7 +2051,13 @@
       const badgeObjekEl = document.getElementById('l3-badge-objek');
       if (titleEl) titleEl.textContent = targetHutang.jenis || 'Rincian & Transaksi Piutang';
       if (badgeNomorEl) badgeNomorEl.textContent = targetHutang.nomor || '-';
-      if (badgeObjekEl) badgeObjekEl.textContent = 'Objek: ' + (targetHutang.objekPensiun || 'Peserta');
+      if (badgeObjekEl) {
+        if (targetHutang.nopens && targetHutang.nopens !== '-') {
+          badgeObjekEl.textContent = `NOPENS: ${targetHutang.nopens}${targetHutang.pemilikNopens ? ' (' + targetHutang.pemilikNopens + (targetHutang.wali ? ' / Wali: ' + targetHutang.wali : '') + ')' : ''}`;
+        } else {
+          badgeObjekEl.textContent = 'Objek: ' + (targetHutang.objekPensiun || 'Peserta');
+        }
+      }
 
       // 1. Auto-fill Profil Peserta (Card 1)
       const p = currentParticipant || {};
@@ -1912,6 +2072,7 @@
 
       // 2. Auto-fill Data Pinjaman (Card 2)
       setTxt('l3-d-nomor', targetHutang.nomor || targetHutang.noHutangPiutang || '-');
+      setTxt('l3-d-nopens', (targetHutang.nopens && targetHutang.nopens !== '-' ? targetHutang.nopens + ' - ' : '') + (targetHutang.pemilikNopens ? targetHutang.pemilikNopens + (targetHutang.wali ? ' (Wali: ' + targetHutang.wali + ')' : '') : (targetHutang.objekPensiun || '-')));
       setTxt('l3-d-jenis', targetHutang.jenis || '-');
       setTxt('l3-d-kategori', targetHutang.kategoriPinjaman || 'Reguler');
       setTxt('l3-d-total', formatRupiah(targetHutang.jumlah || 0));
@@ -2710,10 +2871,146 @@
       showToast("Transaksi Dihapus", "Catatan transaksi telah dihapus dari riwayat.", "warning");
     }
 
+    function populateObjekPensiunSelect() {
+      const select = document.getElementById('fp-objek-pensiun');
+      const labelEl = document.getElementById('fp-label-objek-pensiun');
+      if (!select) return;
+
+      const p = currentParticipant || {};
+      const nopensList = getActiveNopensList(p);
+
+      select.innerHTML = '';
+
+      if (nopensList.length > 1) {
+        // Kasus > 1 NOPENS Aktif (Pensiun Bagi: misal Wari & Yatim) -> Dropdown WAJIB DIISI!
+        select.required = true;
+        if (labelEl) {
+          labelEl.innerHTML = `Objek Pensiun (NOPENS) <span class="text-rose-500">*</span> <span class="text-[10px] text-amber-600 font-semibold ml-1">(Wajib: Memiliki ${nopensList.length} NOPENS Aktif)</span>`;
+        }
+        
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = '-- Pilih Objek Pensiun (NOPENS) --';
+        select.appendChild(defaultOpt);
+
+        nopensList.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.nopens;
+          let text = `[${item.nopens}] - ${item.namaPemilik} (${item.jenisPensiun}`;
+          if (item.wali && !item.jenisPensiun.includes('Wali')) {
+            text += `, Wali: ${item.wali}`;
+          }
+          text += `)`;
+          opt.textContent = text;
+          opt.dataset.nopens = item.nopens;
+          opt.dataset.nama = item.namaPemilik;
+          opt.dataset.jenis = item.jenisPensiun;
+          opt.dataset.wali = item.wali || '';
+          select.appendChild(opt);
+        });
+
+        select.value = ''; // Biarkan kosong agar user wajib memilih salah satu
+      } else if (nopensList.length === 1) {
+        // Kasus 1 NOPENS Aktif -> Dibiarkan KOSONG (bukan auto-select), sistem otomatis mapping!
+        select.required = false;
+        if (labelEl) {
+          labelEl.innerHTML = `Objek Pensiun (NOPENS) <span class="text-[10px] text-slate-400 font-medium ml-1">(Opsional: Otomatis mapping ke NOPENS Aktif)</span>`;
+        }
+
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.selected = true;
+        defaultOpt.textContent = `-- Dikosongkan (Sistem Otomatis Mapping ke [${nopensList[0].nopens}] - ${nopensList[0].namaPemilik}) --`;
+        select.appendChild(defaultOpt);
+
+        const item = nopensList[0];
+        const opt = document.createElement('option');
+        opt.value = item.nopens;
+        let text = `[${item.nopens}] - ${item.namaPemilik} (${item.jenisPensiun}`;
+        if (item.wali && !item.jenisPensiun.includes('Wali')) {
+          text += `, Wali: ${item.wali}`;
+        }
+        text += `)`;
+        opt.textContent = text;
+        opt.dataset.nopens = item.nopens;
+        opt.dataset.nama = item.namaPemilik;
+        opt.dataset.jenis = item.jenisPensiun;
+        opt.dataset.wali = item.wali || '';
+        select.appendChild(opt);
+
+        select.value = ''; // Tetap dibiarkan kosong sesuai instruksi spesifik user
+      } else {
+        // Kasus belum punya NOPENS
+        select.required = false;
+        if (labelEl) {
+          labelEl.innerHTML = `Objek Pensiun (NOPENS) <span class="text-[10px] text-slate-400 font-medium ml-1">(Non-Pensiun / Umum)</span>`;
+        }
+        const defaultOpt = document.createElement('option');
+        defaultOpt.value = '';
+        defaultOpt.textContent = '-- Dikosongkan (Mapping Peserta Utama) --';
+        select.appendChild(defaultOpt);
+      }
+    }
+
+    function calculateJatuhTempo(tmtStr) {
+      if (!tmtStr) return '';
+      try {
+        const d = new Date(tmtStr);
+        if (!isNaN(d.getTime())) {
+          d.setMonth(d.getMonth() + 1);
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, '0');
+          return `${year}-${month}-10`;
+        }
+      } catch(e) {}
+      return '';
+    }
+
+    function handleJumlahInputChange(val) {
+      const jumlah = parseRupiah(val) || 0;
+      const angsuranEl = document.getElementById('fp-angsuran-perbulan');
+      if (angsuranEl) {
+        const tenor = 24;
+        const estAngsuran = Math.round(jumlah / tenor);
+        angsuranEl.value = estAngsuran > 0 ? estAngsuran : '';
+      }
+    }
+
+    function handleTmtInputChange(val) {
+      const jatuhTempoEl = document.getElementById('fp-jatuh-tempo');
+      if (jatuhTempoEl) {
+        jatuhTempoEl.value = calculateJatuhTempo(val);
+      }
+    }
+
     function toggleFormTambahPinjaman(show) {
       const panel = document.getElementById('form-tambah-pinjaman-panel');
       if (!panel) return;
       if (show) {
+        populateObjekPensiunSelect();
+
+        // Autofill default system values jika field kosong / baru dibuka
+        const numEl = document.getElementById('fp-nomor-pinjaman');
+        if (numEl && !numEl.value) {
+          numEl.value = 'HUT-2026/' + String(Math.floor(Math.random() * 900) + 100);
+        }
+
+        const tmtEl = document.getElementById('fp-tmt-pinjaman');
+        if (tmtEl && !tmtEl.value) {
+          const todayStr = new Date().toISOString().split('T')[0];
+          tmtEl.value = todayStr;
+          const jtEl = document.getElementById('fp-jatuh-tempo');
+          if (jtEl && !jtEl.value) {
+            jtEl.value = calculateJatuhTempo(todayStr);
+          }
+        }
+
+        const jmlEl = document.getElementById('fp-jumlah-pinjaman');
+        if (jmlEl && !jmlEl.value) {
+          jmlEl.value = 2400000;
+          handleJumlahInputChange(2400000);
+        }
+
         panel.classList.remove('hidden');
         panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       } else {
@@ -2725,8 +3022,43 @@
       e.preventDefault();
       const getVal = (id) => document.getElementById(id)?.value || '';
 
-      const objekPensiun = getVal('fp-objek-pensiun') || 'Istri/Suami';
-      const nomorPinjaman = getVal('fp-nomor-pinjaman') || ('PINJ-' + Date.now().toString().slice(-4));
+      const p = currentParticipant || {};
+      const nopensList = getActiveNopensList(p);
+
+      const selectedNopens = getVal('fp-objek-pensiun');
+      let resolvedNopens = '';
+      let resolvedPemilik = '';
+      let resolvedJenis = '';
+      let resolvedWali = null;
+
+      if (selectedNopens) {
+        resolvedNopens = selectedNopens;
+        const matched = nopensList.find(item => item.nopens === selectedNopens);
+        if (matched) {
+          resolvedPemilik = matched.namaPemilik;
+          resolvedJenis = matched.jenisPensiun;
+          resolvedWali = matched.wali || null;
+        }
+      } else {
+        // Jika dikosongkan oleh user:
+        if (nopensList.length > 1) {
+          showToast("Peringatan", "Peserta memiliki lebih dari satu NOPENS aktif (Pensiun Bagi). Silakan pilih Objek Pensiun (NOPENS) terlebih dahulu!", "warning");
+          document.getElementById('fp-objek-pensiun')?.focus();
+          return;
+        } else if (nopensList.length === 1) {
+          // Kasus biasa: sistem otomatis mapping ke NOPENS aktif tersebut
+          resolvedNopens = nopensList[0].nopens;
+          resolvedPemilik = nopensList[0].namaPemilik;
+          resolvedJenis = nopensList[0].jenisPensiun;
+          resolvedWali = nopensList[0].wali || null;
+        } else {
+          resolvedNopens = p.nopens && p.nopens !== '-' ? p.nopens : (p.nrp || '-');
+          resolvedPemilik = p.nama || '-';
+          resolvedJenis = 'Umum';
+        }
+      }
+
+      const nomorPinjaman = getVal('fp-nomor-pinjaman') || ('HUT-2026/' + Date.now().toString().slice(-4));
       const jenisPinjaman = getVal('fp-jenis-pinjaman') || 'KETERLANJURAN BAYAR';
       const kategoriPinjaman = getVal('fp-kategori-pinjaman') || 'Reguler';
       const jumlahPinjaman = parseRupiah(getVal('fp-jumlah-pinjaman')) || 0;
@@ -2736,11 +3068,20 @@
       const tanggalJatuhTempo = getVal('fp-jatuh-tempo') || '-';
       const tipeTransaksi = getVal('fp-tipe-transaksi') || 'Baru';
 
+      let objekPensiunLabel = resolvedJenis || 'Peserta';
+      if (resolvedWali) {
+        objekPensiunLabel = `${resolvedJenis} (Wali: ${resolvedWali})`;
+      }
+
       const itemObj = {
         tmt: tmtPinjaman,
         nomor: nomorPinjaman,
+        nopens: resolvedNopens,
+        pemilikNopens: resolvedPemilik,
+        jenisPensiun: resolvedJenis,
+        wali: resolvedWali,
+        objekPensiun: objekPensiunLabel,
         jenis: jenisPinjaman,
-        objekPensiun: objekPensiun,
         kategoriPinjaman: kategoriPinjaman,
         jumlah: jumlahPinjaman,
         bungaPerbulan: bungaPerbulan,
@@ -2755,14 +3096,18 @@
       if (!hutangData) hutangData = getHutangData() || [];
       hutangData.push(itemObj);
 
-      if (currentParticipant && currentParticipant.nik) {
-        localStorage.setItem("hutangData_" + currentParticipant.nik, JSON.stringify(hutangData));
+      if (p && p.nik) {
+        localStorage.setItem("hutangData_" + p.nik, JSON.stringify(hutangData));
       }
 
       renderPiutangTables();
       renderPiutangPage2Sections();
       toggleFormTambahPinjaman(false);
-      showToast("Pinjaman Disimpan", `Data pinjaman ${nomorPinjaman} berhasil ditambahkan ke sub-section yang sesuai.`, "success");
+
+      const mappingNote = (!selectedNopens && nopensList.length === 1) 
+        ? ` (Otomatis dipetakan ke NOPENS: ${resolvedNopens})` 
+        : ` (NOPENS: ${resolvedNopens})`;
+      showToast("Pinjaman/Hutang Disimpan", `Data hutang ${nomorPinjaman} berhasil ditambahkan${mappingNote}.`, "success");
     }
 
     function parseRupiah(str) {
@@ -2821,50 +3166,48 @@
         btnEdit.setAttribute('href', `tambah-data-keluarga.html?kpa=${encodeURIComponent(kpaVal)}`);
       }
 
-      // Default mock keluarga matching Screenshot 1
-      let keluargaList = [
-        {
-          tglEntry: '06-06-2011',
-          nopens: '-',
-          penspok: '-',
-          nama: 'DARMAWAN',
-          hubungan: 'SUAMI',
-          tempatLahir: 'PALANGKARAYA',
-          tglLahir: '06-06-1982',
-          tglMenikah: '07-06-2010',
-          tglMeninggal: '-',
-          tglMulaiKul: '-'
-        },
-        {
-          tglEntry: '06-06-2013',
-          nopens: '-',
-          penspok: '-',
-          nama: 'INTAN NURAINI',
-          hubungan: 'ANAK KE-1',
-          tempatLahir: 'PALANGKARAYA',
-          tglLahir: '06-06-2012',
-          tglMenikah: '-',
-          tglMeninggal: '-',
-          tglMulaiKul: '-'
-        }
-      ];
-
-      // If participant has custom added family members
+      let keluargaList = [];
       if (currentParticipant && currentParticipant.keluargaLengkap && currentParticipant.keluargaLengkap.length > 0) {
-        currentParticipant.keluargaLengkap.forEach(item => {
-          keluargaList.push({
-            tglEntry: item.tglEntry || new Date().toLocaleDateString('id-ID'),
+        keluargaList = currentParticipant.keluargaLengkap.map(item => ({
+          tglEntry: item.tglEntry || new Date().toLocaleDateString('id-ID'),
+          nopens: item.nopens || '-',
+          penspok: item.penspok ? (typeof item.penspok === 'number' ? formatRupiah(item.penspok) : item.penspok) : '-',
+          nama: (item.nama || '').toUpperCase(),
+          hubungan: (item.hubungan || '').toUpperCase(),
+          tempatLahir: (item.tempatLahir || 'PALANGKARAYA').toUpperCase(),
+          tglLahir: item.tglLahir || item.tanggalLahir || '-',
+          tglMenikah: item.tglMenikah || '-',
+          tglMeninggal: item.tglMeninggal || '-',
+          tglMulaiKul: item.tglMulaiKul || '-'
+        }));
+      } else {
+        // Default mock keluarga matching Screenshot 1
+        keluargaList = [
+          {
+            tglEntry: '06-06-2011',
             nopens: '-',
-            penspok: item.penspok ? formatRupiah(item.penspok) : '-',
-            nama: item.nama.toUpperCase(),
-            hubungan: item.hubungan.toUpperCase(),
-            tempatLahir: (item.tempatLahir || 'PALANGKARAYA').toUpperCase(),
-            tglLahir: item.tanggalLahir || '-',
-            tglMenikah: item.tglMenikah || '-',
-            tglMeninggal: item.tglMeninggal || '-',
+            penspok: '-',
+            nama: 'DARMAWAN',
+            hubungan: 'SUAMI',
+            tempatLahir: 'PALANGKARAYA',
+            tglLahir: '06-06-1982',
+            tglMenikah: '07-06-2010',
+            tglMeninggal: '-',
             tglMulaiKul: '-'
-          });
-        });
+          },
+          {
+            tglEntry: '06-06-2013',
+            nopens: '-',
+            penspok: '-',
+            nama: 'INTAN NURAINI',
+            hubungan: 'ANAK KE-1',
+            tempatLahir: 'PALANGKARAYA',
+            tglLahir: '06-06-2012',
+            tglMenikah: '-',
+            tglMeninggal: '-',
+            tglMulaiKul: '-'
+          }
+        ];
       }
 
       keluargaList.forEach((row, idx) => {

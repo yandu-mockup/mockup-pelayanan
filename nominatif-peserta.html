@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASABRI YANDU - Data Nominatif Peserta</title>
+  <title>ASABRI YANDU - Data Nominatif Peserta SP3R</title>
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome for Icons -->
@@ -60,18 +60,24 @@
       </div>
     </div>
 
-    <!-- Right-side Topbar Controls -->
+    <!-- Right-side Topbar Controls with Role Switcher -->
     <div class="flex items-center gap-4">
-      <div class="bg-blue-950/20 border border-blue-400/30 px-3 py-1.5 rounded-lg flex items-center gap-2">
+      <div class="bg-blue-950/40 border border-blue-400/40 px-3 py-1.5 rounded-xl flex items-center gap-2.5 shadow-xs">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-xs font-semibold text-white tracking-wide">ROLE : STAF KANCAB / ADMIN</span>
+        <label for="role-switcher" class="text-[10px] font-extrabold text-blue-200 uppercase tracking-wider hidden sm:inline">Hak Akses / Role:</label>
+        <select id="role-switcher" onchange="changeUserRole(this.value)" class="bg-blue-900/80 text-white border border-blue-400/50 rounded-lg px-2.5 py-1 text-xs font-bold outline-none cursor-pointer hover:bg-blue-800 transition-colors">
+          <option value="DIVISI_LAYANAN" selected>🏢 Divisi Layanan (Semua Kancab)</option>
+          <option value="KANCAB_JAKARTA">📍 Staf/Kepala Kancab (KCU JAKARTA - Terkunci)</option>
+          <option value="KANCAB_BANDUNG">📍 Staf/Kepala Kancab (BANDUNG - Terkunci)</option>
+          <option value="KANCAB_SURABAYA">📍 Staf/Kepala Kancab (SURABAYA - Terkunci)</option>
+        </select>
       </div>
       <div class="h-8 w-px bg-white/20"></div>
       <div class="flex items-center gap-3">
-        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner">NP</div>
+        <div class="w-8 h-8 shrink-0 rounded-full bg-white/20 border border-white/60 text-white font-black flex items-center justify-center text-xs shadow-inner" id="user-avatar-initial">DL</div>
         <div class="flex flex-col">
-          <span class="text-xs font-semibold text-white">Staf Pengelola Data</span>
-          <span class="text-[9px] text-blue-200 leading-none font-mono">NIP. 19930214008</span>
+          <span class="text-xs font-semibold text-white" id="user-role-label">Divisi Layanan</span>
+          <span class="text-[9px] text-blue-200 leading-none font-mono" id="user-kancab-sub">Kantor Pusat (Semua Akses)</span>
         </div>
       </div>
     </div>
@@ -94,13 +100,13 @@
         <div class="flex items-center gap-2 text-[11px] font-medium text-slate-500">
           <a href="index.html" class="hover:text-asabri-blue transition-colors">Dashboard</a>
           <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
-          <span>Monitoring SP3R</span>
+          <a href="monitoring-sp3r.html" class="hover:text-asabri-blue transition-colors">Monitoring SP3R</a>
           <i class="fas fa-chevron-right text-[8px] text-slate-300"></i>
           <span class="font-bold text-asabri-blue">Data Nominatif Peserta</span>
         </div>
 
         <a href="monitoring-sp3r.html" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5">
-          <i class="fas fa-arrow-left"></i> Back (Monitoring SP3R)
+          <i class="fas fa-arrow-left"></i> Kembali ke Monitoring SP3R
         </a>
       </div>
 
@@ -112,23 +118,23 @@
           <h1 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
             <i class="fas fa-id-card text-asabri-blue"></i> Data Nominatif Peserta SP3R
           </h1>
-          <p class="text-xs text-slate-500 mt-1">Daftar rincian peserta pensiunan untuk konfirmasi dan kelengkapan dokumen SP3R.</p>
+          <p class="text-xs text-slate-500 mt-1">Daftar rincian data nominatif peserta SP3R untuk monitoring konfirmasi dan kelengkapan dokumen pensiun.</p>
         </div>
 
-        <!-- FILTER SECTION -->
+        <!-- FILTER SECTION (6 Filter Sesuai Ketentuan) -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
           <div class="flex items-center justify-between pb-2 border-b border-slate-100">
             <span class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
               <i class="fas fa-filter text-asabri-blue"></i> Filter Data Nominatif
             </span>
             <div class="flex items-center gap-2">
-              <button onclick="resetFilter()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
+              <button type="button" onclick="resetFilter()" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-bold transition-colors flex items-center gap-1">
                 <i class="fas fa-undo"></i> Reset
               </button>
-              <button onclick="applyFilter()" class="px-4 py-1.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+              <button type="button" onclick="applyFilter()" class="px-4 py-1.5 bg-asabri-blue hover:bg-asabri-blueDark text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
                 <i class="fas fa-search"></i> Cari
               </button>
-              <button onclick="exportCSV()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
+              <button type="button" onclick="exportCSV()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shadow-sm">
                 <i class="fas fa-file-csv"></i> Export CSV
               </button>
             </div>
@@ -136,64 +142,56 @@
 
           <!-- GRID FILTER FIELDS -->
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <!-- 1. Kantor Cabang (urut alfabet, default 'Semua') -->
             <div>
-              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Kantor Cabang</label>
-              <select id="filter-kantor-cabang" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
-                <option value="">Semua Kantor Cabang</option>
-                <option value="KC01 KCU JAKARTA">KC01 KCU JAKARTA</option>
-                <option value="KC02 KC MEDAN">KC02 KC MEDAN</option>
-                <option value="KC03 KC SURABAYA">KC03 KC SURABAYA</option>
-                <option value="KC04 KC BANDUNG">KC04 KC BANDUNG</option>
-                <option value="KC05 KC SEMARANG">KC05 KC SEMARANG</option>
-                <option value="KC06 KC MAKASSAR">KC06 KC MAKASSAR</option>
-                <option value="KC07 KC PALEMBANG">KC07 KC PALEMBANG</option>
-                <option value="KC08 KC BALIKPAPAN">KC08 KC BALIKPAPAN</option>
-                <option value="KC09 KC AMBON">KC09 KC AMBON</option>
-                <option value="KC10 KC JAYAPURA">KC10 KC JAYAPURA</option>
+              <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center justify-between">
+                <span>Kantor Cabang</span>
+                <span id="kancab-locked-badge" class="text-[9px] text-amber-600 font-bold hidden"><i class="fas fa-lock"></i> Terkunci</span>
+              </label>
+              <select id="filter-kantor-cabang" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue transition-colors">
+                <option value="">Semua</option>
+                <!-- Populated dynamically / alphabetically -->
               </select>
             </div>
 
+            <!-- 2. Status Laporan: Semua / Sudah SP3R / Belum SP3R -->
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Status Laporan</label>
-              <select id="filter-status-laporan" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
-                <option value="">Semua Status Laporan</option>
-                <option value="Terverifikasi">Terverifikasi</option>
-                <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
-                <option value="Belum Upload">Belum Upload</option>
+              <select id="filter-status-laporan" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua</option>
+                <option value="Sudah SP3R">Sudah SP3R</option>
+                <option value="Belum SP3R">Belum SP3R</option>
               </select>
             </div>
 
+            <!-- 3. Dari Tanggal -->
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Dari Tanggal</label>
-              <input type="date" id="filter-dari-tgl" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+              <input type="date" id="filter-dari-tgl" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
             </div>
 
+            <!-- 4. Sampai Tanggal -->
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Sampai Tanggal</label>
-              <input type="date" id="filter-sampai-tgl" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+              <input type="date" id="filter-sampai-tgl" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
             </div>
 
+            <!-- 5. Mitra (default 'Semua') -->
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mitra</label>
-              <select id="filter-mitra" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
-                <option value="">Semua Mitra</option>
-                <option value="BANK MANDIRI">BANK MANDIRI</option>
-                <option value="BANK BRI">BANK BRI</option>
-                <option value="BANK BNI">BANK BNI</option>
-                <option value="BANK BSI">BANK BSI</option>
-                <option value="BANK BTPN">BANK BTPN</option>
-                <option value="PT POS INDONESIA">PT POS INDONESIA</option>
+              <select id="filter-mitra" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua</option>
+                <!-- Populated dynamically -->
               </select>
             </div>
 
+            <!-- 6. Status Pensiun: Semua / ON / OFF -->
             <div>
               <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Status Pensiun</label>
-              <select id="filter-status-pensiun" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
-                <option value="">Semua Status Pensiun</option>
-                <option value="Pensiun Sendiri">Pensiun Sendiri</option>
-                <option value="Pensiun Warakawuri">Pensiun Warakawuri</option>
-                <option value="Tunjangan Yatim Piatu">Tunjangan Yatim Piatu</option>
-                <option value="Tunjangan Orang Tua">Tunjangan Orang Tua</option>
+              <select id="filter-status-pensiun" onchange="applyFilter()" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-700 outline-none focus:border-asabri-blue">
+                <option value="">Semua</option>
+                <option value="ON">ON</option>
+                <option value="OFF">OFF</option>
               </select>
             </div>
           </div>
@@ -202,15 +200,15 @@
           <div class="pt-2 border-t border-slate-100 flex items-center gap-3">
             <div class="flex-1 relative">
               <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="text" id="filter-keyword" oninput="applyFilter()" placeholder="Cari NOPENS / KTPA / NRP / Nama Peserta..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-asabri-blue transition-colors">
+              <input type="text" id="filter-keyword" oninput="applyFilter()" placeholder="Cari NOPENS / KTPA / NRP / Nama Peserta / No HP..." class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-slate-800 outline-none focus:border-asabri-blue transition-colors">
             </div>
           </div>
         </div>
 
-        <!-- MAIN TABLE SECTION -->
+        <!-- MAIN TABLE SECTION (12 Kolom) -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
           <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Daftar Data Nominatif Peserta</span>
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Daftar Data Nominatif Peserta SP3R</span>
             <span id="record-count" class="text-xs font-semibold text-slate-400">Total: 0 Record</span>
           </div>
 
@@ -219,17 +217,17 @@
               <thead class="bg-slate-100/90 text-slate-700 font-extrabold uppercase tracking-wider border-b border-slate-200">
                 <tr>
                   <th class="py-3.5 px-3 text-center">No</th>
-                  <th class="py-3.5 px-4">Nopens</th>
-                  <th class="py-3.5 px-4">KTPA</th>
-                  <th class="py-3.5 px-4">NRP</th>
-                  <th class="py-3.5 px-4">Nama Peserta</th>
-                  <th class="py-3.5 px-4">No HP</th>
-                  <th class="py-3.5 px-4">Kancab Dapem</th>
-                  <th class="py-3.5 px-4">Kancab User Upload</th>
-                  <th class="py-3.5 px-4">Mitra</th>
-                  <th class="py-3.5 px-4">Tgl Dokumen</th>
-                  <th class="py-3.5 px-4 text-center">Status Laporan</th>
-                  <th class="py-3.5 px-4">Status Pensiun</th>
+                  <th class="py-3.5 px-3">Nopens</th>
+                  <th class="py-3.5 px-3">KTPA</th>
+                  <th class="py-3.5 px-3">NRP</th>
+                  <th class="py-3.5 px-3">Nama Peserta</th>
+                  <th class="py-3.5 px-3">No HP</th>
+                  <th class="py-3.5 px-3">Kancab Dapem</th>
+                  <th class="py-3.5 px-3">Kancab User Upload</th>
+                  <th class="py-3.5 px-3">Mitra</th>
+                  <th class="py-3.5 px-3">Tgl Dokumen</th>
+                  <th class="py-3.5 px-3 text-center">Status</th>
+                  <th class="py-3.5 px-3 text-center">Status Pensiun</th>
                 </tr>
               </thead>
               <tbody id="tbody-nominatif" class="divide-y divide-slate-100 text-slate-700 font-medium">
@@ -238,15 +236,15 @@
             </table>
           </div>
 
-          <!-- PAGINATION FOOTER -->
+          <!-- PAGINATION FOOTER (10 baris per halaman) -->
           <div class="px-6 py-3.5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-xs">
             <span id="pagination-info" class="text-slate-500 font-semibold">Menampilkan 1 - 10 dari 0 data</span>
             <div class="flex items-center gap-2">
-              <button id="btn-prev" onclick="changePage(-1)" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-sm">
+              <button id="btn-prev" onclick="changePage(-1)" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                 <i class="fas fa-chevron-left text-[10px]"></i> Sebelumnya
               </button>
               <span id="page-num" class="px-3 py-1.5 font-bold text-asabri-blue bg-blue-50 border border-blue-200 rounded-lg">1</span>
-              <button id="btn-next" onclick="changePage(1)" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-sm">
+              <button id="btn-next" onclick="changePage(1)" class="px-3 py-1.5 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
                 Selanjutnya <i class="fas fa-chevron-right text-[10px]"></i>
               </button>
             </div>
@@ -258,10 +256,62 @@
   </div>
 
   <script>
+    // Master List Kantor Cabang (Diurutkan secara alfabetis)
+    const KANCAB_LIST = [
+      "KANCAB AMBON",
+      "KANCAB BALIKPAPAN",
+      "KANCAB BANDA ACEH",
+      "KANCAB BANDUNG",
+      "KANCAB BANJARMASIN",
+      "KANCAB BATAM",
+      "KANCAB BENGKULU",
+      "KANCAB BOGOR",
+      "KANCAB CIREBON",
+      "KANCAB DENPASAR",
+      "KANCAB GORONTALO",
+      "KANCAB JAMBI",
+      "KANCAB JAYAPURA",
+      "KANCAB KCU JAKARTA",
+      "KANCAB KENDARI",
+      "KANCAB KUPANG",
+      "KANCAB LAMPUNG",
+      "KANCAB MAKASSAR",
+      "KANCAB MANADO",
+      "KANCAB MANOKWARI",
+      "KANCAB MATARAM",
+      "KANCAB MEDAN",
+      "KANCAB PADANG",
+      "KANCAB PALEMBANG",
+      "KANCAB PALU",
+      "KANCAB PEKANBARU",
+      "KANCAB PONTIANAK",
+      "KANCAB SEMARANG",
+      "KANCAB SERANG",
+      "KANCAB SORONG",
+      "KANCAB SURABAYA",
+      "KANCAB SURAKARTA",
+      "KANCAB TERNATE",
+      "KANCAB YOGYAKARTA"
+    ].sort((a, b) => a.localeCompare('id'));
+
+    // Master List Mitra
+    const MITRA_LIST = [
+      "BANK BNI",
+      "BANK BRI",
+      "BANK BSI",
+      "BANK BTPN",
+      "BANK KB BUKOPIN",
+      "BANK MANDIRI",
+      "BANK MANDIRI TASPEN",
+      "PT POS INDONESIA"
+    ].sort((a, b) => a.localeCompare('id'));
+
     let DATA_NOMINATIF_FULL = [];
     let filteredData = [];
     let currentPage = 1;
     const pageSize = 10;
+    let currentRole = 'DIVISI_LAYANAN';
+    let userLockedKancab = '';
 
     document.addEventListener("DOMContentLoaded", () => {
       // Toggle sidebar functionality
@@ -273,7 +323,10 @@
         }
       });
 
-      // Auto-fill Kancab from URL param if redirected from Monitoring SP3R
+      populateDropdowns();
+      loadNominatifData();
+
+      // Check URL param 'kancab' if redirected from Monitoring SP3R
       const urlParams = new URLSearchParams(window.location.search);
       const kancabParam = urlParams.get('kancab');
       if (kancabParam) {
@@ -286,35 +339,243 @@
         }
       }
 
-      loadNominatifData();
       applyFilter();
     });
 
-    function loadNominatifData() {
-      // Enriched from MOCK_PESERTA and getClaims()
-      const pesertaList = typeof MOCK_PESERTA !== 'undefined' ? MOCK_PESERTA : [];
-      const kancabList = [
-        "KC01 KCU JAKARTA", "KC02 KC MEDAN", "KC03 KC SURABAYA", "KC04 KC BANDUNG", "KC05 KC SEMARANG",
-        "KC06 KC MAKASSAR", "KC07 KC PALEMBANG", "KC08 KC BALIKPAPAN", "KC09 KC AMBON", "KC10 KC JAYAPURA"
-      ];
-      const mitraList = ["BANK MANDIRI", "BANK BRI", "BANK BNI", "BANK BSI", "BANK BTPN", "PT POS INDONESIA"];
-      const statusLaporanList = ["Terverifikasi", "Menunggu Verifikasi", "Belum Upload"];
-      const statusPensiunList = ["Pensiun Sendiri", "Pensiun Warakawuri", "Tunjangan Yatim Piatu", "Tunjangan Orang Tua"];
+    function populateDropdowns() {
+      // 1. Populate Kancab Dropdown
+      const selKancab = document.getElementById('filter-kantor-cabang');
+      if (selKancab) {
+        selKancab.innerHTML = '<option value="">Semua</option>';
+        KANCAB_LIST.forEach(kc => {
+          const opt = document.createElement('option');
+          opt.value = kc;
+          opt.textContent = kc;
+          selKancab.appendChild(opt);
+        });
+      }
 
+      // 2. Populate Mitra Dropdown
+      const selMitra = document.getElementById('filter-mitra');
+      if (selMitra) {
+        selMitra.innerHTML = '<option value="">Semua</option>';
+        MITRA_LIST.forEach(m => {
+          const opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = m;
+          selMitra.appendChild(opt);
+        });
+      }
+    }
+
+    function changeUserRole(role) {
+      currentRole = role;
+      const kancabSelect = document.getElementById('filter-kantor-cabang');
+      const lockBadge = document.getElementById('kancab-locked-badge');
+      const avatarInitial = document.getElementById('user-avatar-initial');
+      const roleLabel = document.getElementById('user-role-label');
+      const kancabSub = document.getElementById('user-kancab-sub');
+
+      if (role === 'DIVISI_LAYANAN') {
+        userLockedKancab = '';
+        kancabSelect.disabled = false;
+        kancabSelect.classList.remove('bg-slate-100', 'cursor-not-allowed', 'border-amber-300');
+        kancabSelect.classList.add('bg-slate-50');
+        if (lockBadge) lockBadge.classList.add('hidden');
+        if (avatarInitial) avatarInitial.textContent = 'DL';
+        if (roleLabel) roleLabel.textContent = 'Divisi Layanan';
+        if (kancabSub) kancabSub.textContent = 'Kantor Pusat (Semua Akses)';
+      } else if (role === 'KANCAB_JAKARTA') {
+        userLockedKancab = 'KANCAB KCU JAKARTA';
+        kancabSelect.value = userLockedKancab;
+        kancabSelect.disabled = true;
+        kancabSelect.classList.remove('bg-slate-50');
+        kancabSelect.classList.add('bg-slate-100', 'cursor-not-allowed', 'border-amber-300');
+        if (lockBadge) lockBadge.classList.remove('hidden');
+        if (avatarInitial) avatarInitial.textContent = 'JKT';
+        if (roleLabel) roleLabel.textContent = 'Staf / Kepala Kancab';
+        if (kancabSub) kancabSub.textContent = 'KANCAB KCU JAKARTA (Terkunci)';
+      } else if (role === 'KANCAB_BANDUNG') {
+        userLockedKancab = 'KANCAB BANDUNG';
+        kancabSelect.value = userLockedKancab;
+        kancabSelect.disabled = true;
+        kancabSelect.classList.remove('bg-slate-50');
+        kancabSelect.classList.add('bg-slate-100', 'cursor-not-allowed', 'border-amber-300');
+        if (lockBadge) lockBadge.classList.remove('hidden');
+        if (avatarInitial) avatarInitial.textContent = 'BDG';
+        if (roleLabel) roleLabel.textContent = 'Staf / Kepala Kancab';
+        if (kancabSub) kancabSub.textContent = 'KANCAB BANDUNG (Terkunci)';
+      } else if (role === 'KANCAB_SURABAYA') {
+        userLockedKancab = 'KANCAB SURABAYA';
+        kancabSelect.value = userLockedKancab;
+        kancabSelect.disabled = true;
+        kancabSelect.classList.remove('bg-slate-50');
+        kancabSelect.classList.add('bg-slate-100', 'cursor-not-allowed', 'border-amber-300');
+        if (lockBadge) lockBadge.classList.remove('hidden');
+        if (avatarInitial) avatarInitial.textContent = 'SBY';
+        if (roleLabel) roleLabel.textContent = 'Staf / Kepala Kancab';
+        if (kancabSub) kancabSub.textContent = 'KANCAB SURABAYA (Terkunci)';
+      }
+
+      applyFilter();
+    }
+
+    function formatDateDisplay(yyyyMmDd) {
+      if (!yyyyMmDd || yyyyMmDd === '-') return '-';
+      const parts = yyyyMmDd.split('-');
+      if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      }
+      return yyyyMmDd;
+    }
+
+    function loadNominatifData() {
       DATA_NOMINATIF_FULL = [];
 
-      for (let i = 1; i <= 65; i++) {
-        const p = pesertaList[(i - 1) % pesertaList.length] || {};
-        const nama = p.nama || `Peserta SP3R ${i}`;
-        const nopens = `NPS-2026-${String(100 + i).padStart(4, '0')}`;
-        const ktpa = `KTPA-99${String(i).padStart(4, '0')}`;
-        const nrp = p.nrp_nip || `NRP-19800${i}`;
-        const kancabDapem = kancabList[i % kancabList.length];
-        const kancabUpload = kancabList[(i + 2) % kancabList.length];
-        const mitra = mitraList[i % mitraList.length];
-        const statusLaporan = statusLaporanList[i % statusLaporanList.length];
-        const statusPensiun = statusPensiunList[i % statusPensiunList.length];
-        const tglDok = `2026-09-${String((i % 14) + 1).padStart(2, '0')}`;
+      // Curated baseline data from active peserta test cases
+      const baselinePeserta = [
+        {
+          nopens: "8839201993",
+          ktpa: "ASB-2024-001235",
+          nrp: "3273120105910088",
+          namaPeserta: "Siti Nurhaliza",
+          noHp: "0817-0320-5395",
+          kancabDapem: "KANCAB KCU JAKARTA",
+          mitra: "BANK MANDIRI TASPEN",
+          status: "Sudah SP3R",
+          statusPensiun: "ON",
+          tglDokumenRaw: "2026-09-05"
+        },
+        {
+          nopens: "8839201994",
+          ktpa: "ASB-2015-087211",
+          nrp: "3171092801890001",
+          namaPeserta: "Wirata Atmaja",
+          noHp: "0812-9988-7711",
+          kancabDapem: "KANCAB KCU JAKARTA",
+          mitra: "BANK BRI",
+          status: "Sudah SP3R",
+          statusPensiun: "ON",
+          tglDokumenRaw: "2026-09-08"
+        },
+        {
+          nopens: "8839201995",
+          ktpa: "ASB-2024-001235",
+          nrp: "3273120105910095",
+          namaPeserta: "Ayu Fauzi",
+          noHp: "0813-2211-4455",
+          kancabDapem: "KANCAB KCU JAKARTA",
+          mitra: "-",
+          status: "Belum SP3R",
+          statusPensiun: "ON",
+          tglDokumenRaw: null
+        },
+        {
+          nopens: "8839202001",
+          ktpa: "ASB-2026-009981",
+          nrp: "197805122002121001",
+          namaPeserta: "Hj. Ratna Juwita",
+          noHp: "0811-3456-7890",
+          kancabDapem: "KANCAB BOGOR",
+          mitra: "BANK MANDIRI TASPEN",
+          status: "Sudah SP3R",
+          statusPensiun: "ON",
+          tglDokumenRaw: "2026-08-20"
+        },
+        {
+          nopens: "8839202002",
+          ktpa: "ASB-2026-009981",
+          nrp: "3201011904120005",
+          namaPeserta: "Bagas Sugeng Pratama",
+          noHp: "0812-5544-3322",
+          kancabDapem: "KANCAB BOGOR",
+          mitra: "-",
+          status: "Belum SP3R",
+          statusPensiun: "ON",
+          tglDokumenRaw: null
+        },
+        {
+          nopens: "8839201992",
+          ktpa: "ASB-2024-001234",
+          nrp: "197505121998011001",
+          namaPeserta: "Ahmad Fauzi",
+          noHp: "0815-6677-8899",
+          kancabDapem: "KANCAB BANDUNG",
+          mitra: "BANK BNI",
+          status: "Sudah SP3R",
+          statusPensiun: "ON",
+          tglDokumenRaw: "2026-09-01"
+        },
+        {
+          nopens: "-",
+          ktpa: "ASB-2025-001073",
+          nrp: "198411012025212012",
+          namaPeserta: "Astuti",
+          noHp: "0818-7788-9900",
+          kancabDapem: "KANCAB BANDUNG",
+          mitra: "-",
+          status: "Belum SP3R",
+          statusPensiun: "OFF",
+          tglDokumenRaw: null
+        },
+        {
+          nopens: "8839201996",
+          ktpa: "ASB-2022-004412",
+          nrp: "196803151990031002",
+          namaPeserta: "Danang Sutrisno",
+          noHp: "0812-3344-5566",
+          kancabDapem: "KANCAB SURABAYA",
+          mitra: "PT POS INDONESIA",
+          status: "Sudah SP3R",
+          statusPensiun: "OFF",
+          tglDokumenRaw: "2026-08-15"
+        }
+      ];
+
+      baselinePeserta.forEach((item, idx) => {
+        const isSudah = item.status === "Sudah SP3R";
+        DATA_NOMINATIF_FULL.push({
+          no: idx + 1,
+          nopens: item.nopens,
+          ktpa: item.ktpa,
+          nrp: item.nrp,
+          namaPeserta: item.namaPeserta,
+          noHp: item.noHp,
+          kancabDapem: item.kancabDapem,
+          kancabUserUpload: isSudah ? item.kancabDapem : "-",
+          mitra: isSudah ? item.mitra : "-",
+          tglDokumen: isSudah ? formatDateDisplay(item.tglDokumenRaw) : "-",
+          tglDokumenRaw: isSudah ? item.tglDokumenRaw : null,
+          status: item.status,
+          statusPensiun: item.statusPensiun
+        });
+      });
+
+      // Procedural synthetic dataset spanning multiple Kancabs & Mitras
+      const firstNames = ["Bambang", "Supriyadi", "Agus", "Hadi", "Hendra", "Suryono", "Endang", "Dewi", "Rina", "Tri", "Slamet", "Budi", "Joko", "Sri", "Nur"];
+      const lastNames = ["Pranoto", "Wibowo", "Kusuma", "Hidayat", "Santoso", "Saputra", "Siregar", "Nasution", "Lubis", "Panggabean", "Utomo", "Gunawan", "Setiawan"];
+
+      for (let i = 9; i <= 85; i++) {
+        const kancab = KANCAB_LIST[(i - 1) % KANCAB_LIST.length];
+        const mitra = MITRA_LIST[(i - 1) % MITRA_LIST.length];
+        // 60% Sudah SP3R, 40% Belum SP3R
+        const isSudah = (i % 5 !== 0 && i % 3 !== 0);
+        const status = isSudah ? "Sudah SP3R" : "Belum SP3R";
+        // 75% ON, 25% OFF
+        const statusPensiun = (i % 4 === 0) ? "OFF" : "ON";
+
+        const fName = firstNames[(i * 3) % firstNames.length];
+        const lName = lastNames[(i * 5) % lastNames.length];
+        const nama = `${fName} ${lName}`;
+
+        const nopens = `8839${String(200000 + i)}`;
+        const ktpa = `ASB-${2020 + (i % 6)}-${String(1000 + i).padStart(6, '0')}`;
+        const nrp = `19${70 + (i % 25)}${String((i % 12) + 1).padStart(2, '0')}${String((i % 28) + 1).padStart(2, '0')}199${i % 10}0${(i % 3) + 1}`;
+        const noHp = `081${(i % 5) + 1}-${String(2000 + i * 11).slice(0, 4)}-${String(5000 + i * 37).slice(0, 4)}`;
+
+        const day = String((i % 28) + 1).padStart(2, '0');
+        const month = String((i % 3) + 7).padStart(2, '0'); // Jul, Aug, Sep
+        const tglRaw = `2026-${month}-${day}`;
 
         DATA_NOMINATIF_FULL.push({
           no: i,
@@ -322,19 +583,24 @@
           ktpa: ktpa,
           nrp: nrp,
           namaPeserta: nama,
-          noHp: `08129876${String(1000 + i)}`,
-          kancabDapem: kancabDapem,
-          kancabUserUpload: kancabUpload,
-          mitra: mitra,
-          tglDokumen: tglDok,
-          status: statusLaporan,
+          noHp: noHp,
+          kancabDapem: kancab,
+          kancabUserUpload: isSudah ? kancab : "-",
+          mitra: isSudah ? mitra : "-",
+          tglDokumen: isSudah ? formatDateDisplay(tglRaw) : "-",
+          tglDokumenRaw: isSudah ? tglRaw : null,
+          status: status,
           statusPensiun: statusPensiun
         });
       }
     }
 
     function applyFilter() {
-      const kancab = document.getElementById('filter-kantor-cabang').value;
+      let kancab = document.getElementById('filter-kantor-cabang').value;
+      if (userLockedKancab) {
+        kancab = userLockedKancab;
+      }
+
       const statusLaporan = document.getElementById('filter-status-laporan').value;
       const dariTgl = document.getElementById('filter-dari-tgl').value;
       const sampaiTgl = document.getElementById('filter-sampai-tgl').value;
@@ -342,19 +608,42 @@
       const statusPensiun = document.getElementById('filter-status-pensiun').value;
       const keyword = document.getElementById('filter-keyword').value.toLowerCase().trim();
 
+      const hasDateFilter = Boolean(dariTgl || sampaiTgl);
+
       filteredData = DATA_NOMINATIF_FULL.filter(item => {
-        if (kancab && item.kancabDapem !== kancab && item.kancabUserUpload !== kancab) return false;
+        // 1. Filter Kantor Cabang
+        if (kancab && item.kancabDapem !== kancab) return false;
+
+        // 2. Filter Status Laporan (Sudah SP3R / Belum SP3R)
         if (statusLaporan && item.status !== statusLaporan) return false;
-        if (dariTgl && item.tglDokumen < dariTgl) return false;
-        if (sampaiTgl && item.tglDokumen > sampaiTgl) return false;
+
+        // 3. Filter Tanggal Dokumen:
+        // Ketentuan: Jika filter tanggal diisi, peserta 'Belum SP3R' (tanpa tgl dokumen) tidak ikut tampil
+        if (hasDateFilter) {
+          if (item.status === 'Belum SP3R' || !item.tglDokumenRaw || item.tglDokumenRaw === '-') {
+            return false;
+          }
+          if (dariTgl && item.tglDokumenRaw < dariTgl) return false;
+          if (sampaiTgl && item.tglDokumenRaw > sampaiTgl) return false;
+        }
+
+        // 4. Filter Mitra
         if (mitra && item.mitra !== mitra) return false;
+
+        // 5. Filter Status Pensiun (ON / OFF)
         if (statusPensiun && item.statusPensiun !== statusPensiun) return false;
+
+        // 6. Search Keyword
         if (keyword && !(
-          item.nopens.toLowerCase().includes(keyword) ||
-          item.ktpa.toLowerCase().includes(keyword) ||
-          item.nrp.toLowerCase().includes(keyword) ||
-          item.namaPeserta.toLowerCase().includes(keyword)
+          (item.nopens || '').toLowerCase().includes(keyword) ||
+          (item.ktpa || '').toLowerCase().includes(keyword) ||
+          (item.nrp || '').toLowerCase().includes(keyword) ||
+          (item.namaPeserta || '').toLowerCase().includes(keyword) ||
+          (item.noHp || '').toLowerCase().includes(keyword) ||
+          (item.kancabDapem || '').toLowerCase().includes(keyword) ||
+          (item.mitra || '').toLowerCase().includes(keyword)
         )) return false;
+
         return true;
       });
 
@@ -372,8 +661,9 @@
       if (totalRecord === 0) {
         tbody.innerHTML = `
           <tr>
-            <td colspan="12" class="text-center py-8 text-slate-400 italic">
-              Tidak ada data nominatif peserta yang sesuai filter.
+            <td colspan="12" class="text-center py-10 text-slate-400 font-medium italic">
+              <i class="fas fa-folder-open text-2xl mb-2 text-slate-300 block"></i>
+              Tidak ada data nominatif peserta SP3R yang sesuai dengan filter.
             </td>
           </tr>`;
         document.getElementById('pagination-info').textContent = "Menampilkan 0 - 0 dari 0 data";
@@ -391,30 +681,37 @@
       const pageData = filteredData.slice(startIndex, endIndex);
 
       pageData.forEach((item, idx) => {
+        // Badge Status SP3R
         let badgeStatus = '';
-        if (item.status === 'Terverifikasi') {
-          badgeStatus = `<span class="bg-emerald-50 text-emerald-600 border border-emerald-200 px-2 py-0.5 rounded-full font-bold text-[10px]">Terverifikasi</span>`;
-        } else if (item.status === 'Menunggu Verifikasi') {
-          badgeStatus = `<span class="bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded-full font-bold text-[10px]">Menunggu Verifikasi</span>`;
+        if (item.status === 'Sudah SP3R') {
+          badgeStatus = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-extrabold text-[10px] inline-flex items-center gap-1"><i class="fas fa-check-circle text-[9px] text-emerald-500"></i> Sudah SP3R</span>`;
         } else {
-          badgeStatus = `<span class="bg-rose-50 text-rose-600 border border-rose-200 px-2 py-0.5 rounded-full font-bold text-[10px]">Belum Upload</span>`;
+          badgeStatus = `<span class="bg-rose-50 text-rose-700 border border-rose-200 px-2.5 py-0.5 rounded-full font-extrabold text-[10px] inline-flex items-center gap-1"><i class="fas fa-clock text-[9px] text-rose-500"></i> Belum SP3R</span>`;
+        }
+
+        // Badge Status Pensiun (ON / OFF)
+        let badgePensiun = '';
+        if (item.statusPensiun === 'ON') {
+          badgePensiun = `<span class="bg-blue-50 text-asabri-blue border border-blue-200 px-2.5 py-0.5 rounded font-black text-[10px]">ON</span>`;
+        } else {
+          badgePensiun = `<span class="bg-slate-100 text-slate-500 border border-slate-300 px-2 py-0.5 rounded font-bold text-[10px]">OFF</span>`;
         }
 
         const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50/70 transition-colors';
+        tr.className = 'hover:bg-slate-50/80 transition-colors text-xs';
         tr.innerHTML = `
-          <td class="py-2.5 px-3 text-center font-mono font-bold text-slate-400">${startIndex + idx + 1}</td>
-          <td class="py-2.5 px-4 font-mono font-bold text-asabri-blue whitespace-nowrap">${item.nopens}</td>
-          <td class="py-2.5 px-4 font-mono whitespace-nowrap">${item.ktpa}</td>
-          <td class="py-2.5 px-4 font-mono whitespace-nowrap">${item.nrp}</td>
-          <td class="py-2.5 px-4 font-bold text-slate-800 whitespace-nowrap">${item.namaPeserta}</td>
-          <td class="py-2.5 px-4 font-mono text-slate-600 whitespace-nowrap">${item.noHp}</td>
-          <td class="py-2.5 px-4 whitespace-nowrap">${item.kancabDapem}</td>
-          <td class="py-2.5 px-4 whitespace-nowrap">${item.kancabUserUpload}</td>
-          <td class="py-2.5 px-4 font-bold text-slate-700 whitespace-nowrap">${item.mitra}</td>
-          <td class="py-2.5 px-4 font-mono text-slate-600 whitespace-nowrap">${item.tglDokumen}</td>
-          <td class="py-2.5 px-4 text-center whitespace-nowrap">${badgeStatus}</td>
-          <td class="py-2.5 px-4 whitespace-nowrap"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-bold">${item.statusPensiun}</span></td>
+          <td class="py-3 px-3 text-center font-mono font-bold text-slate-400">${startIndex + idx + 1}</td>
+          <td class="py-3 px-3 font-mono font-bold text-asabri-blue whitespace-nowrap">${item.nopens}</td>
+          <td class="py-3 px-3 font-mono text-slate-700 whitespace-nowrap">${item.ktpa}</td>
+          <td class="py-3 px-3 font-mono text-slate-600 whitespace-nowrap">${item.nrp}</td>
+          <td class="py-3 px-3 font-extrabold text-slate-900 whitespace-nowrap">${item.namaPeserta}</td>
+          <td class="py-3 px-3 font-mono text-slate-600 whitespace-nowrap">${item.noHp}</td>
+          <td class="py-3 px-3 whitespace-nowrap font-medium text-slate-800">${item.kancabDapem}</td>
+          <td class="py-3 px-3 whitespace-nowrap font-medium text-slate-600">${item.kancabUserUpload}</td>
+          <td class="py-3 px-3 font-bold text-slate-700 whitespace-nowrap">${item.mitra}</td>
+          <td class="py-3 px-3 font-mono text-slate-600 whitespace-nowrap">${item.tglDokumen}</td>
+          <td class="py-3 px-3 text-center whitespace-nowrap">${badgeStatus}</td>
+          <td class="py-3 px-3 text-center whitespace-nowrap">${badgePensiun}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -432,7 +729,11 @@
     }
 
     function resetFilter() {
-      document.getElementById('filter-kantor-cabang').value = '';
+      if (!userLockedKancab) {
+        document.getElementById('filter-kantor-cabang').value = '';
+      } else {
+        document.getElementById('filter-kantor-cabang').value = userLockedKancab;
+      }
       document.getElementById('filter-status-laporan').value = '';
       document.getElementById('filter-dari-tgl').value = '';
       document.getElementById('filter-sampai-tgl').value = '';
@@ -448,7 +749,7 @@
         return;
       }
 
-      let csv = "No,Nopens,KTPA,NRP,Nama Peserta,No HP,Kancab Dapem,Kancab User Upload,Mitra,Tgl Dokumen,Status Laporan,Status Pensiun\n";
+      let csv = "No,Nopens,KTPA,NRP,Nama Peserta,No HP,Kancab Dapem,Kancab User Upload,Mitra,Tgl Dokumen,Status,Status Pensiun\n";
       filteredData.forEach((row, idx) => {
         csv += `"${idx+1}","${row.nopens}","${row.ktpa}","${row.nrp}","${row.namaPeserta}","${row.noHp}","${row.kancabDapem}","${row.kancabUserUpload}","${row.mitra}","${row.tglDokumen}","${row.status}","${row.statusPensiun}"\n`;
       });
@@ -462,7 +763,7 @@
       link.click();
       document.body.removeChild(link);
 
-      alert("Data Nominatif Peserta (.csv) berhasil di-generate dan diunduh!");
+      alert(`Data Nominatif Peserta (${filteredData.length} baris) berhasil di-generate dan diunduh (.csv)!`);
     }
   </script>
 

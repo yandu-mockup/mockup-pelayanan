@@ -372,7 +372,83 @@ const MOCK_PESERTA = [
       { nama: "Budi Santoso", usia: 15, status_sekolah: "SMP", menikah: false, bekerja: false, nik: "3273120105910090" },
       { nama: "Ani Fitria", usia: 12, status_sekolah: "SD", menikah: false, bekerja: false, nik: "3273120105910091" }
     ],
-    kantor_bayar: { bank: "Bank BNI", jenis_tabungan: "Tabungan", no_rekening: "9876543210" }
+    kantor_bayar: { bank: "Bank BNI", jenis_tabungan: "Tabungan", no_rekening: "9876543210" },
+    nopensList: [
+      {
+        nopens: "8839201992",
+        namaPemilik: "Ahmad Fauzi",
+        jenisPensiun: "Pensiun Sendiri",
+        status: "Aktif",
+        wali: null
+      }
+    ]
+  },
+  {
+    nik: "3201015504820002",
+    nrp: "197805122002121001",
+    nrp_nip: "197805122002121001",
+    nopens: "8839202001",
+    kpa: "ASB-2026-009981",
+    no_ktpa: "ASB-2026-009981",
+    noPeserta: "ASB-2026-009981",
+    nama: "HJ. RATNA JUWITA",
+    tempatLahir: "Bogor",
+    tempat_lahir: "Bogor",
+    tanggalLahir: "1982-04-15",
+    tanggal_lahir: "1982-04-15",
+    tmtPengangkatan: "2002-12-01",
+    tmt_pengangkatan: "2002-12-01",
+    noSkep: "SKEP/WARI/2026/044",
+    no_skep_pengangkatan: "SKEP/WARI/2026/044",
+    tanggalSkep: "2026-01-10",
+    tgl_skep_pengangkatan: "2026-01-10",
+    noSkepPensiun: "SKEP-WARI/081/I/2026",
+    tglSkepPensiun: "2026-01-15",
+    pangkatAwal: "Kapten Inf (Anm)",
+    pangkat_awal: "Kapten Inf (Anm)",
+    pangkatAkhir: "Kapten Inf (Anm)",
+    pangkat: "Kapten Inf (Anm)",
+    golongan_pangkat: "Pama / Warakawuri",
+    kesatuan: "Korem 061/Surya Kencana",
+    unitKerja: "Korem 061/Surya Kencana",
+    angkatan: "TNI AD",
+    vip: "Tidak",
+    migrasiId: "MIG-002088",
+    migrasi_id: "MIG-002088",
+    alihStatus: "-",
+    statusPeserta: "PENSIUN BAGI",
+    statusKepesertaan: "Pensiunan",
+    status_kepesertaan: "Pensiunan",
+    statusValid: "Valid",
+    gaji_pokok_terakhir: 4850000,
+    dapemBulanan: 4850000,
+    ikut_tppd: true,
+    jenis_kelamin: "P",
+    nopensList: [
+      {
+        nopens: "8839202001",
+        namaPemilik: "HJ. RATNA JUWITA",
+        jenisPensiun: "Warakawuri",
+        status: "Aktif",
+        wali: null
+      },
+      {
+        nopens: "8839202002",
+        namaPemilik: "BAGAS SUGENG PRATAMA",
+        jenisPensiun: "Yatim",
+        status: "Aktif",
+        wali: "HJ. RATNA JUWITA"
+      }
+    ],
+    pasangan: {
+      nik: "3201011205780001",
+      nama: "ALM. KAPTEN INF SUGENG",
+      jugaPesertaASABRI: true
+    },
+    anak: [
+      { nama: "BAGAS SUGENG PRATAMA", usia: 14, status_sekolah: "SMP", menikah: false, bekerja: false, nik: "3201011904120005" }
+    ],
+    kantor_bayar: { bank: "Bank Mandiri Taspen", jenis_tabungan: "Tabungan", no_rekening: "1330099882211" }
   },
   {
     nik: "3273120105910088",
@@ -393,8 +469,8 @@ const MOCK_PESERTA = [
     no_skep_pengangkatan: "SKEP/PNS/088/I/2008",
     tanggalSkep: "2008-01-15",
     tgl_skep_pengangkatan: "2008-01-15",
-    noSkepPensiun: "-",
-    tglSkepPensiun: "",
+    noSkepPensiun: "SKEP-PEN/088/VIII/2026",
+    tglSkepPensiun: "2026-08-01",
     pangkatAwal: "PNS Gol II/a",
     pangkat_awal: "PNS Gol II/a",
     pangkatAkhir: "PNS Gol II/c",
@@ -407,21 +483,105 @@ const MOCK_PESERTA = [
     migrasiId: "MIG-001002",
     migrasi_id: "MIG-001002",
     alihStatus: "Semua",
-    statusPeserta: "AKTIF",
-    statusKepesertaan: "Aktif",
-    status_kepesertaan: "Aktif",
+    statusPeserta: "PENSIUN BAGI",
+    statusKepesertaan: "Pensiunan",
+    status_kepesertaan: "Pensiunan",
     statusValid: "Valid",
     gaji_pokok_terakhir: 3800000,
+    penspok: 3800000,
+    dapemBulanan: 3800000,
     ikut_tppd: false,
     jenis_kelamin: "P",
+    nopensList: [
+      {
+        nopens: "8839201993",
+        namaPemilik: "Siti Nurhaliza",
+        jenisPensiun: "Pensiun Sendiri",
+        status: "Aktif",
+        wali: null
+      },
+      {
+        nopens: "8839201994",
+        namaPemilik: "Wirata Atmaja",
+        jenisPensiun: "Pensiun Wari",
+        status: "Aktif",
+        wali: null
+      },
+      {
+        nopens: "8839201995",
+        namaPemilik: "Ayu Fauzi",
+        jenisPensiun: "Yatim Piatu",
+        status: "Aktif",
+        wali: "Siti Fatimah"
+      }
+    ],
     pasangan: {
-      nik: "3273120105910003",
-      nama: "Ahmad Fauzi",
+      nik: "3171092801890001",
+      nama: "Wirata Atmaja",
+      nopens: "8839201994",
       jugaPesertaASABRI: true
     },
     anak: [
+      { nama: "Ayu Fauzi", usia: 14, nopens: "8839201995", wali: "Siti Fatimah", jenisPensiun: "Yatim Piatu", status_sekolah: "SMP", menikah: false, bekerja: false, nik: "3273120105910095" },
       { nama: "Budi Santoso", usia: 15, status_sekolah: "SMP", menikah: false, bekerja: false, nik: "3273120105910090" },
       { nama: "Ani Fitria", usia: 12, status_sekolah: "SD", menikah: false, bekerja: false, nik: "3273120105910091" }
+    ],
+    keluargaLengkap: [
+      {
+        tglEntry: '15-08-2015',
+        nopens: '8839201994',
+        penspok: 2450000,
+        nama: 'WIRATA ATMAJA',
+        hubungan: 'SUAMI',
+        tempatLahir: 'JAKARTA',
+        tanggalLahir: '28-01-1978',
+        tglMenikah: '10-06-2010',
+        tglMeninggal: '-',
+        tglMulaiKul: '-',
+        jenisPensiun: 'Pensiun Wari',
+        status: 'Aktif'
+      },
+      {
+        tglEntry: '20-09-2018',
+        nopens: '8839201995',
+        penspok: 1350000,
+        nama: 'AYU FAUZI',
+        hubungan: 'ANAK (YATIM PIATU)',
+        tempatLahir: 'BANDUNG',
+        tanggalLahir: '14-04-2012',
+        tglMenikah: '-',
+        tglMeninggal: '-',
+        tglMulaiKul: '-',
+        jenisPensiun: 'Yatim Piatu',
+        wali: 'Siti Fatimah',
+        status: 'Aktif'
+      },
+      {
+        tglEntry: '10-02-2011',
+        nopens: '-',
+        penspok: '-',
+        nama: 'BUDI SANTOSO',
+        hubungan: 'ANAK KE-1',
+        tempatLahir: 'CIMAHI',
+        tanggalLahir: '15-05-2011',
+        tglMenikah: '-',
+        tglMeninggal: '-',
+        tglMulaiKul: '-',
+        status: 'Aktif'
+      },
+      {
+        tglEntry: '12-07-2014',
+        nopens: '-',
+        penspok: '-',
+        nama: 'ANI FITRIA',
+        hubungan: 'ANAK KE-2',
+        tempatLahir: 'CIMAHI',
+        tanggalLahir: '22-08-2014',
+        tglMenikah: '-',
+        tglMeninggal: '-',
+        tglMulaiKul: '-',
+        status: 'Aktif'
+      }
     ],
     kantor_bayar: { bank: "Bank Mandiri Taspen", jenis_tabungan: "Tabungan", no_rekening: "1122334455" }
   },
